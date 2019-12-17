@@ -7,8 +7,12 @@ app.get('/', (req, res) => {
   res.send('Hi there');
 });
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   console.log('A user connected');
+  socket.on('message', message => {
+    console.log(message);
+    io.emit('message', message);
+  });
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });

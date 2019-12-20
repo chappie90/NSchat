@@ -1,5 +1,6 @@
 const express = require('express');
 const io = require('socket.io')();
+const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
 
@@ -7,11 +8,16 @@ app.get('/', (req, res) => {
   res.send('Hi there');
 });
 
+let currentUserId = 2;
+const users = {};
+
 io.on('connection', socket => {
   console.log('A user connected');
-  socket.on('message', message => {
-    console.log(message);
-    io.emit('message', message);
+  console.log(socket.id);
+  users[socket.id] = { userId: currentUserId++ };
+  socket.on('join', username => {
+    users[socket.id].username = username;
+    messageHandler.handleMessage(socket, users);
   });
   socket.on('disconnect', () => {
     console.log('User disconnected');

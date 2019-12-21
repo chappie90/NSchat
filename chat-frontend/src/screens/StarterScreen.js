@@ -2,17 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-elements';
 
-const StarterScreen = () => {
+const StarterScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image style={styles.image}  source={require('../../assets/starter-icon.jpg')} />
       <View style={styles.textWrapper}>
         <Text style={styles.text1}>You & Me</Text><Text style={styles.text2}> Chat</Text>
       </View>
-      <TouchableOpacity style={styles.signupButton}>
+      <TouchableOpacity style={styles.signupButton} onPress={() => navigation.navigate('Signup')}>
         <Text style={styles.signupTextButton}>Get Started</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.signinButton}>
+      <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('Signin')}>
         <Text style={styles.signinTextButton}>Sign In</Text>
       </TouchableOpacity>
     </View>

@@ -12,18 +12,20 @@ import ChatsListScreen from './src/screens/ChatsListScreen';
 import ContactsListScreen from './src/screens/ContactsListScreen';
 import AccountScreen from './src/screens/AccountScreen';
 
-const stackNavigator = createStackNavigator(
-  {
+const switchNavigator = createSwitchNavigator({
+  loginFlow: createStackNavigator({
     Starter: StarterScreen,
     Signup: SignupScreen,
     Signin: SigninScreen
-  },
-  {
-    initialRouteName: 'Starter'
-  }
-);
+  }),
+  mainFlow: createBottomTabNavigator({
+    ChatsList: ChatsListScreen,
+    ContactsList: ContactsListScreen,
+    Account: AccountScreen
+  })
+});
 
-const App = createAppContainer(stackNavigator);
+const App = createAppContainer(switchNavigator);
 
 export default () => {
   return (

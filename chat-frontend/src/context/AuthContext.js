@@ -16,7 +16,7 @@ const signup = dispatch => async ({ email, password }) => {
     const response = await chatApi.post('/signup', { email, password });
     dispatch({ type: 'signin', payload: response.data.token });
 
-    navigate('Starter');
+    navigate('mainFlow');
   } catch (err) {
     console.log(err);
   }

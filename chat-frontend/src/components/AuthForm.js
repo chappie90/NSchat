@@ -7,7 +7,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-const AuthForm = ({ header, submitBtn, navLink, navigation }) => {
+const AuthForm = ({ header, submitBtn, navLink, onSubmit }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -27,7 +27,9 @@ const AuthForm = ({ header, submitBtn, navLink, navigation }) => {
         onChangeText={setPassword}
         autoCorrect={false}
         secureTextEntry />
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={() => onSubmit({ email, password })}>
         <Text style={styles.btnText}>{submitBtn}</Text>
       </TouchableOpacity>
       <TouchableOpacity>

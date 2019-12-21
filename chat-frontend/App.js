@@ -8,6 +8,9 @@ import { setNavigator } from './src/components/navigationRef';
 import StarterScreen from './src/screens/StarterScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import SigninScreen from './src/screens/SigninScreen';
+import ChatsListScreen from './src/screens/ChatsListScreen';
+import ContactsListScreen from './src/screens/ContactsListScreen';
+import AccountScreen from './src/screens/AccountScreen';
 
 const stackNavigator = createStackNavigator(
   {

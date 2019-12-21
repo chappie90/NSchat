@@ -13,6 +13,7 @@ const SignupScreen = () => {
         header="Join the chat"
         submitBtn="Sign Up"
         navLink="Already have an account? Sign in here"
+        routeName="Signin"
         onSubmit={signup}
         />
       {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}

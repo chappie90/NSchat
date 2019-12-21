@@ -10,6 +10,7 @@ const SigninScreen = () => {
         header="Welcome back"
         submitBtn="Sign In"
         navLink="Don't have an account yet? Sign up here"
+        routeName="Signup"
         />
       {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />}
     </View>

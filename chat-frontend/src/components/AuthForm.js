@@ -6,8 +6,9 @@ import {
   TextInput, 
   TouchableOpacity
 } from 'react-native';
+import { withNavigation } from 'react-navigation';
 
-const AuthForm = ({ header, submitBtn, navLink, onSubmit }) => {
+const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -32,7 +33,7 @@ const AuthForm = ({ header, submitBtn, navLink, onSubmit }) => {
         onPress={() => onSubmit({ email, password })}>
         <Text style={styles.btnText}>{submitBtn}</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate(routeName)}>
         <Text style={styles.navLink}>{navLink}</Text>
       </TouchableOpacity>
     </View>
@@ -81,4 +82,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AuthForm;
+export default withNavigation(AuthForm);

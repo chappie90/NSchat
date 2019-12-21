@@ -1,8 +1,14 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const io = require('socket.io')();
+
+const authRoutes = require('./src/routes/authRoutes');
 const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
+
+app.use(bodyParser.json());
+app.use(authRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hi there');

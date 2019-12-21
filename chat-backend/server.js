@@ -1,3 +1,4 @@
+require('./src/models/User');
 const express = require('express');
 const bodyParser = require('body-parser');
 const io = require('socket.io')();

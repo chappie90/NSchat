@@ -1,12 +1,20 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
 const router = express.Router();
 
-router.post('/signup', (req, res) => {
+router.post('/signup', async (req, res) => {
   const { email, password } = req.body;
 
-  console.log(email);
-  console.log(password);
+  try {
+    const user = new User({ email, password });
+    await user.save();
+
+    res.send({ user });
+  } catch (err) {
+    return res.status(422).send(err.message);
+  }
 
   res.send({email, password});
 });

@@ -16,7 +16,7 @@ const SigninScreen = () => {
         routeName="Signup"
         onSubmit={signin}
         />
-      {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />}
+      {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
     </View>
   );
 };

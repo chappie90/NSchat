@@ -24,9 +24,6 @@ const signup = dispatch => async ({ email, password }) => {
 
 const signin = dispatch => async ({ email, password }) => {
   try {
-    console.log(email);
-    console.log(password);
-
     const response = await chatApi.post('/signin', { email, password });
     dispatch({ type: 'signin', payload: response.data.token });
 

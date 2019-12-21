@@ -8,7 +8,7 @@ function createMessage(user, messageText) {
     user: {
       _id: user.userId,
       name: user.username,
-      avatar: 'https://placeimg.com/140/140/any'
+      avatar: user.avatar
     }
   }
 }
@@ -16,7 +16,7 @@ function createMessage(user, messageText) {
 function handleMessage(socket, users) {
   socket.on('message', messageText => {
     const user = users[socket.id];
-    const message = createMessage(userId, messageText);
+    const message = createMessage(user, messageText);
     console.log(message);
     socket.broadcast.emit('message', message);
   });

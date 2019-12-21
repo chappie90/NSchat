@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 
+import { Context as AuthContext } from '../context/AuthContext';
 import AuthForm from '../components/AuthForm';
 
 const SigninScreen = () => {
+  const { state, signin } = useContext(AuthContext);
+
   return (
     <View style={styles.container}>
       <AuthForm
@@ -11,6 +14,7 @@ const SigninScreen = () => {
         submitBtn="Sign In"
         navLink="Don't have an account yet? Sign up here"
         routeName="Signup"
+        onSubmit={signin}
         />
       {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />}
     </View>

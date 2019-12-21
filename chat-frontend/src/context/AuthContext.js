@@ -20,11 +20,24 @@ const signup = dispatch => async ({ email, password }) => {
   } catch (err) {
     console.log(err);
   }
-  
+};
+
+const signin = dispatch => async ({ email, password }) => {
+  try {
+    console.log(email);
+    console.log(password);
+
+    const response = await chatApi.post('/signin', { email, password });
+    dispatch({ type: 'signin', payload: response.data.token });
+
+    navigate('mainFlow');
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup },
+  { signup, signin },
   { token: null }
 );

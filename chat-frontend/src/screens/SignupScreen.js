@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
-import { Button } from 'react-native-elements';
 
 import AuthForm from '../components/AuthForm';
 
@@ -10,7 +9,7 @@ const SignupScreen = () => {
       <AuthForm 
         header="Join the chat"
         submitBtn="Sign Up"
-        navLink="Don't have an account yet? Sign up here"
+        navLink="Already have an account? Sign in here"
         />
       {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
     </View>

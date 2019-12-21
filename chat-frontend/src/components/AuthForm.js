@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 34,
     textAlign: 'center',
-    marginBottom: 30
+    marginBottom: 30,
+    color: 'orange'
   },
   input: {
     height: 60,

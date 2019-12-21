@@ -19,12 +19,17 @@ const StarterScreen = () => {
   );
 };
 
+StarterScreen.navigationOptions = {
+  header: null
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 30
+    paddingTop: 100,
+    paddingBottom: 30
   },
   image: {
     width: 250,
@@ -46,15 +51,17 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 3 ,
     marginTop: 'auto',
-    marginBottom: 10
+    marginBottom: 5
   },
   signupTextButton: {
-    fontSize: 22,
+    fontSize: 23,
     color: 'white'
   },
+  signinButton: {
+    padding: 5
+  },
   signinTextButton: {
-    color: 'black',
-    fontSize: 22
+    fontSize: 23
   }
 });
 

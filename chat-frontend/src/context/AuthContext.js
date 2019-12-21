@@ -1,5 +1,6 @@
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
+import { navigate } from '../components/navigationRef';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -14,6 +15,8 @@ const signup = dispatch => async ({ email, password }) => {
   try {
     const response = await chatApi.post('/signup', { email, password });
     dispatch({ type: 'signin', payload: response.data.token });
+
+    navigate('Starter');
   } catch (err) {
     console.log(err);
   }

@@ -17,9 +17,14 @@ const AddContactScreen = () => {
   );
 };
 
+AddContactScreen.navigationOptions = {
+  title: 'New Contact'
+};
+
 const styles = StyleSheet.create({
   input: {
-
+    height: 100,
+    backgroundColor: 'orange'
   }
 });
 

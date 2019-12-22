@@ -6,16 +6,18 @@ import { navigate } from '../components/navigationRef';
 
 const chatReducer = (state, action) => {
   switch (action.type) {
+    case 'search_contacts':
+      return { ...state, contacts: action.payload };
     default:
       return state;
   }
 };
 
-const getContacts = dispatch => async ({ search }) => {
+const searchContacts = dispatch => async ({ search }) => {
   try {
-    const response = await chatApi.post('/contacts', { search });
+    const response = await chatApi.post('/contacts/search', { search });
 
-    console.log(response); 
+    dispatch({ type: 'search_contacts', payload: response.data.contacts });
   } catch (err) {
     console.log(err);
   }
@@ -23,6 +25,6 @@ const getContacts = dispatch => async ({ search }) => {
 
 export const { Context, Provider } = createDataContext(
   chatReducer,
-  { getContacts },
-  { contacts: null }
+  { searchContacts },
+  { contacts: [] }
 );

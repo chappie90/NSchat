@@ -1,12 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpactiy, StyleSheet } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { Context as ChatContext } from '../context/ChatContext';
 
 const AddContactScreen = () => {
-  const { state, getContacts } = useContext(ChatContext);
+  const { state: { contacts }, searchContacts } = useContext(ChatContext);
   const [search, setSearch] = useState('');
+
+  console.log(contacts);
 
   return (
     <View style={styles.container}>
@@ -19,10 +21,18 @@ const AddContactScreen = () => {
           value={search}
           onChangeText={(search) => {
             setSearch(search);
-            getContacts({ search });
+            searchContacts({ search });
           }}
           autoCorrect={false} />
         </View>
+      <FlatList 
+        data={contacts}
+        keyExtractor={item => item.username}
+        renderItem={({ item }) => {
+          return <TouchableOpacity>
+            <Text>{item.username}</Text>
+          </TouchableOpacity>  
+        }}/>
     </View>
   );
 };

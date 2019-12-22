@@ -6,19 +6,13 @@ import { AsyncStorage } from 'react-native';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const AccountScreen = () => {
-  const { state, signout } = useContext(AuthContext);
-
-  // useEffect(() => {
-  //   setUsername(state.username);
-  // }, [state]);
-
-  const username = state.username;
+  const { state: { username }, signout } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
       <View>
         <Image style={styles.image} resizeMode="cover" source={require('../../assets/profile.jpg')} />
-        <Text>{username}</Text>
+        <Text style={styles.user}>{username}</Text>
       </View>
       <TouchableOpacity style={styles.signoutButton} onPress={() => signout()}>
         <Text style={styles.signoutTextButton}>Sign Out</Text>
@@ -41,11 +35,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   image: {
-    width: 250,
-    height: 250,
-    borderRadius: 125,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
     borderWidth: 2,
     borderColor: 'orange'   
+  },
+  user: {
+    fontSize: 34,
+    marginTop: 10,
+    textAlign: 'center'
   },
   signoutButton: {
     backgroundColor: 'orange',

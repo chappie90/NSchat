@@ -2,6 +2,7 @@ import React from 'react';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { setNavigator } from './src/components/navigationRef';
@@ -12,6 +13,17 @@ import SigninScreen from './src/screens/SigninScreen';
 import ChatsListScreen from './src/screens/ChatsListScreen';
 import ContactsListScreen from './src/screens/ContactsListScreen';
 import AccountScreen from './src/screens/AccountScreen';
+import AddContactScreen from './src/screens/AddContactScreen';
+
+const contactsListFlow = createStackNavigator({
+  ContactsList: ContactsListScreen,
+  AddContact: AddContactScreen,
+});
+
+contactsListFlow.navigationOptions = {
+  title: 'Contacts',
+  tabBarIcon: <MaterialIcons name="import-contacts" size={30} />
+};
 
 const switchNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
@@ -22,7 +34,7 @@ const switchNavigator = createSwitchNavigator({
   }),
   mainFlow: createBottomTabNavigator({
     ChatsList: ChatsListScreen,
-    ContactsList: ContactsListScreen,
+    contactsListFlow,
     Account: AccountScreen
   })
 });

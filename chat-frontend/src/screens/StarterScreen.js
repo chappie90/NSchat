@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-elements';
 
 const StarterScreen = ({ navigation }) => {
+
   return (
     <View style={styles.container}>
       <Image style={styles.image}  source={require('../../assets/starter-icon.jpg')} />

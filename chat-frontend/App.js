@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { setNavigator } from './src/components/navigationRef';
+import ResolveAuthScreen from './src/screens/ResolveAuthScreen';
 import StarterScreen from './src/screens/StarterScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import SigninScreen from './src/screens/SigninScreen';
@@ -13,6 +14,7 @@ import ContactsListScreen from './src/screens/ContactsListScreen';
 import AccountScreen from './src/screens/AccountScreen';
 
 const switchNavigator = createSwitchNavigator({
+  ResolveAuth: ResolveAuthScreen,
   loginFlow: createStackNavigator({
     Starter: StarterScreen,
     Signup: SignupScreen,

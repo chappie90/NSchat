@@ -37,8 +37,18 @@ const signin = dispatch => async ({ email, password }) => {
   }
 };
 
+const autoLogin = dispatch => async () => {
+  const token = await AsyncStorage.getItem('token');
+  if (token) {
+    dispatch({ type: 'signin', payload: token });
+    navigate('mainFlow');
+  } else {
+    navigate('Starter');
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup, signin },
+  { signup, signin, autoLogin },
   { token: null }
 );

@@ -20,4 +20,14 @@ router.post('/contacts/search', async (req, res) => {
   }
 });
 
+router.post('/contacts/add', async (req, res) => {
+  const { user } = req.body;
+
+  try {
+
+  } catch (err) {
+    return res.status(422).send(err.message);
+  }
+});
+
 module.exports = router;

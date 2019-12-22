@@ -11,7 +11,18 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  contacts: [
+    {
+      username: { type: String, unique: true, required: true },
+      chat: [
+        {
+          timestamp: { type: Date, default: Date.now },
+          message: { type: String }
+        }
+      ]
+    }
+  ]
 });
 
 userSchema.pre('save', function(next) {

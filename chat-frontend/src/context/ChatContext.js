@@ -24,6 +24,15 @@ const searchContacts = dispatch => async ({ search }) => {
   }
 };
 
+const addContact = dispatch => async ({ user }) => {
+  try {
+    const response = await chatApi.post('/contacts/add', { user });
+    console.log(response);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { searchContacts },

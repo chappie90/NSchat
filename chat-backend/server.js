@@ -5,12 +5,14 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')();
 
 const authRoutes = require('./src/routes/authRoutes');
+const chatRoutes = require('./src/routes/chatRoutes');
 const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(authRoutes);
+app.use(chatRoutes);
 
 const mongoUri = 'mongodb+srv://stoyangarov:Daspak12@emaily-w8ewa.mongodb.net/ns-chat?retryWrites=true&w=majority';
 mongoose.connect(mongoUri, {

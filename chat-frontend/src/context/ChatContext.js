@@ -11,12 +11,18 @@ const chatReducer = (state, action) => {
   }
 };
 
-const getContacts = dispatch => async () => {
+const getContacts = dispatch => async ({ search }) => {
+  try {
+    const response = await chatApi.post('/contacts', { search });
 
+    console.log(response); 
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const { Context, Provider } = createDataContext(
   chatReducer,
-  { },
+  { getContacts },
   { contacts: null }
 );

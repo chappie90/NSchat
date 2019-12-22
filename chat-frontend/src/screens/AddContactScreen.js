@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpactiy, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
+import { Context as ChatContext } from '../context/ChatContext';
+
 const AddContactScreen = () => {
+  const { state, getContacts } = useContext(ChatContext);
   const [search, setSearch] = useState('');
 
   return (
@@ -14,7 +17,10 @@ const AddContactScreen = () => {
           placeholder="Find people..."
           placeholderTextColor="white"
           value={search}
-          onChangeText={setSearch}
+          onChangeText={(search) => {
+            setSearch(search);
+            getContacts({ search });
+          }}
           autoCorrect={false} />
         </View>
     </View>

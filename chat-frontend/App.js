@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { Provider as AuthProvider } from './src/context/AuthContext';
+import { Provider as ChatProvider } from './src/context/ChatContext'; 
 import { setNavigator } from './src/components/navigationRef';
 import ResolveAuthScreen from './src/screens/ResolveAuthScreen';
 import StarterScreen from './src/screens/StarterScreen';
@@ -43,8 +44,10 @@ const App = createAppContainer(switchNavigator);
 
 export default () => {
   return (
-    <AuthProvider>
-      <App ref={(navigator) => { setNavigator(navigator) }} />
-    </AuthProvider>
+    <ChatProvider>
+      <AuthProvider>
+        <App ref={(navigator) => { setNavigator(navigator) }} />
+      </AuthProvider>
+    </ChatProvider>
   );
 };

@@ -16,8 +16,9 @@ const chatReducer = (state, action) => {
 const searchContacts = dispatch => async ({ search }) => {
   try {
     const response = await chatApi.post('/contacts/search', { search });
-
-    dispatch({ type: 'search_contacts', payload: response.data.contacts });
+    if (response.data.contacts !== undefined || response.data.contacts.length != 0) {
+      dispatch({ type: 'search_contacts', payload: response.data.contacts });
+    }
   } catch (err) {
     console.log(err);
   }

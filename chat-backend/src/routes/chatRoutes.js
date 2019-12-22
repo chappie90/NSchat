@@ -10,6 +10,9 @@ router.post('/contacts/search', async (req, res) => {
   try {
     if (search) {
       const contacts = await User.find({ username: { $regex: search } }, { username: 1, _id: 0 }).limit(10);
+      if (contacts.length == 0) {
+        return res.send({ contacts: [] });
+      }
       res.send({ contacts });
     }  
   } catch (err) {

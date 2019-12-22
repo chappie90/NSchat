@@ -9,7 +9,7 @@ import {
 import { withNavigation } from 'react-navigation';
 
 const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   return (
@@ -17,9 +17,9 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation 
       <Text style={styles.header}>{header}</Text>
       <TextInput 
         style={styles.input} 
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         autoCorrect={false} />
       <TextInput
         style={styles.input} 
@@ -30,7 +30,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation 
         secureTextEntry />
       <TouchableOpacity 
         style={styles.button} 
-        onPress={() => onSubmit({ email, password })}>
+        onPress={() => onSubmit({ username, password })}>
         <Text style={styles.btnText}>{submitBtn}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate(routeName)}>

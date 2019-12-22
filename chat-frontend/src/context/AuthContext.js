@@ -15,9 +15,9 @@ const authReducer = (state, action) => {
   }
 };
 
-const signup = dispatch => async ({ email, password }) => {
+const signup = dispatch => async ({ username, password }) => {
   try {
-    const response = await chatApi.post('/signup', { email, password });
+    const response = await chatApi.post('/signup', { username, password });
     await AsyncStorage.setItem('token', response.data.token);
     dispatch({ type: 'signin', payload: response.data.token });
 
@@ -27,9 +27,9 @@ const signup = dispatch => async ({ email, password }) => {
   }
 };
 
-const signin = dispatch => async ({ email, password }) => {
+const signin = dispatch => async ({ username, password }) => {
   try {
-    const response = await chatApi.post('/signin', { email, password });
+    const response = await chatApi.post('/signin', { username, password });
     await AsyncStorage.setItem('token', response.data.token);
     dispatch({ type: 'signin', payload: response.data.token });
 

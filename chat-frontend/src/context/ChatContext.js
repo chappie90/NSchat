@@ -7,6 +7,10 @@ import { navigate } from '../components/navigationRef';
 const chatReducer = (state, action) => {
   switch (action.type) {
     case 'search_contacts':
+      return { ...state, searchResults: action.payload };
+    case 'new_contact':
+      return { ...state, contacts: [ ...state.contacts, action.payload ] };
+    case 'get_contacts':
       return { ...state, contacts: action.payload };
     default:
       return state;
@@ -24,10 +28,23 @@ const searchContacts = dispatch => async ({ search }) => {
   }
 };
 
-const addContact = dispatch => async ({ user }) => {
+const addContact = dispatch => async ({ username, contact }) => {
   try {
-    const response = await chatApi.post('/contacts/add', { user });
-    console.log(response);
+    const response = await chatApi.post('/contacts/add', { username, contact });
+    
+    dispatch({ type: 'new_contact', payload: response.data.contact });
+
+    navigate('ContactsList');
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getContacts = dispatch => async ({ username }) => {
+  try {
+    const response = await chatApi.post('/contacts', { username });
+
+    dispatch({ type: 'get_contacts', payload: response.data.contacts });
   } catch (err) {
     console.log(err);
   }
@@ -35,6 +52,6 @@ const addContact = dispatch => async ({ user }) => {
 
 export const { Context, Provider } = createDataContext(
   chatReducer,
-  { searchContacts },
-  { contacts: [] }
+  { searchContacts, addContact, getContacts },
+  { searchResults: [], contacts: [] }
 );

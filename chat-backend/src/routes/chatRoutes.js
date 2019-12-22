@@ -21,13 +21,48 @@ router.post('/contacts/search', async (req, res) => {
 });
 
 router.post('/contacts/add', async (req, res) => {
-  const { user } = req.body;
+  const { username, contact } = req.body;
 
   try {
+    const newContact = await User.findOneAndUpdate(
+      { username: username },
+      { $addToSet: {
+          contacts: {
+            username: contact,
+            chat: []
+          }
+        }
+      },
+      { new: true }
+    );
 
+    if (!newContact) {
+      return  res.status(422).send({ error: 'Something went wrong with your request' });
+    }
+
+    res.send({ contact });
   } catch (err) {
     return res.status(422).send(err.message);
   }
+});
+
+router.post('/contacts', async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const user = await User.findOne({ username }, { 'contacts.username': 1, _id: 0 });
+
+    if (!user) {
+      return res.status(422).send({ error: 'Something went wrong with your request' });
+    }
+
+    const contacts = user.contacts.map(c => c.username);
+
+    res.send({ contacts });
+  } catch (err) {
+    return res.status(422).send(err.message);
+  }
+
 });
 
 module.exports = router;

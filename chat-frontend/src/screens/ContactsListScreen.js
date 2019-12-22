@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
+import { Context as AuthContext } from '../context/AuthContext';
+import { Context as ChatContext } from '../context/ChatContext';
+
 const ContactsListScreen = ({ navigation }) => {
+  const { state: { contacts }, getContacts } = useContext(ChatContext);
+  const { state: { username } } = useContext(AuthContext);
+
+  useEffect(() => {
+    getContacts({ username });
+  }, [contacts]);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddContact')}>

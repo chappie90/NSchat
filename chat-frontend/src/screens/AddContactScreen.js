@@ -2,16 +2,14 @@ import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 
+import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 
 const AddContactScreen = () => {
-  const { state: { contacts }, searchContacts } = useContext(ChatContext);
+  const { state: { searchResults }, searchContacts, addContact } = useContext(ChatContext);
+  const { state: { username } } = useContext(AuthContext);
   const [search, setSearch] = useState('');
 
-  function addContact() {
-    console.log(contacts);
-  }
-  
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -29,13 +27,13 @@ const AddContactScreen = () => {
         </View>
       <FlatList 
         style={styles.list}
-        data={contacts}
+        data={searchResults}
         keyExtractor={item => item.username}
         renderItem={({ item }) => {
           return <View style={styles.userContainer}> 
             <FontAwesome5 style={styles.icon} name="user-circle" size={32} />
             <Text style={styles.user}>{item.username}</Text>
-            <TouchableOpacity style={styles.button} onPress={addContact}>
+            <TouchableOpacity style={styles.button} onPress={() => addContact({ username: username, contact: item.username })}>
               <Text style={styles.text}>Add</Text>
             </TouchableOpacity>  
           </View>

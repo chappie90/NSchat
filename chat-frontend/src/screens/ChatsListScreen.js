@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const ChatsListScreen = () => {
   return (
@@ -7,6 +8,11 @@ const ChatsListScreen = () => {
       <Text>Chats List</Text>
     </View>
   );
+};
+
+ChatsListScreen.navigationOptions = {
+  title: 'Chats',
+  tabBarIcon: <MaterialIcons name="chat" size={30} />
 };
 
 const styles = StyleSheet.create({

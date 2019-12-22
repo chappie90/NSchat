@@ -6,13 +6,17 @@ const AddContactScreen = () => {
   const [search, setSearch] = useState('');
 
   return (
-    <View>
-      <TextInput
-        style={styles.input} 
-        placeholder="Find people..."
-        value={search}
-        onChangeText={setSearch}
-        autoCorrect={false} />
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <MaterialIcons style={styles.icon} name="search" size={40} color="white" />
+        <TextInput
+          style={styles.input} 
+          placeholder="Find people..."
+          placeholderTextColor="white"
+          value={search}
+          onChangeText={setSearch}
+          autoCorrect={false} />
+        </View>
     </View>
   );
 };
@@ -22,9 +26,21 @@ AddContactScreen.navigationOptions = {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  inputContainer: {
+    height: 80,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'orange',
+  },
+  icon: {
+    padding: 10
+  },
   input: {
-    height: 100,
-    backgroundColor: 'orange'
+    fontSize: 24,
+    color: 'white'
   }
 });
 

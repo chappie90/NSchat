@@ -1,15 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { AsyncStorage } from 'react-native';
 
 import { Context as AuthContext } from '../context/AuthContext';
 
 const AccountScreen = () => {
   const { state, signout } = useContext(AuthContext);
 
+  // useEffect(() => {
+  //   setUsername(state.username);
+  // }, [state]);
+
+  const username = state.username;
+
   return (
     <View style={styles.container}>
-      <Image style={styles.image} resizeMode="cover" source={require('../../assets/profile.jpg')} />
+      <View>
+        <Image style={styles.image} resizeMode="cover" source={require('../../assets/profile.jpg')} />
+        <Text>{username}</Text>
+      </View>
       <TouchableOpacity style={styles.signoutButton} onPress={() => signout()}>
         <Text style={styles.signoutTextButton}>Sign Out</Text>
       </TouchableOpacity>

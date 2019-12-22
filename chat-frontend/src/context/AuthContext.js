@@ -7,9 +7,9 @@ import { navigate } from '../components/navigationRef';
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'signin':
-      return { token: action.payload };
+      return { token: action.payload.token, username: action.payload.username };
     case 'signout':
-      return { token: null };
+      return { token: null, username: null };
     default: 
       return state;
   }
@@ -19,7 +19,8 @@ const signup = dispatch => async ({ username, password }) => {
   try {
     const response = await chatApi.post('/signup', { username, password });
     await AsyncStorage.setItem('token', response.data.token);
-    dispatch({ type: 'signin', payload: response.data.token });
+    await AsyncStorage.setItem('token', response.data.username);
+    dispatch({ type: 'signin', payload: response.data });
 
     navigate('mainFlow');
   } catch (err) {
@@ -30,8 +31,11 @@ const signup = dispatch => async ({ username, password }) => {
 const signin = dispatch => async ({ username, password }) => {
   try {
     const response = await chatApi.post('/signin', { username, password });
-    await AsyncStorage.setItem('token', response.data.token);
-    dispatch({ type: 'signin', payload: response.data.token });
+
+    const dataObj = { username: response.data.username, token: response.data.token };
+    await AsyncStorage.setItem('data', JSON.stringify(dataObj));
+
+    dispatch({ type: 'signin', payload: response.data });
 
     navigate('mainFlow');
   } catch (err) {
@@ -40,9 +44,11 @@ const signin = dispatch => async ({ username, password }) => {
 };
 
 const autoLogin = dispatch => async () => {
-  const token = await AsyncStorage.getItem('token');
-  if (token) {
-    dispatch({ type: 'signin', payload: token });
+  let data = await AsyncStorage.getItem('data');
+  data = JSON.parse(data);
+
+  if (data.token) {
+    dispatch({ type: 'signin', payload: data });
     setTimeout(() => {
       navigate('mainFlow');
     }, 4000);
@@ -53,7 +59,7 @@ const autoLogin = dispatch => async () => {
 
 const signout = dispatch => async () => {
   try {
-    await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem('data');
     dispatch({ type: 'signout' });
 
     navigate('loginFlow');
@@ -65,5 +71,5 @@ const signout = dispatch => async () => {
 export const { Context, Provider } = createDataContext(
   authReducer,
   { signup, signin, autoLogin, signout },
-  { token: null }
+  { token: null, username: null }
 );

@@ -8,6 +8,8 @@ const authReducer = (state, action) => {
   switch (action.type) {
     case 'signin':
       return { token: action.payload };
+    case 'signout':
+      return { token: null };
     default: 
       return state;
   }
@@ -49,8 +51,19 @@ const autoLogin = dispatch => async () => {
   }
 };
 
+const signout = dispatch => async () => {
+  try {
+    await AsyncStorage.removeItem('token');
+    dispatch({ type: 'signout' });
+
+    navigate('loginFlow');
+  } catch (err) {
+    console.log(err);
+  }  
+};
+
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup, signin, autoLogin },
+  { signup, signin, autoLogin, signout },
   { token: null }
 );

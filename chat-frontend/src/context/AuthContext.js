@@ -41,7 +41,9 @@ const autoLogin = dispatch => async () => {
   const token = await AsyncStorage.getItem('token');
   if (token) {
     dispatch({ type: 'signin', payload: token });
-    navigate('mainFlow');
+    setTimeout(() => {
+      navigate('mainFlow');
+    }, 4000);
   } else {
     navigate('Starter');
   }

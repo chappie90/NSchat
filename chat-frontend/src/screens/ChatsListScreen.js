@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
 
-const ChatsListScreen = () => {
+const ChatsListScreen = ({ navigation }) => {
 
   return (
-    <View>
-      <Text>Chats List</Text>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.navigate('ChatDetail')}>
+        <Text>Chats List</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -18,7 +20,11 @@ ChatsListScreen.navigationOptions = {
 };
 
 const styles = StyleSheet.create({
-
+  cotainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });
 
 export default ChatsListScreen;

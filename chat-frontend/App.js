@@ -32,6 +32,12 @@ contactsListFlow.navigationOptions = {
   tabBarIcon: <MaterialIcons name="import-contacts" size={30} />
 };
 
+chatsFlow.navigationOptions = {
+  title: 'Chats',
+  tabBarIcon: <MaterialIcons name="chat" size={30} />
+};
+
+
 const switchNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
   loginFlow: createStackNavigator({

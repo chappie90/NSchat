@@ -24,6 +24,7 @@ const chatsFlow = createStackNavigator({
 
 const contactsListFlow = createStackNavigator({
   ContactsList: ContactsListScreen,
+  ChatDetail: ChatDetailScreen,
   AddContact: AddContactScreen
 },{
   headerMode: 'screen'

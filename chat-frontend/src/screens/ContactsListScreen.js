@@ -35,10 +35,12 @@ const ContactsListScreen = ({ navigation }) => {
         data={contacts}
         keyExtractor={(item, index) => "" + index}
         renderItem={({ item }) =>{
-          return <View style={styles.userContainer}>
-            { getAvatar(item) }
-            <Text style={styles.username}>{item}</Text>
-          </View>
+          return <TouchableOpacity onPress={() => navigation.navigate('ChatDetail')}>
+            <View style={styles.userContainer}>
+              { getAvatar(item) }
+              <Text style={styles.username}>{item}</Text>
+            </View>
+          </TouchableOpacity>
         }}/>
     </View>
   );

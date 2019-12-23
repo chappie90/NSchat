@@ -35,7 +35,7 @@ const ContactsListScreen = ({ navigation }) => {
         data={contacts}
         keyExtractor={(item, index) => "" + index}
         renderItem={({ item }) =>{
-          return <TouchableOpacity onPress={() => navigation.navigate('ChatDetail')}>
+          return <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item })}>
             <View style={styles.userContainer}>
               { getAvatar(item) }
               <Text style={styles.username}>{item}</Text>

@@ -21,11 +21,6 @@ const AccountScreen = () => {
   );
 };
 
-AccountScreen.navigationOptions = {
-  title: 'Account',
-  tabBarIcon: <MaterialIcons name="account-box" size={30} />
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

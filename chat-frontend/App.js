@@ -24,19 +24,28 @@ const chatsFlow = createStackNavigator({
 
 const contactsListFlow = createStackNavigator({
   ContactsList: ContactsListScreen,
-  AddContact: AddContactScreen,
+  AddContact: AddContactScreen
+},{
+  headerMode: 'screen'
 });
-
-contactsListFlow.navigationOptions = {
-  title: 'Contacts',
-  tabBarIcon: <MaterialIcons name="import-contacts" size={30} />
-};
 
 chatsFlow.navigationOptions = {
   title: 'Chats',
-  tabBarIcon: <MaterialIcons name="chat" size={30} />
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="chat" size={30} />,
+  tabBarOptions: { activeTintColor: 'orange' }
 };
 
+contactsListFlow.navigationOptions = {
+  title: 'Contacts',
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={30} />,
+  tabBarOptions: { activeTintColor: 'orange' }
+};
+
+AccountScreen.navigationOptions = {
+  title: 'Account',
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={30} />,
+  tabBarOptions: { activeTintColor: 'orange' }
+};
 
 const switchNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,

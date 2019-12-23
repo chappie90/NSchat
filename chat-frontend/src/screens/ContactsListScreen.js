@@ -70,14 +70,15 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     paddingVertical: 5,
-    marginTop: 15
+    marginTop: 15,
+    paddingLeft: 10
   },
   divider: {
     borderBottomColor: 'lightgrey',
-    borderBottomWidth: 1
+    borderBottomWidth: 2
   },
   list: {
-    paddingVertical: 20,
+    paddingVertical: 10,
     paddingHorizontal: 10
   },
   userContainer: {
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 5,
-    padding: 10,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: 'lightgrey'
   },

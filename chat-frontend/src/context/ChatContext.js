@@ -44,6 +44,8 @@ const getContacts = dispatch => async ({ username }) => {
   try {
     const response = await chatApi.post('/contacts', { username });
 
+    console.log(response.data.contacts);
+
     dispatch({ type: 'get_contacts', payload: response.data.contacts });
   } catch (err) {
     console.log(err);

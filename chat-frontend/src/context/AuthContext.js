@@ -47,7 +47,7 @@ const autoLogin = dispatch => async () => {
   let data = await AsyncStorage.getItem('data');
   data = JSON.parse(data);
 
-  if (data.token) {
+  if (data && data.token) {
     dispatch({ type: 'signin', payload: data });
     setTimeout(() => {
       navigate('mainFlow');

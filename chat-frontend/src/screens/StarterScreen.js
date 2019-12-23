@@ -5,7 +5,7 @@ const StarterScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.image}  source={require('../../assets/starter-icon.jpg')} />
+      <Image style={styles.image}  source={require('../../assets/starter-icon-min.jpg')} />
       <View style={styles.textWrapper}>
         <Text style={styles.text1}>You & Me</Text><Text style={styles.text2}> Chat</Text>
       </View>

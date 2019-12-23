@@ -11,7 +11,7 @@ const AccountScreen = () => {
   return (
     <View style={styles.container}>
       <View>
-        <Image style={styles.image} resizeMode="cover" source={require('../../assets/profile.jpg')} />
+        <Image style={styles.image} resizeMode="cover" source={require('../../assets/profile-min.jpg')} />
         <Text style={styles.user}>{username}</Text>
       </View>
       <TouchableOpacity style={styles.signoutButton} onPress={() => signout()}>

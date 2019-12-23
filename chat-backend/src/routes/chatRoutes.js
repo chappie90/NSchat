@@ -57,7 +57,7 @@ router.post('/contacts', async (req, res) => {
     }
 
     const contacts = user.contacts.map(c => c.username);
-
+    
     res.send({ contacts });
   } catch (err) {
     return res.status(422).send(err.message);

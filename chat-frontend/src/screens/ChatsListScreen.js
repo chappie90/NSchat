@@ -12,7 +12,7 @@ const ChatsListScreen = ({ navigation }) => {
       </TouchableOpacity>
     </View>
   );
-};
+};  
 
 const styles = StyleSheet.create({
   container: {

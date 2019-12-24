@@ -1,4 +1,5 @@
 require('./src/models/User');
+require('./src/models/Message');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -35,20 +36,22 @@ app.get('/', (req, res) => {
 let currentUserId = 2;
 const users = {};
 
-function createUserAvatarUrl() {
-  const rand1 = Math.round(Math.random() * 200 + 100);
-  const rand2 = Math.round(Math.random() * 200 + 100);
-  return `https://placeimg.com/${rand1}/${rand2}/any`;
-}
+// function createUserAvatarUrl() {
+//   const rand1 = Math.round(Math.random() * 200 + 100);
+//   const rand2 = Math.round(Math.random() * 200 + 100);
+//   return `https://placeimg.com/${rand1}/${rand2}/any`;
+// }
 
 io.on('connection', socket => {
   console.log('A user connected');
   console.log(socket.id);
   users[socket.id] = { userId: currentUserId++ };
-  socket.on('join', username => {
-    users[socket.id].username = username;
-    users[socket.id].avatar = createUserAvatarUrl();
-    messageHandler.handleMessage(socket, users);
+  socket.on('message', message => {
+     console.log(socket.id);
+     console.log(message);
+    // users[socket.id].username = username;
+    // users[socket.id].avatar = createUserAvatarUrl();
+    // messageHandler.handleMessage(socket, users);
   });
   socket.on('disconnect', () => {
     console.log('User disconnected');

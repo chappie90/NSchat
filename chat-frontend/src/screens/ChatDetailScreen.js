@@ -10,7 +10,6 @@ const ChatDetailScreen = ({ navigation }) => {
  const [incomingMsgs, setIncomingMsgs] = useState([]);
   const socket = useRef(null);
 
-  console.log(navigation);
   useEffect(() => {
     const username = navigation.getParam('username');
     setIncomingMsgs([
@@ -34,7 +33,7 @@ const ChatDetailScreen = ({ navigation }) => {
           }
         }
       ],);
-    socket.current = io('http://192.168.1.108:3001');
+    socket.current = io('http://172.20.10.4:3001');
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });

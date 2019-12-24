@@ -1,17 +1,21 @@
 import RemoveSocketIoWarning from '../components/RemoveSocketIoWarning';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
 import { GiftedChat } from 'react-native-gifted-chat';
+
+import { Context as AuthContext } from '../context/AuthContext';
 // import { AsyncStorage } from 'react-native';
 
 const ChatDetailScreen = ({ navigation }) => {
- const [incomingMsgs, setIncomingMsgs] = useState([]);
+  const { state: { username } } = useContext(AuthContext);
+  const [incomingMsgs, setIncomingMsgs] = useState([]);
+  const [receiver, setReceiver] = useState('');
   const socket = useRef(null);
 
   useEffect(() => {
-    const username = navigation.getParam('username');
+    setReceiver(navigation.getParam('username'));
     setIncomingMsgs([
         {
           _id: 1,
@@ -35,14 +39,17 @@ const ChatDetailScreen = ({ navigation }) => {
       ],);
     socket.current = io('http://172.20.10.4:3001');
     socket.current.on('message', message => {
-      setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+      // setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
   }, []);
 
   const sendMessage = (message) => {
-    socket.current.emit('message', message);
-    // socket.current.emit('join', username);
-    console.log(message);
+    const msgObj = {
+      from: username,
+      to: receiver,
+      message
+    };
+    socket.current.emit('message', msgObj);
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
   };
 

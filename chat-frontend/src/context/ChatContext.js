@@ -84,6 +84,8 @@ const getMessages = dispatch => async ({ username, recipient }) => {
 
     dispatch({ type: 'get_messages', payload: chatArr });
 
+    return chatArr;
+
   } catch (err) {
     console.log(err);
   }

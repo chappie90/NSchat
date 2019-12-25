@@ -19,8 +19,11 @@ const ChatDetailScreen = ({ navigation }) => {
   useEffect(() => {
     setReceiver(navigation.getParam('username'));
     const recipient = navigation.getParam('username');
-    getMessages({ username, recipient });
-    // setIncomingMsgs(chat);
+    getMessages({ username, recipient })
+      .then((chat) => {
+        setIncomingMsgs(chat);
+      });
+    setIncomingMsgs(chat);
     socket.current = io('http://192.168.1.108:3001');
     socket.current.on('message', message => {
       // console.log(chat);
@@ -38,15 +41,11 @@ const ChatDetailScreen = ({ navigation }) => {
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
   };
 
-  function showMsgs(chat) {
-    return chat.map(msg => msg.to);
-  }
-
   return (
     <View style={styles.container}>
       <GiftedChat
         renderUsernameOnMessage 
-        messages={chat} 
+        messages={incomingMsgs} 
         onSend={sendMessage} 
         user={{ _id: 1 }} />
     </View>

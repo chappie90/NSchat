@@ -29,8 +29,7 @@ router.post('/contacts/add', async (req, res) => {
       { username: username },
       { $addToSet: {
           contacts: {
-            username: contact,
-            chat: []
+            username: contact
           }
         }
       },

@@ -13,15 +13,13 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   contacts: [
-    {
-      username: { type: String, unique: true, required: true },
-      chat: [
-        {
-          timestamp: { type: Date, default: Date.now },
-          message: { type: String }
-        }
-      ]
-    }
+      username: { type: String, unique: true, required: true }
+      // chat: [
+      //   {
+      //     timestamp: { type: Date, default: Date.now },
+      //     message: { type: String }
+      //   }
+      // ]
   ]
 });
 

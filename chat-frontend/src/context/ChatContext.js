@@ -12,6 +12,8 @@ const chatReducer = (state, action) => {
       return { ...state, contacts: [ ...state.contacts, action.payload ] };
     case 'get_contacts':
       return { ...state, contacts: action.payload };
+    case 'get_messages':
+      return { ...state, chat: action.payload };
     default:
       return state;
   }
@@ -44,8 +46,6 @@ const getContacts = dispatch => async ({ username }) => {
   try {
     const response = await chatApi.post('/contacts', { username });
 
-    console.log(response.data.contacts);
-
     dispatch({ type: 'get_contacts', payload: response.data.contacts });
   } catch (err) {
     console.log(err);
@@ -56,7 +56,34 @@ const getMessages = dispatch => async ({ username, recipient }) => {
   try {
     const response = await chatApi.post('/messages', { username, recipient });
 
-    console.log(response.data);
+    const chatArr = [];
+
+    const chat = response.data.messages.map(message => {
+      if (message.from === username) {
+        chatArr.push({
+          _id: message._id,
+          text: message.message.text,
+          createdAt: message.message.createdAt,
+          user: {
+            _id: 1,
+            name: username
+          }
+        });
+      } else {
+        chatArr.push({
+          _id: message._id,
+          text: message.message.text,
+          createdAt: message.message.createdAt,
+          user: {
+            _id: 2,
+            name: recipient
+          }
+        });
+      }
+    });
+
+    dispatch({ type: 'get_messages', payload: chatArr });
+
   } catch (err) {
     console.log(err);
   }
@@ -65,5 +92,5 @@ const getMessages = dispatch => async ({ username, recipient }) => {
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { searchContacts, addContact, getContacts, getMessages },
-  { searchResults: [], contacts: [], chat: [{ receiver: '', messages: [] }] }
+  { searchResults: [], contacts: [], chat: [] }
 );

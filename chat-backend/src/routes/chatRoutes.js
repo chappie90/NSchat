@@ -69,9 +69,9 @@ router.post('/messages', async (req, res) => {
   const { username, recipient } = req.body;
 
   try {
-    const messages = await Message.find({ between: { $all: [username, recipient] } });
+    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1 });
 
-    console.log(messages);
+    res.send({ messages });
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Could not fetch messages' });

@@ -20,30 +20,10 @@ const ChatDetailScreen = ({ navigation }) => {
     setReceiver(navigation.getParam('username'));
     const recipient = navigation.getParam('username');
     getMessages({ username, recipient });
-    setIncomingMsgs([
-        {
-          _id: 1,
-          text: 'Hello developer!!!',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-          },
-        },
-        {
-          _id: 2,
-          text: 'Hello yourself!',
-          createdAt: new Date(),
-          user: {
-            _id: 1,
-            name: 'React Native'
-          }
-        }
-      ],);
+    // setIncomingMsgs(chat);
     socket.current = io('http://192.168.1.108:3001');
     socket.current.on('message', message => {
-      console.log(message);
+      // console.log(chat);
       // setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
   }, []);
@@ -58,11 +38,15 @@ const ChatDetailScreen = ({ navigation }) => {
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
   };
 
+  function showMsgs(chat) {
+    return chat.map(msg => msg.to);
+  }
+
   return (
     <View style={styles.container}>
       <GiftedChat
         renderUsernameOnMessage 
-        messages={incomingMsgs} 
+        messages={chat} 
         onSend={sendMessage} 
         user={{ _id: 1 }} />
     </View>

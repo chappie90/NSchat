@@ -69,7 +69,9 @@ router.post('/messages', async (req, res) => {
   const { username, recipient } = req.body;
 
   try {
-    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1 });
+    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1 })
+                                  .sort({ 'message.createdAt': -1 })
+                                  .limit(20);
 
     res.send({ messages });
   } catch (err) {

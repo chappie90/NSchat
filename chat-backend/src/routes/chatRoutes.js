@@ -65,4 +65,17 @@ router.post('/contacts', async (req, res) => {
 
 });
 
+router.post('/messages', async (req, res) => {
+  const { username, recipient } = req.body;
+
+  try {
+    const messages = await Message.find({ between: { $all: [username, recipient] } });
+
+    console.log(messages);
+  } catch (err) {
+    console.log(err);
+    return res.status(422).send({ error: 'Could not fetch messages' });
+  }
+});
+
 module.exports = router;

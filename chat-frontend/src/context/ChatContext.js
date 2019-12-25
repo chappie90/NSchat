@@ -52,8 +52,18 @@ const getContacts = dispatch => async ({ username }) => {
   }
 };
 
+const getMessages = dispatch => async ({ username, recipient }) => {
+  try {
+    const response = await chatApi.post('/messages', { username, recipient });
+
+    console.log(response.data);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
-  { searchContacts, addContact, getContacts },
-  { searchResults: [], contacts: [] }
+  { searchContacts, addContact, getContacts, getMessages },
+  { searchResults: [], contacts: [], chat: [{ receiver: '', messages: [] }] }
 );

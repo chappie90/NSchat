@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   contacts: [
-      username: { type: String, unique: true, required: true }
+     { username: { type: String, unique: true, required: true }}
       // chat: [
       //   {
       //     timestamp: { type: Date, default: Date.now },

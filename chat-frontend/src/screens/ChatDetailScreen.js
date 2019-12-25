@@ -6,16 +6,20 @@ import io from 'socket.io-client';
 import { GiftedChat } from 'react-native-gifted-chat';
 
 import { Context as AuthContext } from '../context/AuthContext';
+import { Context as ChatContext } from '../context/ChatContext';
 // import { AsyncStorage } from 'react-native';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
+  const { state: { chat }, getMessages } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [receiver, setReceiver] = useState('');
   const socket = useRef(null);
 
   useEffect(() => {
     setReceiver(navigation.getParam('username'));
+    const recipient = navigation.getParam('username');
+    getMessages({ username, recipient });
     setIncomingMsgs([
         {
           _id: 1,
@@ -37,8 +41,9 @@ const ChatDetailScreen = ({ navigation }) => {
           }
         }
       ],);
-    socket.current = io('http://172.20.10.4:3001');
+    socket.current = io('http://192.168.1.108:3001');
     socket.current.on('message', message => {
+      console.log(message);
       // setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
   }, []);

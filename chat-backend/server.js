@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const io = require('socket.io')();
 
+const Message = mongoose.model('Message');
 const authRoutes = require('./src/routes/authRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
 const messageHandler = require('./src/handlers/message.handler');
@@ -38,13 +39,27 @@ const users = {};
 
 io.on('connection', socket => {
   console.log('A user connected');
-  // users[socket.id] = { userId: currentUserId++ };
-  socket.on('message', message => {
-     // console.log(socket.id);
-     console.log(message);
-    socket.emit('message', message);
-    // users[socket.id].username = username;
-    // users[socket.id].avatar = createUserAvatarUrl();
+  users[socket.id] = { userId: currentUserId++ };
+  socket.on('message', async msgObj => {
+    const { from, to, message: [{ text, createdAt }] } = msgObj;
+    try {
+      const message = new Message({
+        between: [from, to],
+        from,
+        to,
+        message: {
+          text,
+          createdAt
+        }
+      });
+      await message.save();
+
+    } catch(err) {
+      console.log(err);
+    }
+
+    socket.emit('message', msgObj);
+    const user = users[socket.id];
     // messageHandler.handleMessage(socket, users);
   });
   socket.on('disconnect', () => {

@@ -55,6 +55,24 @@ io.on('connection', socket => {
       });
       await message.save();
 
+      const contactRecipient = await User.find({
+        username: to
+      });
+
+      // check if recipient has sender as contact
+      // if not add sender as contact
+      // const newContact = await User.findOneAndUpdate(
+      //   { username: username },
+      //   { $addToSet: {
+      //       contacts: {
+      //         username: contact,
+      //         previousChat: 0
+      //       }
+      //     }
+      //   },
+      //   { new: true }
+      // );
+
       const myChat = await User.updateOne(
         { username: from, 'contacts.username': to }, 
         { $set: { 'contacts.$.previousChat': 1 } },

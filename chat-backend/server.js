@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')();
 
 const Message = mongoose.model('Message');
+const User = mongoose.model('User');
 const authRoutes = require('./src/routes/authRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
 const messageHandler = require('./src/handlers/message.handler');
@@ -54,6 +55,19 @@ io.on('connection', socket => {
       });
       await message.save();
 
+      const myChat = await User.updateOne(
+        { username: from, 'contacts.username': to }, 
+        { $set: { 'contacts.$.previousChat': 1 } },
+        { new: true }
+      );
+
+      const yourChat = await User.updateOne(
+        { username: to, 'contacts.username': from },
+        { $set: { 'contacts.$previousChat': 1 } },
+        { new: true }
+      );
+
+      console.log(yourChat);
     } catch(err) {
       console.log(err);
     }

@@ -14,6 +14,8 @@ const chatReducer = (state, action) => {
       return { ...state, contacts: action.payload };
     case 'get_messages':
       return { ...state, chat: action.payload };
+    case 'get_chats':
+      return { ...state, chats: action.payload };
     default:
       return state;
   }
@@ -47,6 +49,16 @@ const getContacts = dispatch => async ({ username }) => {
     const response = await chatApi.post('/contacts', { username });
 
     dispatch({ type: 'get_contacts', payload: response.data.contacts });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getChats = dispatch => async ({ username }) => {
+  try {
+    const response = await chatApi.post('/chats', { username });
+
+    console.log(response);
   } catch (err) {
     console.log(err);
   }
@@ -93,6 +105,6 @@ const getMessages = dispatch => async ({ username, recipient }) => {
 
 export const { Context, Provider } = createDataContext(
   chatReducer,
-  { searchContacts, addContact, getContacts, getMessages },
-  { searchResults: [], contacts: [], chat: [] }
+  { searchContacts, addContact, getContacts, getChats, getMessages },
+  { searchResults: [], contacts: [], previousChats: [], chat: [] }
 );

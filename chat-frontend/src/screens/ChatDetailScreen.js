@@ -24,7 +24,7 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     setIncomingMsgs(chat);
-    socket.current = io('http://192.168.1.108:3001');
+    socket.current = io('http://192.168.1.174:3001');
     socket.current.on('message', message => {
       // console.log(chat);
       // setIncomingMsgs(prevState => GiftedChat.append(prevState, message));

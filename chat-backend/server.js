@@ -58,20 +58,21 @@ io.on('connection', socket => {
       const contactRecipient = await User.find({
         username: to
       });
-
-      // check if recipient has sender as contact
-      // if not add sender as contact
-      // const newContact = await User.findOneAndUpdate(
-      //   { username: username },
-      //   { $addToSet: {
-      //       contacts: {
-      //         username: contact,
-      //         previousChat: 0
-      //       }
-      //     }
-      //   },
-      //   { new: true }
-      // );
+      
+      if (contactRecipient[0].contacts.length == 0) {
+        console.log('check it');
+      }
+      const newContact = await User.findOneAndUpdate(
+        { username: to },
+        { $addToSet: {
+            contacts: {
+              username: from,
+              previousChat: 1
+            }
+          }
+        },
+        { new: true }
+      );
 
       const myChat = await User.updateOne(
         { username: from, 'contacts.username': to }, 
@@ -79,13 +80,6 @@ io.on('connection', socket => {
         { new: true }
       );
 
-      const yourChat = await User.updateOne(
-        { username: to, 'contacts.username': from },
-        { $set: { 'contacts.$previousChat': 1 } },
-        { new: true }
-      );
-
-      console.log(yourChat);
     } catch(err) {
       console.log(err);
     }

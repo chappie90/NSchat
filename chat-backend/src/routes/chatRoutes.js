@@ -66,6 +66,22 @@ router.post('/contacts', async (req, res) => {
 
 });
 
+router.post('/chats', async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const user = await User.find({ username }); 
+
+    const chats = user[0].contacts.filter(c => c.previousChat == true);
+
+    console.log(chats);
+    res.send({ chats });
+  } catch (err) {
+    return res.status(422).send(err.message);
+  }
+
+});
+
 router.post('/messages', async (req, res) => {
   const { username, recipient } = req.body;
 

@@ -15,7 +15,7 @@ const chatReducer = (state, action) => {
     case 'get_messages':
       return { ...state, chat: action.payload };
     case 'get_chats':
-      return { ...state, chats: action.payload };
+      return { ...state, previousChats: action.payload };
     default:
       return state;
   }
@@ -58,7 +58,11 @@ const getChats = dispatch => async ({ username }) => {
   try {
     const response = await chatApi.post('/chats', { username });
 
-    console.log(response);
+    const chats = response.data.chats.sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date)
+    });
+
+    dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);
   }

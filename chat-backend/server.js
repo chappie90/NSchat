@@ -44,8 +44,6 @@ io.on('connection', socket => {
   const socketId = socket.id;
   users[user] = socketId;
 
-  console.log(users);
-
   socket.on('message', async msgObj => {
     const { from, to, message: [{ text, createdAt }] } = msgObj;
     try {
@@ -59,6 +57,23 @@ io.on('connection', socket => {
         }
       });
       await message.save();
+
+      const recipientSocketId = users[to];
+
+      const returnMsg = 
+        {
+          _id: message._id,
+          text,
+          createdAt,
+          user: {
+            _id: 1,
+            name: from
+          }
+        };
+
+      io.to(recipientSocketId).emit('message', returnMsg);
+
+    // messageHandler.handleMessage(socket, users); 
 
       const contactRecipient = await User.find({
         username: to
@@ -87,11 +102,8 @@ io.on('connection', socket => {
     } catch(err) {
       console.log(err);
     }
-
-    socket.emit('message', msgObj);
-    const user = users[socket.id];
-    // messageHandler.handleMessage(socket, users);
   });
+
   socket.on('disconnect', () => {
     console.log('User disconnected');
     // delete users[socket.id];

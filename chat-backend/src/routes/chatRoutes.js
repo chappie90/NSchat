@@ -82,7 +82,7 @@ router.post('/chats', async (req, res) => {
                                         { 'message.text': 1, 'message.createdAt': 1, _id: 0 })
                                         .sort({ 'message.createdAt': -1 })
                                         .limit(1);
-      console.log(lastMessage);
+
       chats.push({ text: lastMessage[0].message.text, date: lastMessage[0].message.createdAt, contact: c.username });
     }
 

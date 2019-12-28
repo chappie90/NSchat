@@ -23,10 +23,9 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     setIncomingMsgs(chat);
-    socket.current = io('http://192.168.1.174:3001', { query: `username=${username}` });
+    socket.current = io('http://b51c49d5.ngrok.io', { query: `username=${username}` });
     socket.current.on('message', message => {
-      // console.log(chat);
-      // setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+      setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
   }, []);
 

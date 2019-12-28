@@ -33,7 +33,7 @@ const ContactsListScreen = ({ navigation }) => {
       <View style={styles.divider} />
       {
         contacts.map((item, index) => (
-          <TouchableOpacity key={item} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
+          <TouchableOpacity key={index} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
             <ListItem
               key={index}
               leftAvatar={{ source: require('../../assets/avatar2.png') }}

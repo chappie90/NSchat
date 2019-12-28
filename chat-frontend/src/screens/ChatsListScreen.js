@@ -21,7 +21,7 @@ const ChatsListScreen = ({ navigation }) => {
       <Text style={styles.header}>My Chats</Text>   
       {
         previousChats.map((c, i) => (
-          <TouchableOpacity key={i} onPress={() => navigation.navigate('ChatDetail')}>
+          <TouchableOpacity key={i} onPress={() => navigation.navigate('ChatDetail', { username: c.contact })}>
             <ListItem
               key={i}
               leftAvatar={{ source: require('../../assets/avatar2.png') }}
@@ -39,11 +39,16 @@ const ChatsListScreen = ({ navigation }) => {
       }
     </View>
   );
-};  
+};
+
+ChatsListScreen.navigationOptions = {
+  header: null
+}; 
 
 const styles = StyleSheet.create({
   container: {
-
+    paddingVertical: 30,
+    paddingHorizontal: 20
   },
   header: {
     fontSize: 22,

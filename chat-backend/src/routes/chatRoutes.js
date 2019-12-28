@@ -72,9 +72,20 @@ router.post('/chats', async (req, res) => {
   try {
     const user = await User.find({ username }); 
 
-    const chats = user[0].contacts.filter(c => c.previousChat == true);
+    const contacts = user[0].contacts.filter(c => c.previousChat == true);
 
-    console.log(chats);
+    const chats = [];
+
+    for (let c of contacts) {
+      const lastMessage = await Message.find(
+                                        { between: { $all: [username, c.username] } },
+                                        { 'message.text': 1, 'message.createdAt': 1, _id: 0 })
+                                        .sort({ 'message.createdAt': -1 })
+                                        .limit(1);
+      console.log(lastMessage);
+      chats.push({ text: lastMessage[0].message.text, date: lastMessage[0].message.createdAt, contact: c.username });
+    }
+
     res.send({ chats });
   } catch (err) {
     return res.status(422).send(err.message);

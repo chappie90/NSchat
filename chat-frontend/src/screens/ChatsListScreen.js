@@ -19,6 +19,7 @@ const ChatsListScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>My Chats</Text>   
+      <View style={styles.divider} />
       {
         previousChats.map((c, i) => (
           <TouchableOpacity key={i} onPress={() => navigation.navigate('ChatDetail', { username: c.contact })}>
@@ -62,7 +63,11 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between'
-  }
+  },
+  divider: {
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 2
+  },
 });
 
 export default ChatsListScreen;

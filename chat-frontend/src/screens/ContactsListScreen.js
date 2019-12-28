@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import { ListItem } from 'react-native-elements';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
@@ -30,18 +31,23 @@ const ContactsListScreen = ({ navigation }) => {
       </TouchableOpacity>
       <Text style={styles.header}>My Contacts</Text>
       <View style={styles.divider} />
-      <FlatList
-        style={styles.list}
-        data={contacts}
-        keyExtractor={(item, index) => "" + index}
-        renderItem={({ item }) =>{
-          return <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item })}>
-            <View style={styles.userContainer}>
-              { getAvatar(item) }
-              <Text style={styles.username}>{item}</Text>
-            </View>
+      {
+        contacts.map((item, index) => (
+          <TouchableOpacity key={item} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
+            <ListItem
+              key={item}
+              leftAvatar={{ source: require('../../assets/avatar2.png') }}
+              title={
+                <View style={styles.itemContainer}>
+                  <Text style={styles.name}>{item}</Text>
+                </View>
+              }
+              bottomDivider
+              chevron
+            />
           </TouchableOpacity>
-        }}/>
+        ))
+      }  
     </View>
   );
 };
@@ -56,6 +62,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 30
+  },
+  name: {
+    fontWeight: 'bold'
   },
   button: {
     backgroundColor: 'orange',
@@ -103,8 +112,6 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 20,
-    borderWidth: 2,
-    borderColor: 'grey'
   },
   username: {
     fontSize: 20

@@ -35,12 +35,17 @@ app.get('/', (req, res) => {
   res.send('Hi there');
 });
 
-let currentUserId = 2;
 const users = {};
 
 io.on('connection', socket => {
   console.log('A user connected');
-  users[socket.id] = { userId: currentUserId++ };
+
+  const user = socket.handshake.query.username;
+  const socketId = socket.id;
+  users[user] = socketId;
+
+  console.log(users);
+
   socket.on('message', async msgObj => {
     const { from, to, message: [{ text, createdAt }] } = msgObj;
     try {
@@ -60,9 +65,7 @@ io.on('connection', socket => {
       });
       
       if (contactRecipient[0].contacts.length == 0) {
-        console.log('check it');
-      }
-      const newContact = await User.findOneAndUpdate(
+        const newContact = await User.findOneAndUpdate(
         { username: to },
         { $addToSet: {
             contacts: {
@@ -73,6 +76,7 @@ io.on('connection', socket => {
         },
         { new: true }
       );
+      }
 
       const myChat = await User.updateOne(
         { username: from, 'contacts.username': to }, 

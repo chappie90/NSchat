@@ -7,7 +7,6 @@ import { GiftedChat } from 'react-native-gifted-chat';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
-// import { AsyncStorage } from 'react-native';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -24,7 +23,7 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     setIncomingMsgs(chat);
-    socket.current = io('http://192.168.1.174:3001');
+    socket.current = io('http://192.168.1.174:3001', { query: `username=${username}` });
     socket.current.on('message', message => {
       // console.log(chat);
       // setIncomingMsgs(prevState => GiftedChat.append(prevState, message));

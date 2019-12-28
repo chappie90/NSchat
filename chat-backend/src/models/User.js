@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   contacts: [
      { 
-       username: { type: String, unique: true, required: true },
+       username: { type: String, required: true },
        previousChat: { type: Boolean, required: true }
      }
   ]

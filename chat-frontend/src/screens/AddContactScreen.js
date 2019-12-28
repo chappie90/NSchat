@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import { ListItem } from 'react-native-elements';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
@@ -25,19 +26,23 @@ const AddContactScreen = () => {
           }}
           autoCorrect={false} />
         </View>
-      <FlatList 
-        style={styles.list}
-        data={searchResults}
-        keyExtractor={item => item.username}
-        renderItem={({ item }) => {
-          return <View style={styles.userContainer}> 
-            <FontAwesome5 style={styles.icon} name="user-circle" size={32} />
-            <Text style={styles.user}>{item.username}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => addContact({ username: username, contact: item.username })}>
-              <Text style={styles.text}>Add</Text>
-            </TouchableOpacity>  
-          </View>
-        }}/>
+        {
+        searchResults.map((item, index) => (
+            <ListItem
+              key={index}
+              leftAvatar={{ source: require('../../assets/avatar2.png') }}
+              title={
+                <View style={styles.itemContainer}>
+                  <Text style={styles.name}>{item.username}</Text>
+                  <TouchableOpacity style={styles.button} onPress={() => addContact({ username: username, contact: item.username })}>
+                    <Text style={styles.text}>Add</Text>
+                  </TouchableOpacity>
+                </View>
+              }
+              bottomDivider
+            />
+        ))
+      }
     </View>
   );
 };
@@ -49,6 +54,11 @@ AddContactScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   inputContainer: {
     height: 80,
@@ -62,6 +72,9 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 24,
     color: 'white'
+  },
+  name: {
+    fontWeight: 'bold'
   },
   list: {
     padding: 20

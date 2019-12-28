@@ -35,7 +35,7 @@ const ContactsListScreen = ({ navigation }) => {
         contacts.map((item, index) => (
           <TouchableOpacity key={item} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
             <ListItem
-              key={item}
+              key={index}
               leftAvatar={{ source: require('../../assets/avatar2.png') }}
               title={
                 <View style={styles.itemContainer}>

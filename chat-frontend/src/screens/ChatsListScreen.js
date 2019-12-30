@@ -14,7 +14,7 @@ const ChatsListScreen = ({ navigation }) => {
 
   useEffect(() => {
     getChats({ username });
-  }, []);
+  }, [previousChats]);
 
   return (
     <View style={styles.container}>

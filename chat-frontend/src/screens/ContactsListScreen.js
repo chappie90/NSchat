@@ -12,7 +12,7 @@ const ContactsListScreen = ({ navigation }) => {
 
   useEffect(() => {
     getContacts({ username });
-  }, []);
+  }, [contacts]);
 
   function getAvatar(username) {
     if (username === 'Stoyan') {

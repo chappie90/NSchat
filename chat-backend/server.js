@@ -66,7 +66,7 @@ io.on('connection', socket => {
           text,
           createdAt,
           user: {
-            _id: 1,
+            _id: 2,
             name: from
           }
         };
@@ -76,21 +76,22 @@ io.on('connection', socket => {
     // messageHandler.handleMessage(socket, users); 
 
       const contactRecipient = await User.find({
-        username: to
+        username: to, 
+        'contacts.username': from
       });
       
-      if (contactRecipient[0].contacts.length == 0) {
+      if (contactRecipient.length == 0) {
         const newContact = await User.findOneAndUpdate(
-        { username: to },
-        { $addToSet: {
-            contacts: {
-              username: from,
-              previousChat: 1
+          { username: to },
+          { $addToSet: {
+              contacts: {
+                username: from,
+                previousChat: 1
+              }
             }
-          }
-        },
-        { new: true }
-      );
+          },
+          { new: true }
+        );
       }
 
       const myChat = await User.updateOne(

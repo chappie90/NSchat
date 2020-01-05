@@ -22,7 +22,7 @@ const signup = dispatch => async ({ username, password }) => {
     await AsyncStorage.setItem('token', response.data.username);
     dispatch({ type: 'signin', payload: response.data });
 
-    navigate('mainFlow');
+    navigate('MainFlow');
   } catch (err) {
     console.log(err);
   }
@@ -37,7 +37,7 @@ const signin = dispatch => async ({ username, password }) => {
 
     dispatch({ type: 'signin', payload: response.data });
 
-    navigate('mainFlow');
+    navigate('MainFlow');
   } catch (err) {
     console.log(err);
   }
@@ -50,7 +50,7 @@ const autoLogin = dispatch => async () => {
   if (data && data.token) {
     dispatch({ type: 'signin', payload: data });
     setTimeout(() => {
-      navigate('mainFlow');
+      navigate('MainFlow');
     }, 4000);
   } else {
     navigate('Starter');
@@ -62,7 +62,7 @@ const signout = dispatch => async () => {
     await AsyncStorage.removeItem('data');
     dispatch({ type: 'signout' });
 
-    navigate('loginFlow');
+    navigate('LoginFlow');
   } catch (err) {
     console.log(err);
   }  

@@ -1,5 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  FlatList, 
+  TouchableOpacity, 
+  StyleSheet,
+  Keyboard,
+  TouchableWithoutFeedback 
+} from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
 
@@ -12,38 +21,40 @@ const AddContactScreen = () => {
   const [search, setSearch] = useState('');
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <MaterialIcons style={styles.icon} name="search" size={40} color="white" />
-        <TextInput
-          style={styles.input} 
-          placeholder="Find people..."
-          placeholderTextColor="white"
-          value={search}
-          onChangeText={(search) => {
-            setSearch(search);
-            searchContacts({ search });
-          }}
-          autoCorrect={false} />
-        </View>
-        {
-        searchResults.map((item, index) => (
-            <ListItem
-              key={index}
-              leftAvatar={{ source: require('../../assets/avatar2.png') }}
-              title={
-                <View style={styles.itemContainer}>
-                  <Text style={styles.name}>{item.username}</Text>
-                  <TouchableOpacity style={styles.button} onPress={() => addContact({ username: username, contact: item.username })}>
-                    <Text style={styles.text}>Add</Text>
-                  </TouchableOpacity>
-                </View>
-              }
-              bottomDivider
-            />
-        ))
-      }
-    </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.container}>
+        <View style={styles.inputContainer}>
+          <MaterialIcons style={styles.icon} name="search" size={40} color="white" />
+          <TextInput
+            style={styles.input} 
+            placeholder="Find people..."
+            placeholderTextColor="white"
+            value={search}
+            onChangeText={(search) => {
+              setSearch(search);
+              searchContacts({ search });
+            }}
+            autoCorrect={false} />
+          </View>
+          {
+          searchResults.map((item, index) => (
+              <ListItem
+                key={index}
+                leftAvatar={{ source: require('../../assets/avatar2.png') }}
+                title={
+                  <View style={styles.itemContainer}>
+                    <Text style={styles.name}>{item.username}</Text>
+                    <TouchableOpacity style={styles.button} onPress={() => addContact({ username: username, contact: item.username })}>
+                      <Text style={styles.text}>Add</Text>
+                    </TouchableOpacity>
+                  </View>
+                }
+                bottomDivider
+              />
+          ))
+        }
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

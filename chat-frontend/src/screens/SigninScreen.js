@@ -1,5 +1,12 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  KeyboardAvoidingView,
+  Keyboard,
+  TouchableWithoutFeedback
+} from 'react-native';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import AuthForm from '../components/AuthForm';
@@ -8,16 +15,18 @@ const SigninScreen = () => {
   const { state, signin } = useContext(AuthContext);
 
   return (
-    <View style={styles.container}>
-      <AuthForm
-        header="Welcome back"
-        submitBtn="Sign In"
-        navLink="Don't have an account yet? Sign up here"
-        routeName="Signup"
-        onSubmit={signin}
-        />
-      {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
-    </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.container}>
+        <AuthForm
+          header="Welcome back"
+          submitBtn="Sign In"
+          navLink="Don't have an account yet? Sign up here"
+          routeName="Signup"
+          onSubmit={signin}
+          />
+        {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

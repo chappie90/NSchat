@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
+import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const ResolveAuthScreen = () => {
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   },
   text1: {
     fontSize: 34,
-    color: 'orange'
+    color: Colors.primary
   },
   text2: {
     fontSize: 34

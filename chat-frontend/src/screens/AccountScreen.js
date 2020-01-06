@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
 
+import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const AccountScreen = () => {
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 110,
     borderWidth: 2,
-    borderColor: 'orange'   
+    borderColor: Colors.primary   
   },
   user: {
     fontSize: 34,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   signoutButton: {
-    backgroundColor: 'orange',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 3

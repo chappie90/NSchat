@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
+import Colors from '../constants/colors';
+
 const StarterScreen = ({ navigation }) => {
 
   return (
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
     fontSize: 34
   },
   signupButton: {
-    backgroundColor: 'orange',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 3 ,

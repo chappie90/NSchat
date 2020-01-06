@@ -3,6 +3,7 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Image } 
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
 
+import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   button: {
-    backgroundColor: 'orange',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 3 ,

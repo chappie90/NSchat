@@ -12,6 +12,7 @@ import {
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
 
+import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     height: 80,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'orange',
+    backgroundColor: Colors.primary
   },
   icon: {
     padding: 10
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   button: {
-    backgroundColor: 'mediumseagreen',
+    backgroundColor: Colors.secondary,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 3

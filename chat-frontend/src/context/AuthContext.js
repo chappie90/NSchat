@@ -7,9 +7,11 @@ import { navigate } from '../components/navigationRef';
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'signin':
-      return { token: action.payload.token, username: action.payload.username };
+      return { token: action.payload.token, username: action.payload.username, errorMessage: '' };
     case 'signout':
-      return { token: null, username: null };
+      return { token: null, username: null, errorMessage: '' };
+    case 'add_error':
+      return { ...state, errorMessage: action.payload };
     default: 
       return state;
   }
@@ -23,8 +25,10 @@ const signup = dispatch => async ({ username, password }) => {
     dispatch({ type: 'signin', payload: response.data });
 
     navigate('MainFlow');
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    if (error.response) {
+      dispatch({ type: 'add_error', payload: error.response.data.message });
+    }
   }
 };
 
@@ -71,5 +75,5 @@ const signout = dispatch => async () => {
 export const { Context, Provider } = createDataContext(
   authReducer,
   { signup, signin, autoLogin, signout },
-  { token: null, username: null }
+  { token: null, username: null, errorMessage: '' }
 );

@@ -15,7 +15,13 @@ router.post('/signup', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, 'MY_SECRET_KEY');
     res.send({ token, username });
   } catch (err) {
-    return res.status(422).send(err.message);
+    console.log(err);
+    if (err.code === 11000) {
+      console.log(err);
+      return res.status(422).send({ message: 'Username already taken'});
+    } else {
+      return res.status(422).send({ message: 'Invalid username or password' });
+    }
   }
 });
 
@@ -36,6 +42,7 @@ router.post('/signin', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, 'MY_SECRET_KEY');
     res.send({ token, username });
   } catch (err) {
+    console.log(err);
     return res.status(422).send({ error: 'Invalid password or email' });
   }
 })

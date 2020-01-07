@@ -12,7 +12,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import AuthForm from '../components/AuthForm';
 
 const SignupScreen = () => {
-  const { state, signup } = useContext(AuthContext);
+  const { state: { errorMessage }, signup } = useContext(AuthContext);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
@@ -24,6 +24,7 @@ const SignupScreen = () => {
           routeName="Signin"
           onSubmit={signup}
           />
+        {errorMessage ? <Text>{errorMessage}</Text> : null}
         {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
       </View>
     </TouchableWithoutFeedback>

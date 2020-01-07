@@ -6,6 +6,8 @@ import { ListItem } from 'react-native-elements';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
+import PrimaryButton from '../components/PrimaryButton';
+import HeadingText from '../components/HeadingText';
 
 const ContactsListScreen = ({ navigation }) => {
   const { state: { contacts }, getContacts } = useContext(ChatContext);
@@ -27,10 +29,10 @@ const ContactsListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddContact')}>
-        <Text style={styles.textButton}>Add New Contact</Text>
-      </TouchableOpacity>
-      <Text style={styles.header}>My Contacts</Text>
+      <PrimaryButton style={styles.button} onPress={() => navigation.navigate('AddContact')}>
+        New Contact
+      </PrimaryButton>
+      <HeadingText style={styles.header}>My Contacts</HeadingText>
       <View style={styles.divider} />
       {
         contacts.map((item, index) => (
@@ -68,10 +70,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   button: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 3 ,
     margin: 15,
     alignSelf: 'center'
   },

@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff',
-    fontFamily: 'open-sans-bold',
+    fontFamily: 'open-sans-semi-bold',
     fontSize: 16
   }
 });

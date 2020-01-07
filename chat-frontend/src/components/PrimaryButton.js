@@ -5,7 +5,7 @@ import Colors from '../constants/colors';
 
 const PrimaryButton = props => {
   return (
-    <TouchableOpacity onPress={props.onPress}>
+    <TouchableOpacity style={{ ...props.style }} onPress={props.onPress}>
       <View style={styles.button}>
         <Text style={styles.text}>{props.children}</Text>
       </View>
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff',
-    fontFamily: 'open-sans-bold',
+    fontFamily: 'open-sans-semi-bold',
     fontSize: 20
   }
 });

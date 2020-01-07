@@ -13,12 +13,10 @@ const StarterScreen = ({ navigation }) => {
       <View style={styles.textWrapper}>
         <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
       </View>
-      <View style={styles.buttonContainer}>
-        <PrimaryButton onPress={() => navigation.navigate('Signup')}>Get Started</PrimaryButton>
-        <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('Signin')}>
-          <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
-        </TouchableOpacity>
-      </View>
+      <PrimaryButton style={styles.signupButton} onPress={() => navigation.navigate('Signup')}>Get Started</PrimaryButton>
+      <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('Signin')}>
+        <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -49,7 +47,7 @@ const styles = StyleSheet.create({
   textRight: {
     fontSize: 30
   },
-  buttonContainer: {
+  signupButton: {
     marginTop: 'auto'
   },
   signinButton: {

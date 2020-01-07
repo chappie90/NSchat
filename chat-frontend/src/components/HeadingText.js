@@ -5,7 +5,7 @@ const HeadingText = props => <Text style={{...styles.text, ...props.style}}>{pro
 
 const styles = StyleSheet.create({
   text: {
-    fontFamily: 'open-sans-bold'
+    fontFamily: 'open-sans-semi-bold'
   }
 });
 

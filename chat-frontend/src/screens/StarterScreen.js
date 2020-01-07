@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/colors';
 import HeadingText from '../components/HeadingText';
+import PrimaryButton from '../components/PrimaryButton';
 
 const StarterScreen = ({ navigation }) => {
 
@@ -10,14 +11,17 @@ const StarterScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Image style={styles.image}  source={require('../../assets/starter-icon-min.jpg')} />
       <View style={styles.textWrapper}>
-        <HeadingText style={styles.text1}>You & Me</HeadingText><HeadingText style={styles.text2}> Chat</HeadingText>
+        <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
       </View>
-      <TouchableOpacity style={styles.signupButton} onPress={() => navigation.navigate('Signup')}>
-        <Text style={styles.signupTextButton}>Get Started</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('Signin')}>
-        <Text style={styles.signinTextButton}>Sign In</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <PrimaryButton
+          style={styles.signupButton}
+          onPress={() => navigation.navigate('Signup')}>Get Started
+        </PrimaryButton>
+        <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('Signin')}>
+          <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -41,30 +45,22 @@ const styles = StyleSheet.create({
   textWrapper: {
     flexDirection: 'row'
   },
-  text1: {
+  textLeft: {
     fontSize: 30,
     color: Colors.primary
   },
-  text2: {
+  textRight: {
     fontSize: 30
   },
-  signupButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 3 ,
-    marginTop: 'auto',
-    marginBottom: 5
-  },
-  signupTextButton: {
-    fontSize: 23,
-    color: 'white'
+  buttonContainer: {
+    marginTop: 'auto'
   },
   signinButton: {
-    padding: 5
+    padding: 10
   },
-  signinTextButton: {
-    fontSize: 23
+  signinButtonText: {
+    fontSize: 20,
+    textAlign: 'center'
   }
 });
 

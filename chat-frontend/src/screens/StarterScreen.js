@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/colors';
+import HeadingText from '../components/HeadingText';
 
 const StarterScreen = ({ navigation }) => {
 
@@ -9,7 +10,7 @@ const StarterScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Image style={styles.image}  source={require('../../assets/starter-icon-min.jpg')} />
       <View style={styles.textWrapper}>
-        <Text style={styles.text1}>You & Me</Text><Text style={styles.text2}> Chat</Text>
+        <HeadingText style={styles.text1}>You & Me</HeadingText><HeadingText style={styles.text2}> Chat</HeadingText>
       </View>
       <TouchableOpacity style={styles.signupButton} onPress={() => navigation.navigate('Signup')}>
         <Text style={styles.signupTextButton}>Get Started</Text>
@@ -41,11 +42,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   text1: {
-    fontSize: 34,
-    color: 'orange'
+    fontSize: 30,
+    color: Colors.primary
   },
   text2: {
-    fontSize: 34
+    fontSize: 30
   },
   signupButton: {
     backgroundColor: Colors.primary,

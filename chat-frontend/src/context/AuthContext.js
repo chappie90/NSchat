@@ -12,6 +12,8 @@ const authReducer = (state, action) => {
       return { token: null, username: null, errorMessage: '' };
     case 'add_error':
       return { ...state, errorMessage: action.payload };
+    case 'clear_error':
+      return { ...state, errorMessage: '' };
     default: 
       return state;
   }
@@ -42,8 +44,10 @@ const signin = dispatch => async ({ username, password }) => {
     dispatch({ type: 'signin', payload: response.data });
 
     navigate('MainFlow');
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    if (error.response) {
+      dispatch({ type: 'add_error', payload: error.response.data.message });
+    }
   }
 };
 
@@ -61,6 +65,10 @@ const autoLogin = dispatch => async () => {
   }
 };
 
+const clearErrorMessage = dispatch => () => {
+  dispatch({ type: 'clear_error' });
+};
+
 const signout = dispatch => async () => {
   try {
     await AsyncStorage.removeItem('data');
@@ -74,6 +82,6 @@ const signout = dispatch => async () => {
 
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup, signin, autoLogin, signout },
+  { signup, signin, autoLogin, clearErrorMessage, signout },
   { token: null, username: null, errorMessage: '' }
 );

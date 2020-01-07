@@ -13,7 +13,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import AuthForm from '../components/AuthForm';
 
 const SignupScreen = () => {
-  const { state: { errorMessage }, signup } = useContext(AuthContext);
+  const { state: { errorMessage }, signup, clearErrorMessage } = useContext(AuthContext);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
@@ -26,7 +26,7 @@ const SignupScreen = () => {
           onSubmit={signup}
           />
         {errorMessage ? 
-          Alert.alert('Signup unsuccessful!', errorMessage, [{ text: 'Try again' }]) :
+          Alert.alert('Signup unsuccessful!', errorMessage, [{ text: 'Try again', onPress: () => clearErrorMessage }]) :
           null
         }
         {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}

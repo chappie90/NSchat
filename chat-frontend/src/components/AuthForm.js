@@ -11,7 +11,7 @@ import { withNavigation } from 'react-navigation';
 import HeadingText from '../components/HeadingText';
 import PrimaryButton from '../components/PrimaryButton';
 
-const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation }) => {
+const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation, resetForm }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 

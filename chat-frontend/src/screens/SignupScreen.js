@@ -5,7 +5,8 @@ import {
   StyleSheet, 
   KeyboardAvoidingView,
   Keyboard,
-  TouchableWithoutFeedback 
+  TouchableWithoutFeedback,
+  Alert 
 } from 'react-native';
 
 import { Context as AuthContext } from '../context/AuthContext';
@@ -24,7 +25,10 @@ const SignupScreen = () => {
           routeName="Signin"
           onSubmit={signup}
           />
-        {errorMessage ? <Text>{errorMessage}</Text> : null}
+        {errorMessage ? 
+          Alert.alert('Signup unsuccessful!', errorMessage, [{ text: 'Try again' }]) :
+          null
+        }
         {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
       </View>
     </TouchableWithoutFeedback>

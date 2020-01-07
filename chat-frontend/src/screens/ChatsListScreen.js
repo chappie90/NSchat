@@ -7,6 +7,7 @@ import Moment from 'moment';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
+import HeadingText from '../components/HeadingText';
 
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const ChatsListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>My Chats</Text>   
+      <HeadingText style={styles.header}>My Chats</HeadingText>   
       <View style={styles.divider} />
       {
         previousChats.map((c, i) => (

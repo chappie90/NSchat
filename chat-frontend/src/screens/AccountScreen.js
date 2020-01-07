@@ -5,6 +5,7 @@ import { AsyncStorage } from 'react-native';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
+import PrimaryButton from '../components/PrimaryButton';
 
 const AccountScreen = () => {
   const { state: { username }, signout } = useContext(AuthContext);
@@ -15,9 +16,7 @@ const AccountScreen = () => {
         <Image style={styles.image} resizeMode="cover" source={require('../../assets/profile-min.jpg')} />
         <Text style={styles.user}>{username}</Text>
       </View>
-      <TouchableOpacity style={styles.signoutButton} onPress={() => signout()}>
-        <Text style={styles.signoutTextButton}>Sign Out</Text>
-      </TouchableOpacity>
+      <PrimaryButton onPress={signout}>Sign Out</PrimaryButton>
     </View>
   );
 };
@@ -41,17 +40,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     marginTop: 10,
     textAlign: 'center'
-  },
-  signoutButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 3
-  },
-  signoutTextButton: {
-    fontSize: 22,
-    color: 'white'
-  },
+  }
 });
 
 export default AccountScreen;

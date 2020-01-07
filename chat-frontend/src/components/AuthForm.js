@@ -8,13 +8,16 @@ import {
 } from 'react-native';
 import { withNavigation } from 'react-navigation';
 
+import HeadingText from '../components/HeadingText';
+import PrimaryButton from '../components/PrimaryButton';
+
 const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{header}</Text>
+      <HeadingText style={styles.header}>{header}</HeadingText>
       <TextInput 
         style={styles.input} 
         placeholder="Username"
@@ -28,11 +31,9 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation 
         onChangeText={setPassword}
         autoCorrect={false}
         secureTextEntry />
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => onSubmit({ username, password })}>
-        <Text style={styles.btnText}>{submitBtn}</Text>
-      </TouchableOpacity>
+      <PrimaryButton style={styles.button} onPress={() => onSubmit({ username, password })}>
+        {submitBtn}
+      </PrimaryButton>
       <TouchableOpacity onPress={() => navigation.navigate(routeName)}>
         <Text style={styles.navLink}>{navLink}</Text>
       </TouchableOpacity>
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30
   },
   header: {
-    fontSize: 34,
+    fontSize: 30,
     textAlign: 'center',
     marginBottom: 30,
     color: 'orange'
@@ -57,24 +58,9 @@ const styles = StyleSheet.create({
     borderBottomColor: 'lightgrey'
   },
   button: {
-    backgroundColor: 'orange',
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 3,
     alignSelf: 'center',
     marginBottom: 10,
-    marginTop: 20
-  },
-  btnText: {
-    fontSize: 23,
-    color: 'white',
-    textAlign: 'center'
-  },
-  signinButton: {
-    padding: 5
-  },
-  signinTextButton: {
-    fontSize: 23
+    marginTop: 25
   },
   navLink: {
     fontSize: 17,

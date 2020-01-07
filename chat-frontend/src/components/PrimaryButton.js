@@ -16,7 +16,7 @@ const PrimaryButton = props => {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: Colors.primary,
-    paddingVertical: 8,
+    paddingVertical: 7,
     paddingHorizontal: 20,
     borderRadius: 3
   },

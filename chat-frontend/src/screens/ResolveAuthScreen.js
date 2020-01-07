@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
+import HeadingText from '../components/HeadingText';
 
 const ResolveAuthScreen = () => {
   const { autoLogin } = useContext(AuthContext);
@@ -15,7 +16,7 @@ const ResolveAuthScreen = () => {
     <View style={styles.container}>
       <Image style={styles.image}  source={require('../../assets/starter-icon.jpg')} />
       <View style={styles.textWrapper}>
-        <Text style={styles.text1}>You & Me</Text><Text style={styles.text2}> Chat</Text>
+        <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
       </View>
     </View>
   );
@@ -34,12 +35,12 @@ const styles = StyleSheet.create({
   textWrapper: {
     flexDirection: 'row'
   },
-  text1: {
-    fontSize: 34,
+  textLeft: {
+    fontSize: 30,
     color: Colors.primary
   },
-  text2: {
-    fontSize: 34
+  textRight: {
+    fontSize: 30
   }
 });
 

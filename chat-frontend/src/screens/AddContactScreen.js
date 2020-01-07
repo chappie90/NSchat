@@ -15,6 +15,7 @@ import { ListItem } from 'react-native-elements';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
+import SecondaryButton from '../components/SecondaryButton';
 
 const AddContactScreen = () => {
   const { state: { searchResults }, searchContacts, addContact } = useContext(ChatContext);
@@ -45,9 +46,9 @@ const AddContactScreen = () => {
                 title={
                   <View style={styles.itemContainer}>
                     <Text style={styles.name}>{item.username}</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => addContact({ username: username, contact: item.username })}>
-                      <Text style={styles.text}>Add</Text>
-                    </TouchableOpacity>
+                    <SecondaryButton onPress={() => addContact({ username: username, contact: item.username })}>
+                      Add
+                    </SecondaryButton>
                   </View>
                 }
                 bottomDivider

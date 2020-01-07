@@ -14,10 +14,7 @@ const StarterScreen = ({ navigation }) => {
         <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
       </View>
       <View style={styles.buttonContainer}>
-        <PrimaryButton
-          style={styles.signupButton}
-          onPress={() => navigation.navigate('Signup')}>Get Started
-        </PrimaryButton>
+        <PrimaryButton onPress={() => navigation.navigate('Signup')}>Get Started</PrimaryButton>
         <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('Signin')}>
           <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
         </TouchableOpacity>

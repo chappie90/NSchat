@@ -2,13 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/colors';
-import HeadingText from './HeadingText';
 
 const PrimaryButton = props => {
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={styles.button}>
-        <HeadingText style={styles.text}>{props.children}</HeadingText>
+        <Text style={styles.text}>{props.children}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -23,6 +22,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff',
+    fontFamily: 'open-sans-bold',
     fontSize: 20
   }
 });

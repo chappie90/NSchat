@@ -7,7 +7,8 @@ import {
   TouchableOpacity, 
   StyleSheet,
   Keyboard,
-  TouchableWithoutFeedback 
+  TouchableWithoutFeedback,
+  Modal 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
@@ -17,46 +18,54 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import SecondaryButton from '../components/SecondaryButton';
 
-const AddContactScreen = () => {
+const AddContactScreen = (props) => {
   const { state: { searchResults }, searchContacts, addContact } = useContext(ChatContext);
   const { state: { username } } = useContext(AuthContext);
   const [search, setSearch] = useState('');
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
-        <View style={styles.inputContainer}>
-          <MaterialIcons style={styles.icon} name="search" size={40} color="white" />
-          <TextInput
-            style={styles.input} 
-            placeholder="Find people..."
-            placeholderTextColor="white"
-            value={search}
-            onChangeText={(search) => {
-              setSearch(search);
-              searchContacts({ search });
-            }}
-            autoCorrect={false} />
-          </View>
-          {
-          searchResults.map((item, index) => (
-              <ListItem
-                key={index}
-                leftAvatar={{ source: require('../../assets/avatar2.png') }}
-                title={
-                  <View style={styles.itemContainer}>
-                    <Text style={styles.name}>{item.username}</Text>
-                    <SecondaryButton onPress={() => addContact({ username: username, contact: item.username })}>
-                      Add
-                    </SecondaryButton>
-                  </View>
-                }
-                bottomDivider
-              />
-          ))
-        }
-      </View>
-    </TouchableWithoutFeedback>
+    <Modal visible={props.visible} animationType="slide">
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.container}>
+            <View style={styles.inputContainer}>
+              <MaterialIcons name="search" size={40} color="white" />
+              <TextInput
+                style={styles.input} 
+                placeholder="Find people..."
+                placeholderTextColor="white"
+                value={search}
+                onChangeText={(search) => {
+                  setSearch(search);
+                  searchContacts({ search });
+                }}
+                autoCorrect={false} />
+              <TouchableOpacity onPress={() => props.closeModal()}>
+                <MaterialIcons name="close" size={30} color="black" />
+              </TouchableOpacity>
+            </View>
+              {
+              searchResults.map((item, index) => (
+                  <ListItem
+                    key={index}
+                    leftAvatar={{ source: require('../../assets/avatar2.png') }}
+                    title={
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.name}>{item.username}</Text>
+                        <SecondaryButton onPress={() => {
+                          addContact({ username: username, contact: item.username });
+                          props.closeModal();
+                        }}>
+                          Add
+                        </SecondaryButton>
+                      </View>
+                    }
+                    bottomDivider
+                  />
+              ))
+            }
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
   );
 };
 
@@ -67,6 +76,7 @@ AddContactScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 30,
   },
   itemContainer: {
     flexDirection: 'row',
@@ -74,17 +84,18 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   inputContainer: {
+    paddingHorizontal: 10,
     height: 80,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.primary
   },
-  icon: {
-    padding: 10
-  },
   input: {
     fontSize: 24,
-    color: 'white'
+    height: '100%',
+    flex: 1,
+    color: 'white',
+    paddingLeft: 10
   },
   name: {
     fontWeight: 'bold'

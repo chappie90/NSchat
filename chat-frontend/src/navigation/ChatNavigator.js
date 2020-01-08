@@ -11,7 +11,6 @@ import SigninScreen from '../screens/SigninScreen';
 import ChatsListScreen from '../screens/ChatsListScreen';
 import ContactsListScreen from '../screens/ContactsListScreen';
 import AccountScreen from '../screens/AccountScreen';
-import AddContactScreen from '../screens/AddContactScreen';
 import ChatDetailScreen from '../screens/ChatDetailScreen';
 
 const ChatsFlow = createStackNavigator({
@@ -28,8 +27,7 @@ ChatsFlow.navigationOptions = {
 const ContactsListFlow = createStackNavigator(
   {
     ContactsList: ContactsListScreen,
-    ChatDetail: ChatDetailScreen,
-    AddContact: AddContactScreen
+    ChatDetail: ChatDetailScreen
   },
   {
     headerMode: 'screen'

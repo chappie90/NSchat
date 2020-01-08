@@ -3,6 +3,7 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Image } 
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
 
+import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
@@ -12,6 +13,7 @@ import HeadingText from '../components/HeadingText';
 const ContactsListScreen = ({ navigation }) => {
   const { state: { contacts }, getContacts } = useContext(ChatContext);
   const { state: { username } } = useContext(AuthContext);
+  const [newContactMode, setNewContactMode] = useState(false);
 
   useEffect(() => {
     getContacts({ username });
@@ -27,9 +29,14 @@ const ContactsListScreen = ({ navigation }) => {
     }
   }
 
+  const closeModal = () => {
+    setNewContactMode(false);
+  };
+
   return (
     <View style={styles.container}>
-      <PrimaryButton style={styles.button} onPress={() => navigation.navigate('AddContact')}>
+      <AddContactScreen visible={newContactMode} closeModal={closeModal} />
+      <PrimaryButton style={styles.button} onPress={() => setNewContactMode(true)}>
         New Contact
       </PrimaryButton>
       <HeadingText style={styles.header}>My Contacts</HeadingText>

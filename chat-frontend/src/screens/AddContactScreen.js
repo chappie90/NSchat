@@ -19,7 +19,7 @@ import { Context as ChatContext } from '../context/ChatContext';
 import SecondaryButton from '../components/SecondaryButton';
 
 const AddContactScreen = (props) => {
-  const { state: { searchResults }, searchContacts, addContact } = useContext(ChatContext);
+  const { state: { searchResults }, searchContacts, clearSearchResults, addContact } = useContext(ChatContext);
   const { state: { username } } = useContext(AuthContext);
   const [search, setSearch] = useState('');
 
@@ -39,7 +39,11 @@ const AddContactScreen = (props) => {
                   searchContacts({ search });
                 }}
                 autoCorrect={false} />
-              <TouchableOpacity onPress={() => props.closeModal()}>
+              <TouchableOpacity onPress={() => {
+                props.closeModal();
+                setSearch('');
+                clearSearchResults();
+              }}>
                 <MaterialIcons name="close" size={30} color="black" />
               </TouchableOpacity>
             </View>
@@ -54,6 +58,8 @@ const AddContactScreen = (props) => {
                         <SecondaryButton onPress={() => {
                           addContact({ username: username, contact: item.username });
                           props.closeModal();
+                          setSearch('');
+                          clearSearchResults();
                         }}>
                           Add
                         </SecondaryButton>

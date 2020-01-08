@@ -8,6 +8,8 @@ const chatReducer = (state, action) => {
   switch (action.type) {
     case 'search_contacts':
       return { ...state, searchResults: action.payload };
+    case 'clear_search_results':
+      return { ...state, searchResults: [] };
     case 'new_contact':
       return { ...state, contacts: [ ...state.contacts, action.payload ] };
     case 'get_contacts':
@@ -30,6 +32,10 @@ const searchContacts = dispatch => async ({ search }) => {
   } catch (err) {
     console.log(err);
   }
+};
+
+const clearSearchResults = dispatch => () => {
+  dispatch({ type: 'clear_search_results' });
 };
 
 const addContact = dispatch => async ({ username, contact }) => {
@@ -109,6 +115,6 @@ const getMessages = dispatch => async ({ username, recipient }) => {
 
 export const { Context, Provider } = createDataContext(
   chatReducer,
-  { searchContacts, addContact, getContacts, getChats, getMessages },
+  { searchContacts, clearSearchResults, addContact, getContacts, getChats, getMessages },
   { searchResults: [], contacts: [], previousChats: [], chat: [] }
 );

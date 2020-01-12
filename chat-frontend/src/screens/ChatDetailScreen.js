@@ -106,7 +106,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondary
   },
   text: {
-    fontFamily: 'open-sans'
+    fontFamily: 'open-sans',
+    fontSize: 15
   }
 });
 

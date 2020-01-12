@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { View, ScrollView, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
 
@@ -15,9 +15,18 @@ const ContactsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
 
+  // const getContactsHandler = useCallback(() => {
+  //   getContacts({ username });
+  // }, [contacts, getContacts]);
+
+  // Fix later - not sure if it needs fixing?
+  // Active user gets the new contact added
+
   useEffect(() => {
-    getContacts({ username });
-  }, [contacts]);
+  //  getContactsHandler();
+     getContacts({ username });
+    console.log('Get contacts use effect ran');
+  }, []);
 
   function getAvatar(username) {
     if (username === 'Stoyan') {
@@ -34,30 +43,35 @@ const ContactsListScreen = ({ navigation }) => {
   };
 
   return (
+
     <View style={styles.container}>
       <AddContactScreen visible={newContactMode} closeModal={closeModal} />
-      <PrimaryButton style={styles.button} onPress={() => setNewContactMode(true)}>
-        New Contact
-      </PrimaryButton>
-      <HeadingText style={styles.header}>My Contacts</HeadingText>
+      <View style={styles.headerContainer}>
+        <HeadingText style={styles.header}>My Contacts</HeadingText>
+        <TouchableOpacity onPress={() => setNewContactMode(true)}>
+          <FontAwesome5 name="user-plus" size={25} color={Colors.primary} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.divider} />
-      {
-        contacts.map((item, index) => (
-          <TouchableOpacity key={index} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
-            <ListItem
-              key={index}
-              leftAvatar={{ source: require('../../assets/avatar2.png') }}
-              title={
-                <View style={styles.itemContainer}>
-                  <Text style={styles.name}>{item}</Text>
-                </View>
-              }
-              bottomDivider
-              chevron
-            />
-          </TouchableOpacity>
-        ))
-      }  
+      <ScrollView>
+        {
+          contacts.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
+              <ListItem
+                key={index}
+                leftAvatar={{ source: require('../../assets/avatar2.png') }}
+                title={
+                  <View style={styles.itemContainer}>
+                    <Text style={styles.name}>{item}</Text>
+                  </View>
+                }
+                bottomDivider
+                chevron
+              />
+            </TouchableOpacity>
+          ))
+        }  
+      </ScrollView>
     </View>
   );
 };
@@ -71,24 +85,26 @@ ContactsListScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30
+    paddingVertical: 30,
+    paddingHorizontal: 20
   },
   name: {
     fontWeight: 'bold'
-  },
-  button: {
-    margin: 15,
-    alignSelf: 'center'
   },
   textButton: {
     fontSize: 22,
     color: 'white'
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 15,
+    paddingHorizontal: 10
+  },
   header: {
     fontSize: 22,
-    paddingVertical: 5,
-    marginTop: 15,
-    paddingLeft: 10
+    paddingVertical: 5
   },
   divider: {
     borderBottomColor: 'lightgrey',
@@ -108,8 +124,8 @@ const styles = StyleSheet.create({
     borderBottomColor: 'lightgrey'
   },
   image: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     borderRadius: 20,
     marginRight: 20,
   },

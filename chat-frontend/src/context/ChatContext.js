@@ -74,9 +74,9 @@ const getChats = dispatch => async ({ username }) => {
   }
 };
 
-const getMessages = dispatch => async ({ username, recipient }) => {
+const getMessages = dispatch => async ({ username, recipient, page }) => {
   try {
-    const response = await chatApi.post('/messages', { username, recipient });
+    const response = await chatApi.post('/messages', { username, recipient, page });
 
     const chatArr = [];
 

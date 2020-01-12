@@ -12,6 +12,7 @@ import ChatsListScreen from '../screens/ChatsListScreen';
 import ContactsListScreen from '../screens/ContactsListScreen';
 import AccountScreen from '../screens/AccountScreen';
 import ChatDetailScreen from '../screens/ChatDetailScreen';
+// import SpeechToTextScreen from '../screens/SpeechToTextScreen';
 
 const ChatsFlow = createStackNavigator({
   ChatsList: ChatsListScreen,
@@ -56,7 +57,8 @@ const ChatNavigator = createSwitchNavigator({
   MainFlow: createBottomTabNavigator({
     ChatsFlow,
     ContactsListFlow,
-    Account: AccountScreen
+    Account: AccountScreen,
+    // SpeechToText: SpeechToTextScreen
   })
 });
 

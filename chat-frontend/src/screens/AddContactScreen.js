@@ -44,7 +44,7 @@ const AddContactScreen = (props) => {
                 setSearch('');
                 clearSearchResults();
               }}>
-                <MaterialIcons name="close" size={30} color="black" />
+                <MaterialIcons name="close" size={30} color="white" />
               </TouchableOpacity>
             </View>
               {

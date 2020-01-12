@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "jobify-251621",
+  "private_key_id": "7198ee601c33ff4c9043f3e5ae5fb35938836961",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDWk2xYLJgZHhv6\n8+NwOHyZ4ipFZeHZ+1xKgA26ovMYOa5nsDZu1y9Gm9ltCT/FdgZ9hvNaZvDaVaOm\n3AAV9cy4jyRkcGbKC9QjsxVGZzFsOMg1ll5i6HrN5TFfG9UNuh1sSeH3qEfaEgz6\nnYOt1s6xzcxe0OEImftkOAlCdMBNPNJ+iqndYVmCN6xHCQVK4A+FaiknsKGZOgfU\n5kgiASM/8u4Lqy6oKFbo7KkJ6yBbFYQPPyqZscVdNK8GOSJQTZXmfahR3aB6Mqyp\nLpogbrkxXy5X45oC/Riri3lwDIEqmpQww++tRhg6M3XiAEdhSArt6II373XfPpNi\n3IDLCIqDAgMBAAECggEARPbh6h7/DYebV5deYJmPFohVrLNXmQ9MNNeeUf+AYSdc\n0g+VFx/LHocFpSFFYUoTQPIIMeSHAa1nqT/pOSWklCbRfASSTNrrZkPvEQ8ml9FS\nK8L1+BUfLyC8MwTHf59zSHQgj9ACs+h8Smoowc0Z5pSt3EWHJhQTc7z84OKUUd4l\nJRKB3XK6iOhtTS/3Ry1jd6Aasx2UduZwbYDoSbaSaSLJfPOhDbHyZQNh+HwLiQpT\nVw0CLDh8zCGzcXhuTEvxoHeY3DHj+MQqAEWidE75+ort8dR9exnvgjiMqL50ZMYT\niiQtWdvkm2WAWYHAwwuVo6I/OsXozuQQ1RUH9kH+qQKBgQD4BN6b5WyhQHkkxpPQ\nLOiuy+Yje8rxE06qbQrlRG3U89IVLSYPeNYQBFJrD/sia8xs55h/goP7zTkhomBN\nVzMDiRatBjdTMG1YgBrDL8+KTBQqxDCOoYY6n4W7kjGPRGGKe0ZwCOKqkF/THCEs\n9YlzyMtTC4LBSJNj8zdqRGVaOQKBgQDdew5GkatGZihDoL8+CUEc26xCWjPa8ilh\nn6zKlX5NfiHlnZZZg0FI8P1nj9jvooMaBMJxZN6eJds3ZnxjLlio9CFLVI+zNRh+\nUpAGDGf0ArlxYGrj3JzrWnfLLvxuznNSyWIcOvU7H+rEeBMCLTi1dCasAqHiEGuQ\nXDsgDQo6mwKBgQDSraBDIRGzsEa3vI8XCO7mfIGTprZvLg1mq5XTxtrdR/gu0NlB\nz01W8bTpCPw08wkFgX2C4uUmYd+j+ICBcg79c9f1RhB88+gOg1M4dkZ/nbyLz3fH\n0OFqrtM00CyVHGsW7TyaMpIIfPdJJt3viOsnlWtRsbdyZCn/fzyVYmAN0QKBgQCl\nZ7FRoph3CvQnDXXFrsOh+ay8IQF5EkE1VzqEUQDyfrBx+y69yviGsPOO1C7/SC8A\nz20nol1fXoZI6ZEbwREVnL0AtTZcb9rK/H3zBnDcGuzDb25kne3TFs1AQOblGemm\neh97VcyvSzbZY5NOnNctLIF1FMIxQnISbc76MMLi4QKBgBCImc5xz/4v7vB6wNlF\nWxEZD1VaWbbcfZcuSa6taptnRGlGXiwSZqK6LD1WJUiYpcsxnkMjqwZoyGynLPlV\nx8Qk7Ig6xDengXVf/Uk3AXsQdPIrIbvpcpQzZPDDK6DtilrdiYxisLNd8GK/RaRA\nYWUjIykzJ+3zeENWdXJkrisN\n-----END PRIVATE KEY-----\n",
+  "client_email": "udemy-chat@jobify-251621.iam.gserviceaccount.com",
+  "client_id": "106792937977802323317",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/udemy-chat%40jobify-251621.iam.gserviceaccount.com"
+}

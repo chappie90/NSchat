@@ -1,4 +1,4 @@
 export default {
-  primary: 'orange',
-  secondary: 'mediumseagreen'
+  primary: '#ffa500',
+  secondary: '#7ad390'
 };

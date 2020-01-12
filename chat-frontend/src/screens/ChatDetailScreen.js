@@ -14,17 +14,19 @@ const ChatDetailScreen = ({ navigation }) => {
   const { state: { chat }, getMessages } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [receiver, setReceiver] = useState('');
+  const [page, setPage] = useState(1);
   const socket = useRef(null);
 
   useEffect(() => {
     setReceiver(navigation.getParam('username'));
     const recipient = navigation.getParam('username');
-    getMessages({ username, recipient })
+    getMessages({ username, recipient, page })
       .then((chat) => {
+        console.log(chat);
         setIncomingMsgs(chat);
       });
     setIncomingMsgs(chat);
-    socket.current = io('http://192.168.0.31:3001', { query: `username=${username}` });
+    socket.current = io('http://192.168.1.174:3001', { query: `username=${username}` });
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
@@ -34,7 +36,7 @@ const ChatDetailScreen = ({ navigation }) => {
     const msgObj = {
       from: username,
       to: receiver,
-      message
+      message,
     };
     socket.current.emit('message', msgObj);
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
@@ -75,8 +77,10 @@ const ChatDetailScreen = ({ navigation }) => {
           );
         }}
         loadEarlier={true} // enables load earlier messages button
-        onLoadEarlier={() => console.log('loaded')} // Put get messages handler here 
-        // isLoadingEarlier={true}
+        onLoadEarlier={() => {
+          
+        }}
+        //isLoadingEarlier={true}
         scrollToBottom={true}
         scrollToBottomComponent={() => {
           return (

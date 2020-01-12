@@ -7,7 +7,7 @@ import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import PrimaryButton from '../components/PrimaryButton';
 
-const AccountScreen = () => {
+const AccountScreen = ({ navigation }) => {
   const { state: { username }, signout } = useContext(AuthContext);
 
   return (
@@ -17,6 +17,7 @@ const AccountScreen = () => {
         <Text style={styles.user}>{username}</Text>
       </View>
       <PrimaryButton onPress={signout}>Sign Out</PrimaryButton>
+      {/* <PrimaryButton onPress={() => navigation.navigate('SpeechToText')}>Speech</PrimaryButton> */}
     </View>
   );
 };

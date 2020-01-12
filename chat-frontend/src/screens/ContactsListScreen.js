@@ -49,7 +49,7 @@ const ContactsListScreen = ({ navigation }) => {
       <View style={styles.headerContainer}>
         <HeadingText style={styles.header}>My Contacts</HeadingText>
         <TouchableOpacity onPress={() => setNewContactMode(true)}>
-          <FontAwesome5 name="user-plus" size={25} color={Colors.primary} />
+          <FontAwesome5 name="user-plus" size={23} color={Colors.primary} />
         </TouchableOpacity>
       </View>
       <View style={styles.divider} />

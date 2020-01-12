@@ -3,7 +3,15 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Message = mongoose.model('Message');
 
+// Speech stuff
+const fs = require('fs')
+const axios = require('axios')
+const speech = require('@google-cloud/speech');
+const ffmpeg = require('fluent-ffmpeg');
+
 const router = express.Router();
+
+const client = new speech.SpeechClient();
 
 router.post('/contacts/search', async (req, res) => {
   const { search } = req.body;
@@ -94,14 +102,28 @@ router.post('/chats', async (req, res) => {
 });
 
 router.post('/messages', async (req, res) => {
-  const { username, recipient } = req.body;
+  const { username, recipient, page } = req.body;
+
+  const skip = 10 * (page - 1);
 
   try {
     const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1 })
+                                  .skip(skip)
                                   .sort({ 'message.createdAt': -1 })
-                                  .limit(20);
+                                  .limit(10);
 
     res.send({ messages });
+  } catch (err) {
+    console.log(err);
+    return res.status(422).send({ error: 'Could not fetch messages' });
+  }
+});
+
+router.post('/speech', async (req, res) => {
+  console.log(req.body);
+
+  try {
+  
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Could not fetch messages' });

@@ -63,7 +63,9 @@ const ChatDetailScreen = ({ navigation }) => {
         // }}
         renderBubble={(props) => {
           return (
-            <Bubble { ...props } wrapperStyle={{ left: styles.left, right: styles.right }} />
+            <Bubble { ...props }
+              wrapperStyle={{ left: styles.left, right: styles.right }}
+              textStyle={{ left: styles.text, right: styles.text }} />
           );
         }}
         loadEarlier={true} // enables load earlier messages button
@@ -102,6 +104,9 @@ const styles = StyleSheet.create({
   },
   right: {
     backgroundColor: Colors.secondary
+  },
+  text: {
+    fontFamily: 'open-sans'
   }
 });
 

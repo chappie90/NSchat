@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -40,6 +40,12 @@ const ChatDetailScreen = ({ navigation }) => {
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
   };
 
+  // IS OVERRIDING scrollToBottom
+  // const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
+  //   const paddingToTop = 80;
+  //   return contentSize.height - layoutMeasurement.height - paddingToTop <= contentOffset.y;
+  // };
+
   return (
     <View style={styles.container}>
       <GiftedChat
@@ -47,8 +53,21 @@ const ChatDetailScreen = ({ navigation }) => {
         messages={incomingMsgs} 
         onSend={sendMessage} 
         user={{ _id: 1 }}
-        // loadEarlier={true} // enables load earlier messages button
-        // onLoadEarlier={() => console.log('loaded')} // Put get messages handler here 
+        // listViewProps={{
+        //   scrollEventThrottle: 400,
+        //   onScroll: ({ nativeEvent }) => { 
+        //     if (isCloseToTop(nativeEvent)) {
+        //       console.log('test');
+        //     }
+        //   }
+        // }}
+        renderBubble={(props) => {
+          return (
+            <Bubble { ...props } wrapperStyle={{ left: styles.left, right: styles.right }} />
+          );
+        }}
+        loadEarlier={true} // enables load earlier messages button
+        onLoadEarlier={() => console.log('loaded')} // Put get messages handler here 
         // isLoadingEarlier={true}
         scrollToBottom={true}
         scrollToBottomComponent={() => {
@@ -77,6 +96,12 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     paddingTop: 1
+  },
+  left: {
+    backgroundColor: '#E8E8E8'
+  },
+  right: {
+    backgroundColor: Colors.secondary
   }
 });
 

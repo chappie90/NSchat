@@ -45,7 +45,8 @@ const ChatDetailScreen = ({ navigation }) => {
         renderUsernameOnMessage 
         messages={incomingMsgs} 
         onSend={sendMessage} 
-        user={{ _id: 1 }} />
+        user={{ _id: 1 }}
+        scrollToBottom={true} />
     </View>
   );
 };

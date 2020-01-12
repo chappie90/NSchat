@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
 import { GiftedChat } from 'react-native-gifted-chat';
 
+import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 
@@ -46,7 +47,17 @@ const ChatDetailScreen = ({ navigation }) => {
         messages={incomingMsgs} 
         onSend={sendMessage} 
         user={{ _id: 1 }}
-        scrollToBottom={true} />
+        // loadEarlier={true} // enables load earlier messages button
+        // onLoadEarlier={() => console.log('loaded')} // Put get messages handler here 
+        // isLoadingEarlier={true}
+        scrollToBottom={true}
+        scrollToBottomComponent={() => {
+          return (
+            <View style={styles.scrollContainer}>
+              <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
+            </View>
+          );
+        }}/>
     </View>
   );
 };
@@ -61,6 +72,11 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  scrollContainer: {
+    width: 30,
+    height: 30,
+    paddingTop: 1
   }
 });
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Avatar } from 'react-native-gifted-chat';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -68,6 +68,12 @@ const ChatDetailScreen = ({ navigation }) => {
               textStyle={{ left: styles.text, right: styles.text }} />
           );
         }}
+        renderAvatar={(props) => {
+          return (
+            <Avatar { ...props }
+              imageStyle={{ left: styles.avatar }} />
+          );
+        }}
         loadEarlier={true} // enables load earlier messages button
         onLoadEarlier={() => console.log('loaded')} // Put get messages handler here 
         // isLoadingEarlier={true}
@@ -106,8 +112,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondary
   },
   text: {
-    fontFamily: 'open-sans',
-    fontSize: 15
+    fontFamily: 'open-sans'
+  },
+  avatar: {
+    backgroundColor: Colors.primary
   }
 });
 

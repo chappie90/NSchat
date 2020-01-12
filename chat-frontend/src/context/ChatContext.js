@@ -13,9 +13,9 @@ const chatReducer = (state, action) => {
     case 'new_contact':
       return { ...state, contacts: [ ...state.contacts, action.payload ] };
     case 'get_contacts':
-      return { ...state, contacts: action.payload };
+      return { ...state, contacts: [ ...action.payload ] };
     case 'get_messages':
-      return { ...state, chat: action.payload };
+      return { ...state, chat: [ ...action.payload ] };
     case 'get_chats':
       return { ...state, previousChats: action.payload };
     default:
@@ -76,6 +76,7 @@ const getChats = dispatch => async ({ username }) => {
 
 const getMessages = dispatch => async ({ username, recipient, page }) => {
   try {
+
     const response = await chatApi.post('/messages', { username, recipient, page });
 
     const chatArr = [];

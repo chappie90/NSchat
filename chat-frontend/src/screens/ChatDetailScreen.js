@@ -14,15 +14,18 @@ const ChatDetailScreen = ({ navigation }) => {
   const { state: { chat }, getMessages } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [receiver, setReceiver] = useState('');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(null);
   const socket = useRef(null);
+  let recipient;
 
   useEffect(() => {
     setReceiver(navigation.getParam('username'));
-    const recipient = navigation.getParam('username');
+    recipient = navigation.getParam('username');
+    setPage(1);
     getMessages({ username, recipient, page })
       .then((chat) => {
-        console.log(chat);
+        // console.log('first');
+        // console.log(chat);
         setIncomingMsgs(chat);
       });
     setIncomingMsgs(chat);
@@ -31,6 +34,19 @@ const ChatDetailScreen = ({ navigation }) => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
   }, []);
+
+  const loadMoreMessages = () => {
+    recipient = receiver;
+    console.log(page);
+    setPage(page + 1);
+    console.log(page);
+    getMessages({ username, recipient, page })
+      .then((chat) => {
+        // console.log('second');
+        // console.log(chat);
+        setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
+      });
+  };
 
   const sendMessage = (message) => {
     const msgObj = {
@@ -78,7 +94,7 @@ const ChatDetailScreen = ({ navigation }) => {
         }}
         loadEarlier={true} // enables load earlier messages button
         onLoadEarlier={() => {
-          
+          loadMoreMessages();
         }}
         //isLoadingEarlier={true}
         scrollToBottom={true}

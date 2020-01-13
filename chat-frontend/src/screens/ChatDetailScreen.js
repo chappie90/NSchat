@@ -46,7 +46,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const sendMessage = (message) => {
     const msgObj = {
       from: username,
-      to: receiver,
+      to: recipient,
       message,
     };
     socket.current.emit('message', msgObj);

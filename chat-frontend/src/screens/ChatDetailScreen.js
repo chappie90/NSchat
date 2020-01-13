@@ -53,6 +53,21 @@ const ChatDetailScreen = ({ navigation }) => {
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
   };
 
+  const renderBubble = (bubbleProps) => {
+    return (
+      <Bubble { ...bubbleProps }
+        wrapperStyle={{ left: styles.left, right: styles.right }}
+        textStyle={{ left: styles.text, right: styles.text }} />
+    );
+  };
+
+  const renderAvatar = (avatarProps) => {
+    return (
+      <Avatar { ...avatarProps }
+        imageStyle={{ left: styles.avatar }} />
+    );
+  };
+
   // IS OVERRIDING scrollToBottom
   // const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
   //   const paddingToTop = 80;
@@ -75,19 +90,8 @@ const ChatDetailScreen = ({ navigation }) => {
         //   }
         // }}
         textInputStyle={styles.input}
-        renderBubble={(props) => {
-          return (
-            <Bubble { ...props }
-              wrapperStyle={{ left: styles.left, right: styles.right }}
-              textStyle={{ left: styles.text, right: styles.text }} />
-          );
-        }}
-        renderAvatar={(props) => {
-          return (
-            <Avatar { ...props }
-              imageStyle={{ left: styles.avatar }} />
-          );
-        }}
+        renderBubble={renderBubble}
+        renderAvatar={renderAvatar}
         loadEarlier={true} // enables load earlier messages button
         onLoadEarlier={() => {
           loadMoreMessages();
@@ -131,7 +135,9 @@ const styles = StyleSheet.create({
     fontFamily: 'open-sans'
   },
   avatar: {
-    backgroundColor: Colors.primary
+    backgroundColor: Colors.primary,
+    // width: 28,
+    // height: 28
   },
   input: {
     paddingTop: 8

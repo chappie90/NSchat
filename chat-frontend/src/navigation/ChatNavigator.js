@@ -23,7 +23,7 @@ const ChatsFlow = createStackNavigator({
 ChatsFlow.navigationOptions = {
   title: 'Chats',
   tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="chat" size={30} />,
-  tabBarOptions: { activeTintColor: Colors.primary }
+  tabBarOptions: { activeTintColor: Colors.primary, keyboardHidesTabBar: false }
 };
 
 const ContactsListFlow = createStackNavigator(

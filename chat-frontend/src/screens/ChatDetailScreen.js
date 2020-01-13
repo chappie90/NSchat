@@ -1,6 +1,15 @@
 import RemoveSocketIoWarning from '../components/RemoveSocketIoWarning';
 import React, { useEffect, useState, useRef, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View, 
+  Text, 
+  StyleSheet, 
+  TextInput, 
+  SafeAreaView, 
+  ScrollView, 
+  TouchableOpacity,
+  KeyboardAvoidingView } from 'react-native';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
 import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
@@ -87,36 +96,42 @@ const ChatDetailScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <GiftedChat
-        renderUsernameOnMessage 
-        messages={incomingMsgs} 
-        onSend={sendMessage} 
-        user={{ _id: 1 }}
-        // listViewProps={{
-        //   scrollEventThrottle: 400,
-        //   onScroll: ({ nativeEvent }) => { 
-        //     if (isCloseToTop(nativeEvent)) {
-        //       console.log('test');
-        //     }
-        //   }
-        // }}
-        textInputStyle={styles.input}
-        renderBubble={renderBubble}
-        renderAvatar={renderAvatar}
-        loadEarlier={true} // enables load earlier messages button
-        onLoadEarlier={() => {
-          loadMoreMessages();
-        }}
-        renderLoadEarlier={renderLoadEarlier}
-        //isLoadingEarlier={true}
-        scrollToBottom={true}
-        scrollToBottomComponent={() => {
-          return (
-            <View style={styles.scrollContainer}>
-              <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
-            </View>
-          );
-        }}/>
+        <GiftedChat
+          renderUsernameOnMessage 
+          messages={incomingMsgs} 
+          onSend={sendMessage} 
+          user={{ _id: 1 }}
+          // listViewProps={{
+          //   scrollEventThrottle: 400,
+          //   onScroll: ({ nativeEvent }) => { 
+          //     if (isCloseToTop(nativeEvent)) {
+          //       console.log('test');
+          //     }
+          //   }
+          // }}
+          textInputStyle={styles.input}
+          renderBubble={renderBubble}
+          renderAvatar={renderAvatar}
+          loadEarlier={true} // enables load earlier messages button
+          onLoadEarlier={() => {
+            loadMoreMessages();
+          }}
+          minInputToolbarHeight={0}
+          renderLoadEarlier={renderLoadEarlier}
+          //isLoadingEarlier={true}
+          scrollToBottom={true}
+          scrollToBottomComponent={() => {
+            return (
+              <View style={styles.scrollContainer}>
+                <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
+              </View>
+            );
+          }}/>
+         {/*  <KeyboardAvoidingView 
+            behavior={ Platform.OS === 'android' ? 'padding' :  null}
+            keyboardVerticalOffset={80} /> */}
+         {/* Solution for Android. Try without to see if necesssary 
+          {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
     </View>
   );
 };
@@ -153,7 +168,7 @@ const styles = StyleSheet.create({
     marginRight: -8
   },
   input: {
-    paddingTop: 8
+    paddingTop: 9
   },
   loadButton: {
     backgroundColor: Colors.tertiary

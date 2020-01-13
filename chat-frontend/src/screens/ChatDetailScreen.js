@@ -74,6 +74,7 @@ const ChatDetailScreen = ({ navigation }) => {
         //     }
         //   }
         // }}
+        textInputStyle={styles.input}
         renderBubble={(props) => {
           return (
             <Bubble { ...props }
@@ -131,6 +132,9 @@ const styles = StyleSheet.create({
   },
   avatar: {
     backgroundColor: Colors.primary
+  },
+  input: {
+    paddingTop: 8
   }
 });
 

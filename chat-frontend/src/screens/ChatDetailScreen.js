@@ -13,39 +13,34 @@ const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
   const { state: { chat }, getMessages } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
-  const [receiver, setReceiver] = useState('');
-  const [page, setPage] = useState(null);
+  const [recipient, setRecipient] = useState('');
+  const [currentPage, setCurrentPage] = useState(null);
   const socket = useRef(null);
-  let recipient;
+  let page;
 
   useEffect(() => {
-    setReceiver(navigation.getParam('username'));
-    recipient = navigation.getParam('username');
-    setPage(1);
-    getMessages({ username, recipient, page })
+    setCurrentPage(1);
+    setRecipient(navigation.getParam('username'));
+    if (recipient && currentPage) {
+      page = currentPage;
+      getMessages({ username, recipient, page })
       .then((chat) => {
-        // console.log('first');
-        // console.log(chat);
         setIncomingMsgs(chat);
       });
-    setIncomingMsgs(chat);
+    }
     socket.current = io('http://192.168.1.174:3001', { query: `username=${username}` });
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
-  }, []);
+  }, [recipient]);
 
   const loadMoreMessages = () => {
-    recipient = receiver;
-    console.log(page);
-    setPage(page + 1);
-    console.log(page);
+    let page = currentPage + 1;  
     getMessages({ username, recipient, page })
       .then((chat) => {
-        // console.log('second');
-        // console.log(chat);
         setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
       });
+    setCurrentPage(currentPage + 1);
   };
 
   const sendMessage = (message) => {

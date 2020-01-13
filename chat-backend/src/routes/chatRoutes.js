@@ -104,13 +104,13 @@ router.post('/chats', async (req, res) => {
 router.post('/messages', async (req, res) => {
   const { username, recipient, page } = req.body;
 
-  const skip = 10 * (page - 1);
+  const skip = 4 * (page - 1);
 
   try {
     const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1 })
                                   .skip(skip)
                                   .sort({ 'message.createdAt': -1 })
-                                  .limit(10);
+                                  .limit(4);
 
     res.send({ messages });
   } catch (err) {

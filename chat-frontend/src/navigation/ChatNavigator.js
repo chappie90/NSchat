@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 
+import Colors from '../constants/colors';
 import ResolveAuthScreen from '../screens/ResolveAuthScreen';
 import StarterScreen from '../screens/StarterScreen';
 import SignupScreen from '../screens/SignupScreen';
@@ -22,7 +23,7 @@ const ChatsFlow = createStackNavigator({
 ChatsFlow.navigationOptions = {
   title: 'Chats',
   tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="chat" size={30} />,
-  tabBarOptions: { activeTintColor: 'orange' }
+  tabBarOptions: { activeTintColor: Colors.primary }
 };
 
 const ContactsListFlow = createStackNavigator(
@@ -38,13 +39,13 @@ const ContactsListFlow = createStackNavigator(
 ContactsListFlow.navigationOptions = {
   title: 'Contacts',
   tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={30} />,
-  tabBarOptions: { activeTintColor: 'orange' }
+  tabBarOptions: { activeTintColor: Colors.primary }
 };
 
 AccountScreen.navigationOptions = {
   title: 'Account',
   tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={30} />,
-  tabBarOptions: { activeTintColor: 'orange' }
+  tabBarOptions: { activeTintColor: Colors.primary }
 };
 
 const ChatNavigator = createSwitchNavigator({

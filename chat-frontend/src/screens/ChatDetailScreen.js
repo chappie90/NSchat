@@ -1,9 +1,9 @@
 import RemoveSocketIoWarning from '../components/RemoveSocketIoWarning';
 import React, { useEffect, useState, useRef, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
-import { GiftedChat, Bubble, Avatar } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -68,6 +68,17 @@ const ChatDetailScreen = ({ navigation }) => {
     );
   };
 
+  const renderLoadEarlier = (props) => {
+    if (chat.length < 4 || !chat) {
+      return;
+    }
+
+    return (
+      <LoadEarlier { ...props } 
+        wrapperStyle={styles.loadButton}
+        textStyle={styles.loadButtonText} />
+    );
+  };
   // IS OVERRIDING scrollToBottom
   // const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
   //   const paddingToTop = 80;
@@ -96,7 +107,7 @@ const ChatDetailScreen = ({ navigation }) => {
         onLoadEarlier={() => {
           loadMoreMessages();
         }}
-
+        renderLoadEarlier={renderLoadEarlier}
         //isLoadingEarlier={true}
         scrollToBottom={true}
         scrollToBottomComponent={() => {
@@ -143,6 +154,12 @@ const styles = StyleSheet.create({
   },
   input: {
     paddingTop: 8
+  },
+  loadButton: {
+    backgroundColor: Colors.tertiary
+  },
+  loadButtonText: {
+    fontFamily: 'open-sans'
   }
 });
 

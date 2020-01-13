@@ -96,6 +96,7 @@ const ChatDetailScreen = ({ navigation }) => {
         onLoadEarlier={() => {
           loadMoreMessages();
         }}
+
         //isLoadingEarlier={true}
         scrollToBottom={true}
         scrollToBottomComponent={() => {
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     // width: 28,
     // height: 28
+    marginRight: -8
   },
   input: {
     paddingTop: 8

@@ -12,6 +12,8 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
 import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -23,8 +25,17 @@ const ChatDetailScreen = ({ navigation }) => {
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
+  const [notification, setNotification] = useState(null);
+  const [messageText, setMessageText] = useState('');
   const socket = useRef(null);
   let page;
+
+  const PUSH_REGISTRATION_ENDPOINT = 'http://generated-ngrok-url/token';
+  const MESSAGE_ENPOINT = 'http://generated-ngrok-url/message';
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -41,6 +52,37 @@ const ChatDetailScreen = ({ navigation }) => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
   }, [recipient]);
+
+  const registerForPushNotificationsAsync = async () => {
+    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    if (status !== 'granted') {
+      return;
+    }
+    let token = await Notifications.getExpoPushTokenAsync();
+
+    return fetch(PUSH_REGISTRATION_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: {
+          value: token
+        },
+        user: {
+          username:'warly',
+          name: 'Dan Ward'
+        }
+      })
+    });
+
+    const notificationSubscription = Notifications.addListener(handleNotifcation);
+  };
+
+  const handleNotification = (notification) => {
+    setNotification({ notification });
+  }
 
   const loadMoreMessages = () => {
     let page = currentPage + 1;  

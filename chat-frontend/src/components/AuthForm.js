@@ -23,6 +23,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
+        autoCapitalize="none"
         autoCorrect={false} />
       <TextInput
         style={styles.input} 
@@ -30,6 +31,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         value={password}
         onChangeText={setPassword}
         autoCorrect={false}
+        autoCapitalize="none"
         secureTextEntry />
       <PrimaryButton style={styles.button} onPress={() => onSubmit({ username, password })}>
         {submitBtn}

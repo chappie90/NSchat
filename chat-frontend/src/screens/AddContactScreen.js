@@ -38,6 +38,7 @@ const AddContactScreen = (props) => {
                   setSearch(search);
                   searchContacts({ search });
                 }}
+                autoCapitalize="none"
                 autoCorrect={false} />
               <TouchableOpacity onPress={() => {
                 props.closeModal();

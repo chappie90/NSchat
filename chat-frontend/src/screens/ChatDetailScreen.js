@@ -9,7 +9,6 @@ import {
   ScrollView, 
   TouchableOpacity,
   KeyboardAvoidingView } from 'react-native';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
 import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
@@ -88,6 +87,7 @@ const ChatDetailScreen = ({ navigation }) => {
         textStyle={styles.loadButtonText} />
     );
   };
+
   // IS OVERRIDING scrollToBottom
   // const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
   //   const paddingToTop = 80;
@@ -116,9 +116,9 @@ const ChatDetailScreen = ({ navigation }) => {
           onLoadEarlier={() => {
             loadMoreMessages();
           }}
-          minInputToolbarHeight={0}
           renderLoadEarlier={renderLoadEarlier}
           //isLoadingEarlier={true}
+          bottomOffset={46}
           scrollToBottom={true}
           scrollToBottomComponent={() => {
             return (

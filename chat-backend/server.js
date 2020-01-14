@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const io = require('socket.io')();
+const { Expo } = require('expo-server-sdk') ;
 
 const Message = mongoose.model('Message');
 const User = mongoose.model('User');
@@ -12,6 +13,7 @@ const chatRoutes = require('./src/routes/chatRoutes');
 const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
+const expo = new Expo();
 
 app.use(bodyParser.json());
 app.use(authRoutes);
@@ -36,6 +38,55 @@ app.get('/', (req, res) => {
 });
 
 const users = {};
+const savedPushTokens = [];
+
+const saveToken = (token) => {
+  if (savedPushTokens.indexOf(token === -1)) {
+    savedPushTokens.push(token);
+  }
+}
+
+const handlePushTokens = (message) => {
+  let notifications = [];
+  for (let pushToken of savedPushTokens) {
+    if (!Expo.isExpoPushToken(pushToken)) {
+      console.log(`Push token ${pushToken} is not a valid Expo push token`);
+      continue;
+    }
+    notifications.push({
+      to: pushToken,
+      sound: 'default',
+      title: 'Message received!',
+      body: message,
+      data: { message }
+    });
+  }
+
+  let chunks = expo.chunkPushNotifications(notifications);
+
+  (async () => {
+    for (let chunk of chunks) {
+      try {
+        let receipts = await expo.sendPushNotificationsAsync(chunk);
+        console.log(receipts);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  })();
+};
+
+app.post('/token', (req, res) => {
+  saveToken(req.body.token.value);
+  console.log(`Received push token, ${req.body.token.value}`);
+  res.send(`Received push token, ${req.body.token.value}`);
+});
+
+app.post('/message', (req, res) => {
+   handlePushTokens(req.body.message);
+  console.log(`Received message, ${req.body.message}`);
+  res.send(`Received message, ${req.body.message}`);
+}); 
 
 io.on('connection', socket => {
   console.log('A user connected');

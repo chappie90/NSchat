@@ -26,12 +26,11 @@ const ChatDetailScreen = ({ navigation }) => {
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [messageText, setMessageText] = useState('');
   const socket = useRef(null);
   let page;
 
-  const PUSH_REGISTRATION_ENDPOINT = 'http://generated-ngrok-url/token';
-  const MESSAGE_ENPOINT = 'http://generated-ngrok-url/message';
+  const PUSH_REGISTRATION_ENDPOINT = 'http://192.168.1.174:3000/token';
+  const MESSAGE_ENPOINT = 'http://192.168.1.174:3000/message';
 
   useEffect(() => {
     registerForPushNotificationsAsync();
@@ -47,7 +46,7 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     }
-    socket.current = io('http://192.168.0.31:3001', { query: `username=${username}` });
+    socket.current = io('http://192.168.1.174:3001', { query: `username=${username}` });
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
@@ -93,14 +92,27 @@ const ChatDetailScreen = ({ navigation }) => {
     setCurrentPage(currentPage + 1);
   };
 
-  const sendMessage = (message) => {
+  const sendMessage = async (message) => {
     const msgObj = {
       from: username,
       to: recipient,
       message,
     };
+    const { message: [{ text }] } = msgObj;
     socket.current.emit('message', msgObj);
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+
+    fetch(MESSAGE_ENPOINT, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: text,
+      }),
+    });
+
   };
 
   const renderBubble = (bubbleProps) => {

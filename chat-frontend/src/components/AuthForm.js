@@ -15,6 +15,8 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  let secondTextInput;
+
   return (
     <View style={styles.container}>
       <HeadingText style={styles.header}>{header}</HeadingText>
@@ -23,6 +25,8 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
+        returnKeyType="next"
+        onSubmitEditing={() => { secondTextInput.focus(); }} 
         autoCapitalize="none"
         autoCorrect={false} />
       <TextInput
@@ -32,7 +36,8 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         onChangeText={setPassword}
         autoCorrect={false}
         autoCapitalize="none"
-        secureTextEntry />
+        secureTextEntry
+        ref={(input) => { secondTextInput = input; }} />
       <PrimaryButton style={styles.button} onPress={() => onSubmit({ username, password })}>
         {submitBtn}
       </PrimaryButton>

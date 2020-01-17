@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { 
   View, 
   Text, 
@@ -8,7 +8,8 @@ import {
   StyleSheet,
   Keyboard,
   TouchableWithoutFeedback,
-  Modal 
+  Modal,
+  ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
@@ -22,6 +23,11 @@ const AddContactScreen = (props) => {
   const { state: { searchResults }, searchContacts, clearSearchResults, addContact } = useContext(ChatContext);
   const { state: { username } } = useContext(AuthContext);
   const [search, setSearch] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [searchResults]);
 
   return (
     <Modal visible={props.visible} animationType="slide">
@@ -35,6 +41,7 @@ const AddContactScreen = (props) => {
                 placeholderTextColor="white"
                 value={search}
                 onChangeText={(search) => {
+                  setIsLoading(true);
                   setSearch(search);
                   searchContacts({ search });
                 }}
@@ -48,7 +55,10 @@ const AddContactScreen = (props) => {
                 <MaterialIcons name="close" size={30} color="white" />
               </TouchableOpacity>
             </View>
-              {
+            {isLoading ? 
+              (<View style={styles.spinnerContainer}>
+                <ActivityIndicator size='large' color={Colors.primary} />
+              </View>) : 
               searchResults.map((item, index) => (
                   <ListItem
                     key={index}
@@ -106,6 +116,9 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: 'bold'
+  },
+  spinnerContainer: {
+    padding: 40
   },
   list: {
     padding: 20

@@ -15,8 +15,8 @@ import PrimaryButton from '../components/PrimaryButton';
 const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation, resetForm }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [usernameIsValid, setUsernameIsValid] = useState(true);
-  const [passwordIsValid, setPasswordIsValid] = useState(true);
+  const [usernameIsValid, setUsernameIsValid] = useState(null);
+  const [passwordIsValid, setPasswordIsValid] = useState(null);
 
   let secondTextInput;
 
@@ -45,7 +45,11 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         autoCapitalize="none"
         // blurOnSubmit={false}
         autoCorrect={false} />
-      {!usernameIsValid && <BodyText style={styles.inputError}>Username can't be an empty value</BodyText>}
+      {
+        usernameIsValid !== null 
+        && !usernameIsValid 
+        && <BodyText style={styles.inputError}>Username can't be an empty value</BodyText>
+      }
       <TextInput
         style={styles.input} 
         placeholder="Password" 
@@ -55,8 +59,23 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         autoCapitalize="none"
         secureTextEntry
         ref={(input) => { secondTextInput = input; }} />
-      {!passwordIsValid && <BodyText style={styles.inputError}>Password must be at least 8 characters long</BodyText>}
-      <PrimaryButton style={styles.button} onPress={() => onSubmit({ username, password })}>
+      {
+        passwordIsValid !== null 
+        && !passwordIsValid 
+        && <BodyText style={styles.inputError}>Password must be at least 8 characters long</BodyText>
+      }
+      <PrimaryButton style={styles.button} onPress={() => {
+        if (usernameIsValid === null) {
+          setUsernameIsValid(false);
+        }
+        if (passwordIsValid === null) {
+          setPasswordIsValid(false);
+        }
+        if (!usernameIsValid || !passwordIsValid) {
+          return;
+        }
+        onSubmit({ username, password });
+      }}>
         {submitBtn}
       </PrimaryButton>
       <TouchableOpacity onPress={() => navigation.navigate(routeName)}>

@@ -1,5 +1,15 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
-import { View, ScrollView, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { 
+  View, 
+  ScrollView, 
+  Text, 
+  TextInput, 
+  FlatList, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Image,
+  ActivityIndicator 
+} from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
 
@@ -11,7 +21,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 
 const ContactsListScreen = ({ navigation }) => {
-  const { state: { contacts }, getContacts } = useContext(ChatContext);
+  const { state: { contacts, isLoading }, getContacts } = useContext(ChatContext);
   const { state: { username } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
 
@@ -24,8 +34,7 @@ const ContactsListScreen = ({ navigation }) => {
 
   useEffect(() => {
   //  getContactsHandler();
-     getContacts({ username });
-    console.log('Get contacts use effect ran');
+    getContacts({ username });
   }, []);
 
   function getAvatar(username) {
@@ -54,7 +63,10 @@ const ContactsListScreen = ({ navigation }) => {
       </View>
       <View style={styles.divider} />
       <ScrollView>
-        {
+        {isLoading ?
+          (<View style={styles.spinnerContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+          </View>) :
           contacts.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
               <ListItem
@@ -109,6 +121,9 @@ const styles = StyleSheet.create({
   divider: {
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 2
+  },
+  spinnerContainer: {
+    padding: 40
   },
   list: {
     paddingVertical: 10,

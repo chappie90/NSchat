@@ -13,11 +13,13 @@ const chatReducer = (state, action) => {
     case 'new_contact':
       return { ...state, contacts: [ ...state.contacts, action.payload ] };
     case 'get_contacts':
-      return { ...state, contacts: [ ...action.payload ] };
+      return { ...state, contacts: action.payload }; // change to contacts: action.payload
     case 'get_messages':
-      return { ...state, chat: [ ...action.payload ] };
+      return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'get_chats':
       return { ...state, previousChats: action.payload };
+    case 'hide_spinner':
+      return { ...state, isLoading: false }
     default:
       return state;
   }
@@ -55,6 +57,8 @@ const getContacts = dispatch => async ({ username }) => {
     const response = await chatApi.post('/contacts', { username });
 
     dispatch({ type: 'get_contacts', payload: response.data.contacts });
+
+    dispatch({ type: 'hide_spinner' });
   } catch (err) {
     console.log(err);
   }
@@ -117,5 +121,5 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { searchContacts, clearSearchResults, addContact, getContacts, getChats, getMessages },
-  { searchResults: [], contacts: [], previousChats: [], chat: [] }
+  { searchResults: [], contacts: [], previousChats: [], chat: [], isLoading: true }
 );

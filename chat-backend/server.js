@@ -76,7 +76,7 @@ const handlePushTokens = (message) => {
   })();
 };
 
-app.post('/token', (req, res) => {
+app.post('/token', (req, res) => {  
   saveToken(req.body.token.value);
   console.log(`Received push token, ${req.body.token.value}`);
   res.send(`Received push token, ${req.body.token.value}`);

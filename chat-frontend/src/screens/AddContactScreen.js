@@ -57,7 +57,7 @@ const AddContactScreen = (props) => {
             </View>
             {isLoading ? 
               (<View style={styles.spinnerContainer}>
-                <ActivityIndicator size='large' color={Colors.primary} />
+                <ActivityIndicator size="large" color={Colors.primary} />
               </View>) : 
               searchResults.map((item, index) => (
                   <ListItem

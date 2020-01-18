@@ -18,8 +18,10 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'get_chats':
       return { ...state, previousChats: action.payload };
-    case 'hide_spinner':
-      return { ...state, isLoading: false }
+    case 'hide_contacts_spinner':
+      return { ...state, contactsIsLoading: false }
+    case 'hide_chats_spinner':
+      return { ...state, chatsIsLoading: false }
     default:
       return state;
   }
@@ -58,7 +60,7 @@ const getContacts = dispatch => async ({ username }) => {
 
     dispatch({ type: 'get_contacts', payload: response.data.contacts });
 
-    dispatch({ type: 'hide_spinner' });
+    dispatch({ type: 'hide_contacts_spinner' });
   } catch (err) {
     console.log(err);
   }
@@ -73,6 +75,8 @@ const getChats = dispatch => async ({ username }) => {
     });
 
     dispatch({ type: 'get_chats', payload: chats });
+
+    dispatch({ type: 'hide_chats_spinner' });
   } catch (err) {
     console.log(err);
   }
@@ -120,6 +124,20 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
 
 export const { Context, Provider } = createDataContext(
   chatReducer,
-  { searchContacts, clearSearchResults, addContact, getContacts, getChats, getMessages },
-  { searchResults: [], contacts: [], previousChats: [], chat: [], isLoading: true }
+  { 
+    searchContacts, 
+    clearSearchResults, 
+    addContact, 
+    getContacts, 
+    getChats, 
+    getMessages 
+  },
+  { 
+    searchResults: [], 
+    contacts: [], 
+    previousChats: [], 
+    chat: [], 
+    contactsIsLoading: true,
+    chatsIsLoading: true 
+  }
 );

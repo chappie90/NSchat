@@ -1,44 +1,57 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { 
+  View, 
+  ScrollView,
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  ActivityIndicator 
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import Moment from 'moment';
 
+import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import HeadingText from '../components/HeadingText';
 
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
-  const { state: { previousChats }, getChats } = useContext(ChatContext);
+  const { state: { previousChats, chatsIsLoading }, getChats } = useContext(ChatContext);
 
   useEffect(() => {
     getChats({ username });
-  }, [previousChats]);
+  }, []);
 
   return (
     <View style={styles.container}>
       <HeadingText style={styles.header}>My Chats</HeadingText>   
       <View style={styles.divider} />
-      {
-        previousChats.map((c, i) => (
-          <TouchableOpacity key={i} onPress={() => navigation.navigate('ChatDetail', { username: c.contact })}>
-            <ListItem
-              key={i}
-              leftAvatar={{ source: require('../../assets/avatar2.png') }}
-              title={
-                <View style={styles.itemContainer}>
-                  <Text style={styles.name}>{c.contact}</Text><Text>{Moment(c.date).format('d MMM HH:mm')}</Text>
-                </View>
-              }
-              subtitle={c.text}
-              bottomDivider
-              chevron
-            />
-          </TouchableOpacity>
-        ))
-      }
+      <ScrollView>
+        {chatsIsLoading ?
+          (<View style={styles.spinnerContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+          </View>) :
+          previousChats.map((c, i) => (
+            <TouchableOpacity key={i} onPress={() => navigation.navigate('ChatDetail', { username: c.contact })}>
+              <ListItem
+                key={i}
+                leftAvatar={{ source: require('../../assets/avatar2.png') }}
+                title={
+                  <View style={styles.itemContainer}>
+                    <Text style={styles.name}>{c.contact}</Text><Text>{Moment(c.date).format('d MMM HH:mm')}</Text>
+                  </View>
+                }
+                subtitle={c.text}
+                bottomDivider
+                chevron
+              />
+            </TouchableOpacity>
+          ))
+        }
+      </ScrollView> 
     </View>
   );
 };
@@ -69,6 +82,9 @@ const styles = StyleSheet.create({
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 2
   },
+  spinnerContainer: {
+    padding: 40
+  }
 });
 
 export default ChatsListScreen;

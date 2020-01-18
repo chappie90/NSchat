@@ -21,19 +21,11 @@ import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 
 const ContactsListScreen = ({ navigation }) => {
-  const { state: { contacts, isLoading }, getContacts } = useContext(ChatContext);
+  const { state: { contacts, contactsIsLoading }, getContacts } = useContext(ChatContext);
   const { state: { username } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
 
-  // const getContactsHandler = useCallback(() => {
-  //   getContacts({ username });
-  // }, [contacts, getContacts]);
-
-  // Fix later - not sure if it needs fixing?
-  // Active user gets the new contact added
-
   useEffect(() => {
-  //  getContactsHandler();
     getContacts({ username });
   }, []);
 
@@ -63,7 +55,7 @@ const ContactsListScreen = ({ navigation }) => {
       </View>
       <View style={styles.divider} />
       <ScrollView>
-        {isLoading ?
+        {contactsIsLoading ?
           (<View style={styles.spinnerContainer}>
             <ActivityIndicator size="large" color={Colors.primary} />
           </View>) :

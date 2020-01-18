@@ -8,6 +8,7 @@ import {
   StyleSheet, 
   Image,
   FlatList,
+  RefreshControl,
   ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -59,6 +60,12 @@ const ContactsListScreen = ({ navigation }) => {
         </View>
       ) : (
         <FlatList
+          refreshControl={
+            <RefreshControl
+              onRefresh={() => getContacts({ username })}
+              refreshing={contactsIsLoading}
+              tintColor={Colors.primary} />
+          }
           data={contacts}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {

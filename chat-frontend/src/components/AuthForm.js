@@ -12,7 +12,7 @@ import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import PrimaryButton from '../components/PrimaryButton';
 
-const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation, resetForm }) => {
+const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation, resetForm, toggleModal }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [usernameIsValid, setUsernameIsValid] = useState(null);
@@ -78,7 +78,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
       }}>
         {submitBtn}
       </PrimaryButton>
-      <TouchableOpacity onPress={() => navigation.navigate(routeName)}>
+      <TouchableOpacity onPress={() => toggleModal()}>
         <Text style={styles.navLink}>{navLink}</Text>
       </TouchableOpacity>
     </View>

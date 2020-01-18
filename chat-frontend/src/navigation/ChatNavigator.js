@@ -7,8 +7,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../constants/colors';
 import ResolveAuthScreen from '../screens/ResolveAuthScreen';
 import StarterScreen from '../screens/StarterScreen';
-import SignupScreen from '../screens/SignupScreen';
-import SigninScreen from '../screens/SigninScreen';
 import ChatsListScreen from '../screens/ChatsListScreen';
 import ContactsListScreen from '../screens/ContactsListScreen';
 import AccountScreen from '../screens/AccountScreen';
@@ -52,8 +50,8 @@ const ChatNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
   LoginFlow: createStackNavigator({
     Starter: StarterScreen,
-    Signup: SignupScreen,
-    Signin: SigninScreen
+    // Signup: SignupScreen,
+    // Signin: SigninScreen
   }),
   MainFlow: createBottomTabNavigator({
     ChatsFlow,

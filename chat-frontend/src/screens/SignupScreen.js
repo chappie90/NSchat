@@ -6,32 +6,46 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
-  Alert 
+  TouchableOpacity,
+  Alert,
+  Modal 
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import AuthForm from '../components/AuthForm';
+import Colors from '../constants/colors';
 
-const SignupScreen = () => {
+const SignupScreen = (props) => {
   const { state: { errorMessage }, signup, clearErrorMessage } = useContext(AuthContext);
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
-      <View style={styles.container}>
-        <AuthForm 
-          header="Join the chat"
-          submitBtn="Sign Up"
-          navLink="Already have an account? Sign in here"
-          routeName="Signin"
-          onSubmit={signup}
-          />
-        {errorMessage ? 
-          Alert.alert('Signup unsuccessful!', errorMessage, [{ text: 'Try again', onPress: () => clearErrorMessage }]) :
-          null
-        }
-        {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
-      </View>
-    </TouchableWithoutFeedback>
+    <Modal visible={props.visible} animationType="slide">
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.container}>
+          <View style={styles.closeModalContainer}>
+            <TouchableOpacity onPress={() => {
+              props.closeModal();
+            }}>
+              <MaterialIcons name="close" size={35} color={Colors.tertiary} />
+            </TouchableOpacity>
+          </View>
+          <AuthForm 
+            header="Join the chat"
+            submitBtn="Sign Up"
+            navLink="Already have an account? Sign in here"
+            routeName="Signin"
+            onSubmit={signup}
+            toggleModal={props.toggleModal}
+            />
+          {errorMessage ? 
+            Alert.alert('Signup unsuccessful!', errorMessage, [{ text: 'Try again', onPress: () => clearErrorMessage }]) :
+            null
+          }
+          {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
   );
 };
 
@@ -40,6 +54,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  closeModalContainer: {
+    width: '100%',
+    alignItems: 'flex-end',
+    padding: 20
   }
 });
 

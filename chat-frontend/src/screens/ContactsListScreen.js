@@ -4,10 +4,10 @@ import {
   ScrollView, 
   Text, 
   TextInput, 
-  FlatList, 
   TouchableOpacity, 
   StyleSheet, 
   Image,
+  FlatList,
   ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -44,7 +44,6 @@ const ContactsListScreen = ({ navigation }) => {
   };
 
   return (
-
     <View style={styles.container}>
       <AddContactScreen visible={newContactMode} closeModal={closeModal} />
       <View style={styles.headerContainer}>
@@ -54,28 +53,32 @@ const ContactsListScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.divider} />
-      <ScrollView>
-        {contactsIsLoading ?
-          (<View style={styles.spinnerContainer}>
-            <ActivityIndicator size="large" color={Colors.primary} />
-          </View>) :
-          contacts.map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
-              <ListItem
-                key={index}
-                leftAvatar={{ source: require('../../assets/avatar2.png') }}
-                title={
-                  <View style={styles.itemContainer}>
-                    <Text style={styles.name}>{item}</Text>
-                  </View>
-                }
-                bottomDivider
-                chevron
-              />
-            </TouchableOpacity>
-          ))
-        }  
-      </ScrollView>
+      {contactsIsLoading ? (
+        <View style={styles.spinnerContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={contacts}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item })}>
+                <ListItem
+                  key={index}
+                  leftAvatar={{ source: require('../../assets/avatar2.png') }}
+                  title={
+                    <View style={styles.itemContainer}>
+                      <Text style={styles.name}>{item}</Text>
+                    </View>
+                  }
+                  bottomDivider
+                  chevron
+                />
+              </TouchableOpacity>
+            );
+          }} />
+      )}
     </View>
   );
 };

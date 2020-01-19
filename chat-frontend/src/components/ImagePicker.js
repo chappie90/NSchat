@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TouchableWithoutFeedback, Image, Text, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
@@ -7,8 +7,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../constants/colors';
 import PrimaryButton from './PrimaryButton';
 import BodyText from './BodyText';
+import { Context as AuthContext } from '../context/AuthContext';
 
 const ImgPicker = props => {
+  const {state, saveImage} = useContext(AuthContext);
   const [pickedImage, setPickedImage] = useState(null);
 
   const getPermissions = async () => {
@@ -34,9 +36,10 @@ const ImgPicker = props => {
       // quality: 0.5 // between 0 and 1
 
     });
-
+    console.log('image');
+    console.log(image.uri);
     setPickedImage(image.uri);
-    props.onImageTaken(image.uri);
+    // saveImage(image.uri);
   };
 
   return (
@@ -69,9 +72,9 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   image: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     borderWidth: 4,
     borderColor: 'white'
   },
@@ -81,8 +84,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'white',
     position: 'absolute',
-    top: '80%',
-    right: 0,
+    top: '75%',
+    right: 35,
     padding: 5
   }
 });

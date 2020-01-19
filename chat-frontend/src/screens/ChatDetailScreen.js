@@ -18,6 +18,7 @@ import * as Permissions from 'expo-permissions';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
+import chatApi from '../api/chat';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -26,15 +27,23 @@ const ChatDetailScreen = ({ navigation }) => {
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [badgeNumber, setBadgeNumber] = useState(null);
   const socket = useRef(null);
   let page;
 
-  const PUSH_REGISTRATION_ENDPOINT = 'http://192.168.1.174:3000/token';
-  const MESSAGE_ENPOINT = 'http://192.168.1.174:3000/message';
+  const PUSH_REGISTRATION_ENDPOINT = `${chatApi}/token`;
+  const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
     registerForPushNotificationsAsync();
   }, []);
+
+  useEffect(() => {
+    async () => {
+      const resetBadgeNumber = await Notifications.setBadgeNumberAsync(0);
+    };
+    setBadgeNumber(0);
+  }, [badgeNumber]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -46,7 +55,7 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     }
-    socket.current = io('http://192.168.1.174:3001', { query: `username=${username}` });
+    socket.current = io('http://192.168.0.93:3001', { query: `username=${username}` });
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
@@ -59,29 +68,48 @@ const ChatDetailScreen = ({ navigation }) => {
     }
     let token = await Notifications.getExpoPushTokenAsync();
 
-    return fetch(PUSH_REGISTRATION_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        token: {
-          value: token
-        },
-        user: {
-          username:'warly',
-          name: 'Dan Ward'
-        }
-      })
-    });
 
-    const notificationSubscription = Notifications.addListener(handleNotifcation);
+    // return fetch(PUSH_REGISTRATION_ENDPOINT, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     token: {
+    //       value: token
+    //     },
+    //     user: {
+    //       username:'warly',
+    //       name: 'Dan Ward'
+    //     }
+    //   })
+    // });
+
+    sendPushNotificationToken(token, 'Stoyan');
+
+    const notificationSubscription = Notifications.addListener(handleNotification);
   };
 
-  const handleNotification = (notification) => {
+  const handleNotification = async (notification) => {
     setNotification({ notification });
+    console.log(notification);
+
+    const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
+    setBadgeNumber(badgeNumber + 1);
   }
+
+  const sendPushNotificationToken = async (token, username) => {
+    try {
+      const response = await chatApi.post('/token', { token, username });
+      
+      console.log(response.data); 
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
 
   const loadMoreMessages = () => {
     let page = currentPage + 1;  

@@ -4,7 +4,9 @@ import {
   ScrollView,
   Text, 
   StyleSheet, 
-  TouchableOpacity, 
+  TouchableOpacity,
+  FlatList,
+  RefreshControl, 
   ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -29,29 +31,39 @@ const ChatsListScreen = ({ navigation }) => {
     <View style={styles.container}>
       <HeadingText style={styles.header}>My Chats</HeadingText>   
       <View style={styles.divider} />
-      <ScrollView>
-        {chatsIsLoading ?
-          (<View style={styles.spinnerContainer}>
-            <ActivityIndicator size="large" color={Colors.primary} />
-          </View>) :
-          previousChats.map((c, i) => (
-            <TouchableOpacity key={i} onPress={() => navigation.navigate('ChatDetail', { username: c.contact })}>
-              <ListItem
-                key={i}
-                leftAvatar={{ source: require('../../assets/avatar2.png') }}
-                title={
-                  <View style={styles.itemContainer}>
-                    <Text style={styles.name}>{c.contact}</Text><Text>{Moment(c.date).format('d MMM HH:mm')}</Text>
-                  </View>
-                }
-                subtitle={c.text}
-                bottomDivider
-                chevron
-              />
-            </TouchableOpacity>
-          ))
-        }
-      </ScrollView> 
+      {chatsIsLoading ? (
+        <View style={styles.spinnerContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              onRefresh={() => getChats({ username })}
+              refreshing={chatsIsLoading}
+              tintColor={Colors.primary} />
+          }
+          data={previousChats}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item.contact })}>
+                <ListItem
+                  key={index}
+                  leftAvatar={{ source: require('../../assets/avatar2.png') }}
+                  title={
+                    <View style={styles.itemContainer}>
+                      <Text style={styles.name}>{item.contact}</Text><Text>{Moment(item.date).format('d MMM HH:mm')}</Text>
+                    </View>
+                  }
+                  subtitle={item.text}
+                  bottomDivider
+                  chevron
+                />
+              </TouchableOpacity>
+            );
+          }} />
+      )} 
     </View>
   );
 };

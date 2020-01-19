@@ -13,15 +13,11 @@ const chatReducer = (state, action) => {
     case 'new_contact':
       return { ...state, contacts: [ ...state.contacts, action.payload ] };
     case 'get_contacts':
-      return { ...state, contacts: action.payload }; // change to contacts: action.payload
+      return { ...state, contacts: action.payload, contactsIsLoading: false }; // change to contacts: action.payload
     case 'get_messages':
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'get_chats':
-      return { ...state, previousChats: action.payload };
-    case 'hide_contacts_spinner':
-      return { ...state, contactsIsLoading: false }
-    case 'hide_chats_spinner':
-      return { ...state, chatsIsLoading: false }
+      return { ...state, previousChats: action.payload, chatsIsLoading: false };
     default:
       return state;
   }
@@ -60,7 +56,6 @@ const getContacts = dispatch => async ({ username }) => {
 
     dispatch({ type: 'get_contacts', payload: response.data.contacts });
 
-    dispatch({ type: 'hide_contacts_spinner' });
   } catch (err) {
     console.log(err);
   }
@@ -75,8 +70,6 @@ const getChats = dispatch => async ({ username }) => {
     });
 
     dispatch({ type: 'get_chats', payload: chats });
-
-    dispatch({ type: 'hide_chats_spinner' });
   } catch (err) {
     console.log(err);
   }

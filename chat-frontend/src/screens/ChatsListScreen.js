@@ -74,6 +74,7 @@ ChatsListScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingVertical: 30,
     paddingHorizontal: 20
   },

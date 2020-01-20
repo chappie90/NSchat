@@ -30,7 +30,8 @@
     "redux": "^4.0.4",
     "redux-socket.io": "^1.4.0",
     "socket.io-client": "2.1.1",
-    "expo-image-picker": "~8.0.1"
+    "expo-image-picker": "~8.0.1",
+    "expo-sqlite": "~8.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0"

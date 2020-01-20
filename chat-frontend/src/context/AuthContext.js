@@ -1,8 +1,10 @@
 import { AsyncStorage } from 'react-native';
+import * as FileSystem from 'expo-file-system';
 
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
 import { navigate } from '../components/navigationRef';
+import { insertProfileImage } from '../database/db';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -14,6 +16,8 @@ const authReducer = (state, action) => {
       return { ...state, errorMessage: action.payload };
     case 'clear_error':
       return { ...state, errorMessage: '' };
+    case 'save_image':
+      return { ...state, profileImage: action.payload };
     default: 
       return state;
   }
@@ -80,8 +84,28 @@ const signout = dispatch => async () => {
   }  
 };
 
+const saveImage = dispatch => async (user, image) => {
+  try {
+    const fileName = image.split('/').pop();
+    const newPath = FileSystem.documentDirectory + fileName;
+
+    await FileSystem.moveAsync({
+      from: image,
+      to: newPath
+    });
+
+    const dbResult = await insertProfileImage(user, newPath);
+
+    dispatch({ type: 'save_image', payload: newPath });
+  } catch (err) {
+    console.log(err);
+    throw err;
+    // handle with alert
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup, signin, autoLogin, clearErrorMessage, signout },
-  { token: null, username: null, errorMessage: '' }
+  { signup, signin, autoLogin, clearErrorMessage, signout, saveImage },
+  { token: null, username: null, errorMessage: '', profileImage: null }
 );

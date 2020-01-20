@@ -10,8 +10,7 @@ import BodyText from './BodyText';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const ImgPicker = props => {
-  const {state, saveImage} = useContext(AuthContext);
-  const [pickedImage, setPickedImage] = useState(null);
+  const {state: { username, profileImage }, saveImage} = useContext(AuthContext);
 
   const getPermissions = async () => {
     // for access to galary CAMERA_ROLL
@@ -36,18 +35,16 @@ const ImgPicker = props => {
       // quality: 0.5 // between 0 and 1
 
     });
-    console.log('image');
-    console.log(image.uri);
-    setPickedImage(image.uri);
-    // saveImage(image.uri);
+
+    saveImage(username, image.uri);
   };
 
   return (
     <View style={styles.imagePickerContainer}>
       <TouchableWithoutFeedback onPress={imageSelected}>
         <View style={styles.imagePreview}>
-          {pickedImage ?
-            <Image source={{ uri: pickedImage}} style={styles.image} /> : 
+          {profileImage ?
+            <Image source={{ uri: profileImage}} style={styles.image} /> : 
             <Image source={require('../../assets/avatar2.png')} style={styles.image} />
           }
           <View style={styles.cameraIconContainer}>

@@ -40,6 +40,10 @@ const ImgPicker = props => {
 
     });
 
+    if (!image.uri) {
+      return;
+    }
+
     saveImage(username, image.uri);
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, TouchableWithoutFeedback, Image, Text, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
@@ -10,7 +10,11 @@ import BodyText from './BodyText';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const ImgPicker = props => {
-  const {state: { username, profileImage }, saveImage} = useContext(AuthContext);
+  const {state: { username, profileImage }, saveImage, getImage} = useContext(AuthContext);
+
+  useEffect(() => {
+    getImage(username);
+  }, []);
 
   const getPermissions = async () => {
     // for access to galary CAMERA_ROLL

@@ -4,7 +4,7 @@ import * as FileSystem from 'expo-file-system';
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
 import { navigate } from '../components/navigationRef';
-import { insertProfileImage } from '../database/db';
+import { insertProfileImage, fetchProfileImage } from '../database/db';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -16,7 +16,7 @@ const authReducer = (state, action) => {
       return { ...state, errorMessage: action.payload };
     case 'clear_error':
       return { ...state, errorMessage: '' };
-    case 'save_image':
+    case 'update_image':
       return { ...state, profileImage: action.payload };
     default: 
       return state;
@@ -96,7 +96,7 @@ const saveImage = dispatch => async (user, image) => {
 
     const dbResult = await insertProfileImage(user, newPath);
 
-    dispatch({ type: 'save_image', payload: newPath });
+    dispatch({ type: 'update_image', payload: newPath });
   } catch (err) {
     console.log(err);
     throw err;
@@ -104,8 +104,19 @@ const saveImage = dispatch => async (user, image) => {
   }
 };
 
+const getImage = dispatch => async (user) => {
+  try {
+    const dbResult = await fetchProfileImage(user);
+
+    dispatch({ type: 'update_image', payload: dbResult.rows._array[0].imageUri });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup, signin, autoLogin, clearErrorMessage, signout, saveImage },
+  { signup, signin, autoLogin, clearErrorMessage, signout, saveImage, getImage },
   { token: null, username: null, errorMessage: '', profileImage: null }
 );

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, TouchableWithoutFeedback, Text, StyleSheet, Alert } from 'react-native';
+import { View, TouchableWithoutFeedback, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { Image, Tooltip, Overlay } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
@@ -83,13 +83,15 @@ const ImgPicker = props => {
                     <HeadingText style={styles.overlayDelete}>Delete Photo</HeadingText>
                   </View>
                   <View style={styles.cancel}>
-                    <HeadingText style={styles.overlayText}>Cancel</HeadingText>
+                    <TouchableOpacity onPress={() => setOverlayMode(false)}>
+                      <HeadingText style={styles.overlayText}>Cancel</HeadingText>
+                    </TouchableOpacity>
                   </View>
                 </View>
             </Overlay>
-            <View style={styles.cameraIconContainer}>
-              <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={36} />
-            </View>
+             <View style={styles.cameraIconContainer}>
+                <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={36} />
+              </View>
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -152,7 +154,8 @@ const styles = StyleSheet.create({
     color: Colors.tertiary
   },
   cancel: {
-    marginTop: 20,
+    marginTop: 15,
+    padding: 5,
     alignSelf: 'center',
   }
 });

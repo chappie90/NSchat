@@ -71,20 +71,20 @@ const ImgPicker = props => {
               onBackdropPress={() => setOverlayMode(false)}>
                 <View style={styles.overlayContainer}>
                   <View style={styles.overlayItem}>
-                    <MaterialIcons color="grey" name="camera-alt" size={28} />
-                    <HeadingText style={styles.overlayText}>Take Photo</HeadingText>
+                    <MaterialIcons color="#6495ED" name="camera-alt" size={26} />
+                    <BodyText style={styles.overlayText}>Take Photo</BodyText>
                   </View>
                   <View style={styles.overlayItem}>
-                    <Ionicons color="grey" name="md-images" size={28} />
-                    <HeadingText style={styles.overlayText}>Choose Photo</HeadingText>
+                    <Ionicons color="#6495ED" name="md-images" size={26} />
+                    <BodyText style={styles.overlayText}>Choose Photo</BodyText>
                   </View>
                   <View style={styles.overlayItem}>
-                    <AntDesign color={Colors.tertiary} name="delete" size={28} />
-                    <HeadingText style={styles.overlayDelete}>Delete Photo</HeadingText>
+                    <AntDesign color={Colors.tertiary} name="delete" size={26} />
+                    <BodyText style={styles.overlayDelete}>Delete Photo</BodyText>
                   </View>
                   <View style={styles.cancel}>
                     <TouchableOpacity onPress={() => setOverlayMode(false)}>
-                      <HeadingText style={styles.overlayText}>Cancel</HeadingText>
+                      <BodyText style={styles.cancelText}>Cancel</BodyText>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -134,29 +134,34 @@ const styles = StyleSheet.create({
   },
   overlayContainer: {
     padding: 15,
+    paddingBottom: 10,
   },
   overlayItem: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 5,
-    marginBottom: 8,
+    marginBottom: 10,
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 1 
   },
   overlayText: {
     fontSize: 18,
-    marginLeft: 5,
-    color: 'grey'
+    marginLeft: 8,
+    color: '#6495ED'
   },
   overlayDelete: {
     fontSize: 18,
-    marginLeft: 5,
+    marginLeft: 8,
     color: Colors.tertiary
   },
   cancel: {
     marginTop: 15,
     padding: 5,
     alignSelf: 'center',
+  },
+  cancelText: {
+    color: 'grey',
+    fontSize: 18
   }
 });
 

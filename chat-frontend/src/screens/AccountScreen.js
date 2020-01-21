@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30
   },
   text: {
-    fontSize: 18,
+    fontSize: 20,
     color: 'white'
   }
 });

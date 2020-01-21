@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, TouchableWithoutFeedback, Image, Text, StyleSheet, Alert } from 'react-native';
+import { View, TouchableWithoutFeedback, Text, StyleSheet, Alert } from 'react-native';
+import { Image } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -50,11 +51,13 @@ const ImgPicker = props => {
   return (
     <View style={styles.imagePickerContainer}>
       <TouchableWithoutFeedback onPress={imageSelected}>
-        <View style={styles.imagePreview}>
-          {profileImage ?
-            <Image source={{ uri: profileImage}} style={styles.image} /> : 
-            <Image source={require('../../assets/avatar2.png')} style={styles.image} />
-          }
+        <View style={styles.profileContainer}>
+          <View style={styles.imagePreview}>
+            {profileImage ?
+              <Image resizeMode="stretch" source={{ uri: profileImage}} style={styles.image} /> : 
+              <Image source={require('../../assets/avatar2.png')} style={styles.image} />
+            }
+          </View>
           <View style={styles.cameraIconContainer}>
             <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={36} />
           </View>
@@ -68,20 +71,21 @@ const styles = StyleSheet.create({
   imagePickerContainer: {
     alignItems: 'center'
   },
+  profileContainer: {
+    marginTop: 30
+  },
   imagePreview: {
-    width: '100%',
-    height: 150,
-    marginBottom: 40,
-    marginTop: 50,
-    justifyContent: 'center',
-    alignItems: 'center'
+    width: 200,
+    height: 200,
+    marginBottom: 30,
+    borderRadius: 100,
+    borderWidth: 4,
+    borderColor: 'white',
+    overflow: 'hidden'
   },
   image: {
     width: 200,
     height: 200,
-    borderRadius: 100,
-    borderWidth: 4,
-    borderColor: 'white'
   },
   cameraIconContainer: {
     backgroundColor: 'lightgrey',
@@ -89,8 +93,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'white',
     position: 'absolute',
-    top: '75%',
-    right: 35,
+    top: '65%',
+    right: 15,
     padding: 5
   }
 });

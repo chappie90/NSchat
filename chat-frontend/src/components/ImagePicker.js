@@ -19,35 +19,57 @@ const ImgPicker = props => {
     getImage(username);
   }, []);
 
-  const getPermissions = async () => {
-    // for access to galary CAMERA_ROLL
-    const result = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
-    if (result.status !== 'granted') {
-      Alert.alert('You don\'t have required permissions', [{text: 'Okay'}]);
+  const getCameraPermissions = async () => {
+    const response = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
+    if (response.status !== 'granted') {
+      Alert.alert('You don\'t have the required permissions to access the camera', [{text: 'Okay'}]);
       return false;
     }
-
     return true;
   };
 
-  const imageSelected = async () => {
-    const hasPermission = await getPermissions();
-    if (!hasPermission) {
-      return;
-    } 
-    // we get the image when the promise resolves
-    const image = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      // aspect: [16, 9]
-      // quality: 0.5 // between 0 and 1
+  const getImageLibraryPermissions = async () => {
+    const response = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (response.status !== 'granted') {
+      Alert.alert('You don\'t have the required permissions to access the image library', [{text: 'Okay'}]);
+      return false;
+    }
+    return true;
+  };
 
-    });
-
-    if (!image.uri) {
+  const takePhotoHandler = async () => {
+    const hasCameraPermissions = await getCameraPermissions();
+    if (!hasCameraPermissions) {
       return;
     }
+    const cameraImage = await ImagePicker.launchCameraAsync({
+      allowsEditing: true
+    });
+    if (!cameraImage.uri) {
+      return;
+    }
+    setOverlayMode(false);
+    saveImage(username, cameraImage.uri);
+  };
 
-    saveImage(username, image.uri);
+  const choosePhotoHandler = async () => {
+    const hasImageLibraryPermissions = await getImageLibraryPermissions();
+    if (!hasImageLibraryPermissions) {
+      return;
+    }
+    const libraryImage = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true
+    });
+    if (!libraryImage.uri) {
+      return;
+    }
+    setOverlayMode(false);
+    saveImage(username, libraryImage.uri);
+  };
+
+  const deletePhotoHandler = async () => {
+    saveImage(username, null);
+    setOverlayMode(false);
   };
 
   return (
@@ -70,18 +92,24 @@ const ImgPicker = props => {
               height="auto"
               onBackdropPress={() => setOverlayMode(false)}>
                 <View style={styles.overlayContainer}>
-                  <View style={styles.overlayItem}>
-                    <MaterialIcons color="#6495ED" name="camera-alt" size={26} />
-                    <BodyText style={styles.overlayText}>Take Photo</BodyText>
-                  </View>
-                  <View style={styles.overlayItem}>
-                    <Ionicons color="#6495ED" name="md-images" size={26} />
-                    <BodyText style={styles.overlayText}>Choose Photo</BodyText>
-                  </View>
-                  <View style={styles.overlayItem}>
-                    <AntDesign color={Colors.tertiary} name="delete" size={26} />
-                    <BodyText style={styles.overlayDelete}>Delete Photo</BodyText>
-                  </View>
+                  <TouchableOpacity style={styles.overlayItemWrapper} onPress={takePhotoHandler}>
+                    <View style={styles.overlayItem}>
+                      <MaterialIcons color="#6495ED" name="camera-alt" size={26} />
+                      <BodyText style={styles.overlayText}>Take Photo</BodyText>
+                    </View>
+                  </TouchableOpacity>
+                    <TouchableOpacity style={styles.overlayItemWrapper} onPress={choosePhotoHandler}>
+                    <View style={styles.overlayItem}>
+                      <Ionicons color="#6495ED" name="md-images" size={26} />
+                      <BodyText style={styles.overlayText}>Choose Photo</BodyText>
+                    </View>  
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.overlayItemWrapper} onPress={deletePhotoHandler}>
+                    <View style={styles.overlayItem}>
+                      <AntDesign color={Colors.tertiary} name="delete" size={26} />
+                      <BodyText style={styles.overlayDelete}>Delete Photo</BodyText>
+                    </View>
+                  </TouchableOpacity>
                   <View style={styles.cancel}>
                     <TouchableOpacity onPress={() => setOverlayMode(false)}>
                       <BodyText style={styles.cancelText}>Cancel</BodyText>
@@ -136,11 +164,13 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingBottom: 10,
   },
+  overlayItemWrapper: {
+    marginBottom: 10,
+  },
   overlayItem: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 5,
-    marginBottom: 10,
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 1 
   },
@@ -155,7 +185,7 @@ const styles = StyleSheet.create({
     color: Colors.tertiary
   },
   cancel: {
-    marginTop: 15,
+    marginTop: 10,
     padding: 5,
     alignSelf: 'center',
   },

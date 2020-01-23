@@ -29,7 +29,7 @@
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "com.stoyangarov.chat-app-course",
+      "package": "com.stoyangarov.chat_app_course",
       "versionCode": 1,
       "permissions": [
         "CAMERA",

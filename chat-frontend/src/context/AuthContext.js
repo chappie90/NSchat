@@ -4,7 +4,7 @@ import * as FileSystem from 'expo-file-system';
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
 import { navigate } from '../components/navigationRef';
-import { insertProfileImage, fetchProfileImage } from '../database/db';
+import { insertProfileImage, fetchProfileImage, deleteProfileImage } from '../database/db';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -115,8 +115,18 @@ const getImage = dispatch => async (user) => {
   }
 };
 
+const deleteImage = dispatch => async (user) => {
+  try {
+    await deleteProfileImage(user);
+    dispatch({ type: 'update_image', payload: null })
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup, signin, autoLogin, clearErrorMessage, signout, saveImage, getImage },
+  { signup, signin, autoLogin, clearErrorMessage, signout, saveImage, getImage, deleteImage },
   { token: null, username: null, errorMessage: '', profileImage: null }
 );

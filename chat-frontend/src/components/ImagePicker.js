@@ -12,11 +12,13 @@ import HeadingText from './HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const ImgPicker = props => {
-  const {state: { username, profileImage }, saveImage, getImage} = useContext(AuthContext);
+  const {state: { username, profileImage }, saveImage, getImage, deleteImage} = useContext(AuthContext);
   const [overlayMode, setOverlayMode] = useState(false);
 
   useEffect(() => {
-    getImage(username);
+    if (profileImage) {
+      getImage(username);
+    }
   }, []);
 
   const getCameraPermissions = async () => {
@@ -68,9 +70,12 @@ const ImgPicker = props => {
   };
 
   const deletePhotoHandler = async () => {
-    saveImage(username, null);
+    if (profileImage) {
+      deleteImage(username);
+    }
     setOverlayMode(false);
   };
+
 
   return (
     <View style={styles.imagePickerContainer}>

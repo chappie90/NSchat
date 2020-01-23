@@ -67,3 +67,20 @@ export const fetchProfileImage = (user) => {
 
   return promise;
 };
+
+export const deleteProfileImage = (user) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'DELETE FROM images WHERE user=?',
+        [user],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        }
+      );
+    });
+  });
+};

@@ -99,19 +99,25 @@ const ImgPicker = props => {
                 <View style={styles.overlayContainer}>
                   <TouchableOpacity style={styles.overlayItemWrapper} onPress={takePhotoHandler}>
                     <View style={styles.overlayItem}>
-                      <MaterialIcons color="#6495ED" name="camera-alt" size={26} />
+                      <View style={styles.iconWrapper}>
+                        <MaterialIcons color="white" name="camera-alt" size={24} />
+                      </View>
                       <BodyText style={styles.overlayText}>Take Photo</BodyText>
                     </View>
                   </TouchableOpacity>
                     <TouchableOpacity style={styles.overlayItemWrapper} onPress={choosePhotoHandler}>
                     <View style={styles.overlayItem}>
-                      <Ionicons color="#6495ED" name="md-images" size={26} />
+                      <View style={styles.iconWrapper}>
+                        <Ionicons color="white" name="md-images" size={24} />
+                      </View>
                       <BodyText style={styles.overlayText}>Choose Photo</BodyText>
                     </View>  
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.overlayItemWrapper} onPress={deletePhotoHandler}>
                     <View style={styles.overlayItem}>
-                      <AntDesign color={Colors.tertiary} name="delete" size={26} />
+                      <View style={styles.deleteIconWrapper}>
+                        <AntDesign color="white" name="delete" size={24} />
+                      </View>
                       <BodyText style={styles.overlayDelete}>Delete Photo</BodyText>
                     </View>
                   </TouchableOpacity>
@@ -182,12 +188,28 @@ const styles = StyleSheet.create({
   overlayText: {
     fontSize: 18,
     marginLeft: 8,
-    color: '#6495ED'
+    color: 'grey'
   },
   overlayDelete: {
     fontSize: 18,
     marginLeft: 8,
     color: Colors.tertiary
+  },
+  iconWrapper: {
+    backgroundColor: Colors.primary,
+    borderRadius: 100,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  deleteIconWrapper: {
+    backgroundColor: Colors.tertiary,
+    borderRadius: 100,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   cancel: {
     marginTop: 10,

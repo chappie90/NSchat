@@ -10,9 +10,11 @@ import PrimaryButton from './PrimaryButton';
 import BodyText from './BodyText';
 import HeadingText from './HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
+import { Context as ProfileContext } from '../context/ProfileContext';
 
 const ImgPicker = props => {
-  const {state: { username, profileImage }, saveImage, getImage, deleteImage} = useContext(AuthContext);
+  const { state: { username } } = useContext(AuthContext);
+  const { state: { profileImage }, saveImage, getImage, deleteImage } = useContext(ProfileContext);
   const [overlayMode, setOverlayMode] = useState(false);
 
   useEffect(() => {

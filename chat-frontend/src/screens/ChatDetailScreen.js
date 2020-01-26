@@ -55,7 +55,7 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     }
-    socket.current = io('http://192.168.0.93:3001', { query: `username=${username}` });
+    socket.current = io('http://192.168.1.174:3000', { query: `username=${username}` });
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });

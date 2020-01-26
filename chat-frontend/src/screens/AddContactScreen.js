@@ -40,9 +40,13 @@ const AddContactScreen = (props) => {
                 placeholder="Find people..."
                 placeholderTextColor="white"
                 value={search}
-                onChangeText={(search) => {
-                  setIsLoading(true);
+                onChangeText={(search) => {               
                   setSearch(search);
+                  if (!search) {
+                    clearSearchResults();
+                    // return // to not show spinner
+                  }
+                  setIsLoading(true);
                   searchContacts({ username, search });
                 }}
                 autoCapitalize="none"
@@ -59,7 +63,8 @@ const AddContactScreen = (props) => {
               (<View style={styles.spinnerContainer}>
                 <ActivityIndicator size="large" color={Colors.primary} />
               </View>) : 
-              searchResults.map((item, index) => (
+              searchResults.length > 0 ? 
+                searchResults.map((item, index) => (
                   <ListItem
                     key={index}
                     leftAvatar={{ source: require('../../assets/avatar2.png') }}
@@ -80,7 +85,8 @@ const AddContactScreen = (props) => {
                     }
                     bottomDivider
                   />
-              ))
+                )) :
+                <Text>No users found</Text>
             }
         </View>
       </TouchableWithoutFeedback>

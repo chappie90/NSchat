@@ -22,7 +22,7 @@ import chatApi from '../api/chat';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
-  const { state: { chat }, getMessages } = useContext(ChatContext);
+  const { state: { chat }, getChats, getMessages } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
@@ -36,6 +36,10 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     registerForPushNotificationsAsync();
+    socket.current = io('http://192.168.1.174:3000', { query: `username=${username}` });
+    socket.current.on('message', message => {
+      setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+    });
   }, []);
 
   useEffect(() => {
@@ -55,10 +59,6 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     }
-    socket.current = io('http://192.168.1.174:3000', { query: `username=${username}` });
-    socket.current.on('message', message => {
-      setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-    });
   }, [recipient]);
 
   const registerForPushNotificationsAsync = async () => {
@@ -129,17 +129,13 @@ const ChatDetailScreen = ({ navigation }) => {
     const { message: [{ text }] } = msgObj;
     socket.current.emit('message', msgObj);
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+    getChats({ username });
 
-    fetch(MESSAGE_ENPOINT, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: text,
-      }),
-    });
+    try {
+      const response = await chatApi.post('/message', { message: text });
+    } catch (err) {
+      console.log(err);
+    }
 
   };
 

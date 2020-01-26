@@ -22,8 +22,10 @@ const authReducer = (state, action) => {
 const signup = dispatch => async ({ username, password }) => {
   try {
     const response = await chatApi.post('/signup', { username, password });
-    await AsyncStorage.setItem('token', response.data.token);
-    await AsyncStorage.setItem('token', response.data.username);
+
+    const dataObj = { username: response.data.username, token: response.data.token };
+    await AsyncStorage.setItem('data', JSON.stringify(dataObj));
+
     dispatch({ type: 'signin', payload: response.data });
 
     navigate('MainFlow');

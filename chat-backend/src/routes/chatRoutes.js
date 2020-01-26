@@ -15,7 +15,7 @@ const router = express.Router();
 
 // const client = new speech.SpeechClient();
 
-router.post('/contacts/search', async (req, res) => {
+router.post('/contacts/search', checkAuth, async (req, res) => {
   const { search } = req.body;
 
   try {
@@ -31,7 +31,7 @@ router.post('/contacts/search', async (req, res) => {
   }
 });
 
-router.post('/contacts/add', async (req, res) => {
+router.post('/contacts/add', checkAuth, async (req, res) => {
   const { username, contact } = req.body;
 
   try {
@@ -57,7 +57,7 @@ router.post('/contacts/add', async (req, res) => {
   }
 });
 
-router.post('/contacts', async (req, res) => {
+router.post('/contacts', checkAuth, async (req, res) => {
   const { username } = req.body;
 
   try {
@@ -76,7 +76,7 @@ router.post('/contacts', async (req, res) => {
 
 });
 
-router.post('/chats', async (req, res) => {
+router.post('/chats', checkAuth, async (req, res) => {
   const { username } = req.body;
 
   try {
@@ -103,7 +103,7 @@ router.post('/chats', async (req, res) => {
 
 });
 
-router.post('/messages', async (req, res) => {
+router.post('/messages', checkAuth, async (req, res) => {
   const { username, recipient, page } = req.body;
 
   const skip = 4 * (page - 1);

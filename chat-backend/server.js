@@ -3,8 +3,8 @@ require('./src/models/Message');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const io = require('socket.io')();
-const { Expo } = require('expo-server-sdk') ;
+const http = require('http');
+const { Expo } = require('expo-server-sdk');
 
 const Message = mongoose.model('Message');
 const User = mongoose.model('User');
@@ -13,6 +13,10 @@ const chatRoutes = require('./src/routes/chatRoutes');
 const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
+
+const server = http.createServer(app);
+const io = require('socket.io').listen(server);
+
 const expo = new Expo();
 
 app.use(bodyParser.json());
@@ -162,10 +166,6 @@ io.on('connection', socket => {
   });
 });
 
-io.listen(3001, () => {
-  console.log('Socket listening on port 3001');
-});
-
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log('Listening on port 3000');
 });

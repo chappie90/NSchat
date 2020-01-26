@@ -12,6 +12,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
 import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
+// import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 
@@ -96,7 +97,7 @@ const ChatDetailScreen = ({ navigation }) => {
     console.log(notification);
 
     const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
-    setBadgeNumber(badgeNumber + 1);
+    // setBadgeNumber(badgeNumber + 1);
   }
 
   const sendPushNotificationToken = async (token, username) => {
@@ -196,7 +197,7 @@ const ChatDetailScreen = ({ navigation }) => {
           }}
           renderLoadEarlier={renderLoadEarlier}
           //isLoadingEarlier={true}
-          bottomOffset={46}
+          bottomOffset={ Platform.OS === 'android' ? 56 : 46 }
           scrollToBottom={true}
           scrollToBottomComponent={() => {
             return (
@@ -205,11 +206,10 @@ const ChatDetailScreen = ({ navigation }) => {
               </View>
             );
           }}/>
-         {/*  <KeyboardAvoidingView 
+         <KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
-            keyboardVerticalOffset={80} /> */}
-         {/* Solution for Android. Try without to see if necesssary 
-          {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
+            keyboardVerticalOffset={80} />
+         {/* {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
     </View>
   );
 };
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     marginRight: -8
   },
   input: {
-    paddingTop: 9
+    paddingTop: Platform.OS === 'ios' ? 9 : null,
   },
   loadButton: {
     backgroundColor: Colors.tertiary

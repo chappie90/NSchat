@@ -196,8 +196,9 @@ const ChatDetailScreen = ({ navigation }) => {
             loadMoreMessages();
           }}
           renderLoadEarlier={renderLoadEarlier}
+          keyboardShouldPersistTaps={'handled'}
           //isLoadingEarlier={true}
-          bottomOffset={ Platform.OS === 'android' ? 56 : 46 }
+          bottomOffset={ Platform.OS === 'android' ? null : 46 }
           scrollToBottom={true}
           scrollToBottomComponent={() => {
             return (

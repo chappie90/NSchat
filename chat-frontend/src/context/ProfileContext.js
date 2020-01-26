@@ -37,7 +37,7 @@ const getImage = dispatch => async (user) => {
   try {
     const dbResult = await fetchProfileImage(user);
 
-    const imagePayload = dbResult.rows._array.length !== 0 ? dbResult.rows._array[0].imageUri : null;
+    const imagePayload = dbResult.rows._array.length > 0 ? dbResult.rows._array[0].imageUri : null;
 
     dispatch({ type: 'update_image', payload: imagePayload });
   } catch (err) {

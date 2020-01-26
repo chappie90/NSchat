@@ -8,15 +8,19 @@ import {
   SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
-  KeyboardAvoidingView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+  KeyboardAvoidingView
+} from 'react-native';
+import { Overlay } from 'react-native-elements';
 import io from 'socket.io-client';
 import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
+import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 
 import Colors from '../constants/colors';
+import BodyText from '../components/BodyText';
+import HeadingText from '../components/HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import chatApi from '../api/chat';
@@ -29,6 +33,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(null);
   const [notification, setNotification] = useState(null);
   const [badgeNumber, setBadgeNumber] = useState(null);
+  const [overlayMode, setOverlayMode] = useState(false);
   const socket = useRef(null);
   let page;
 
@@ -143,6 +148,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const renderBubble = (bubbleProps) => {
     return (
       <Bubble { ...bubbleProps }
+        onLongPress={() => setOverlayMode(true)}
         wrapperStyle={{ left: styles.left, right: styles.right }}
         textStyle={{ left: styles.text, right: styles.text }} />
     );
@@ -211,6 +217,35 @@ const ChatDetailScreen = ({ navigation }) => {
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />
          {/* {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
+         <Overlay
+              isVisible={overlayMode}
+              width="auto"
+              height="auto"
+              onBackdropPress={() => setOverlayMode(false)}>
+                <View style={styles.overlayContainer}>
+                  <TouchableOpacity style={styles.overlayItemWrapper} onPress={() => {}}>
+                    <View style={styles.overlayItem}>
+                      <View style={styles.iconWrapper}>
+                        <MaterialIcons color="white" name="content-copy" size={24} />
+                      </View>
+                      <BodyText style={styles.overlayText}>Copy message</BodyText>
+                    </View>
+                  </TouchableOpacity>
+                    <TouchableOpacity style={styles.overlayItemWrapper} onPress={() => {}}>
+                    <View style={styles.overlayItem}>
+                      <View style={styles.deleteIconWrapper}>
+                        <AntDesign color="white" name="delete" size={24} />
+                      </View>
+                      <BodyText style={styles.overlayDelete}>Delete Message</BodyText>
+                    </View>  
+                  </TouchableOpacity>
+                  <View style={styles.cancel}>
+                    <TouchableOpacity onPress={() => setOverlayMode(false)}>
+                      <BodyText style={styles.cancelText}>Cancel</BodyText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+            </Overlay>
     </View>
   );
 };
@@ -254,6 +289,55 @@ const styles = StyleSheet.create({
   },
   loadButtonText: {
     fontFamily: 'open-sans'
+  },
+  overlayContainer: {
+    padding: 15,
+    paddingBottom: 10,
+  },
+  overlayItemWrapper: {
+    marginBottom: 10,
+  },
+  overlayItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 5,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1 
+  },
+  overlayText: {
+    fontSize: 18,
+    marginLeft: 8,
+    color: 'grey'
+  },
+  overlayDelete: {
+    fontSize: 18,
+    marginLeft: 8,
+    color: Colors.tertiary
+  },
+  iconWrapper: {
+    backgroundColor: Colors.primary,
+    borderRadius: 100,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  deleteIconWrapper: {
+    backgroundColor: Colors.tertiary,
+    borderRadius: 100,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  cancel: {
+    marginTop: 10,
+    padding: 5,
+    alignSelf: 'center',
+  },
+  cancelText: {
+    color: 'grey',
+    fontSize: 18
   }
 });
 

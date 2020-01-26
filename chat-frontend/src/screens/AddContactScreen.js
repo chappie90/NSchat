@@ -86,7 +86,7 @@ const AddContactScreen = (props) => {
                     bottomDivider
                   />
                 )) :
-                <Text>No users found</Text>
+                <Text style={styles.noResults}>No users found</Text>
             }
         </View>
       </TouchableWithoutFeedback>
@@ -152,6 +152,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 3
+  },
+  noResults: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 20
   }
 });
 

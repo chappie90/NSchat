@@ -16,7 +16,10 @@ const router = express.Router();
 // const client = new speech.SpeechClient();
 
 router.post('/contacts/search', checkAuth, async (req, res) => {
-  const { username, search } = req.body;
+  const { username } = req.body;
+
+  let { search } = req.body;
+  search = search.replace(/[-[\]{}()*+?.,\\/^$|#\s]/g, "\\$&");
 
   try {
     if (search) {
@@ -24,9 +27,11 @@ router.post('/contacts/search', checkAuth, async (req, res) => {
       if (contacts.length == 0) {
         return res.send({ contacts: [] });
       }
-      res.send({ contacts });
-    }  
+      return res.send({ contacts });
+    }
+    res.send({ contacts: [] });  
   } catch (err) {
+    console.log(err);
     return res.status(422).send(err.message);
   }
 });

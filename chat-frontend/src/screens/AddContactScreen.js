@@ -43,7 +43,7 @@ const AddContactScreen = (props) => {
                 onChangeText={(search) => {
                   setIsLoading(true);
                   setSearch(search);
-                  searchContacts({ search });
+                  searchContacts({ username, search });
                 }}
                 autoCapitalize="none"
                 autoCorrect={false} />

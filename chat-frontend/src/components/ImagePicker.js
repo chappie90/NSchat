@@ -18,9 +18,7 @@ const ImgPicker = props => {
   const [overlayMode, setOverlayMode] = useState(false);
 
   useEffect(() => {
-    if (profileImage) {
-      getImage(username);
-    }
+    getImage(username);
   }, []);
 
   const getCameraPermissions = async () => {

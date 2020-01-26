@@ -37,10 +37,11 @@ const getImage = dispatch => async (user) => {
   try {
     const dbResult = await fetchProfileImage(user);
 
-    dispatch({ type: 'update_image', payload: dbResult.rows._array[0].imageUri });
+    const imagePayload = dbResult.rows._array.length !== 0 ? dbResult.rows._array[0].imageUri : null;
+
+    dispatch({ type: 'update_image', payload: imagePayload });
   } catch (err) {
     console.log(err);
-    throw err;
   }
 };
 
@@ -50,7 +51,7 @@ const deleteImage = dispatch => async (user) => {
     dispatch({ type: 'update_image', payload: null })
   } catch (err) {
     console.log(err);
-    throw err;
+    // throw err;
   }
 };
 

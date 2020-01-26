@@ -29,6 +29,46 @@ const AddContactScreen = (props) => {
     setIsLoading(false);
   }, [searchResults]);
 
+
+  const showActivityIndicator = () => {
+    return (
+      <View style={styles.spinnerContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  };
+
+  const showResultsList = () => {
+    return searchResults.map((item, index) => (
+      <ListItem
+        key={index}
+        leftAvatar={{ source: require('../../assets/avatar2.png') }}
+        title={
+          <View style={styles.itemContainer}>
+            <Text style={styles.name}>{item.username}</Text>
+            {!contacts.includes(item.username) && (
+              <SecondaryButton onPress={() => {
+                addContact({ username: username, contact: item.username });
+                props.closeModal();
+                setSearch('');
+                clearSearchResults();
+              }}>
+                Add
+              </SecondaryButton>
+            )}
+          </View>
+        }
+        bottomDivider
+      />
+    ))
+  };
+
+  const showNoResults = () => {
+    if (search) {
+      return <Text style={styles.noResults}>No users found</Text>;
+    }
+  };
+
   return (
     <Modal visible={props.visible} animationType="slide">
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -44,7 +84,6 @@ const AddContactScreen = (props) => {
                   setSearch(search);
                   if (!search) {
                     clearSearchResults();
-                    // return // to not show spinner
                   }
                   setIsLoading(true);
                   searchContacts({ username, search });
@@ -60,33 +99,10 @@ const AddContactScreen = (props) => {
               </TouchableOpacity>
             </View>
             {isLoading ? 
-              (<View style={styles.spinnerContainer}>
-                <ActivityIndicator size="large" color={Colors.primary} />
-              </View>) : 
+              showActivityIndicator() : 
               searchResults.length > 0 ? 
-                searchResults.map((item, index) => (
-                  <ListItem
-                    key={index}
-                    leftAvatar={{ source: require('../../assets/avatar2.png') }}
-                    title={
-                      <View style={styles.itemContainer}>
-                        <Text style={styles.name}>{item.username}</Text>
-                        {!contacts.includes(item.username) && (
-                          <SecondaryButton onPress={() => {
-                            addContact({ username: username, contact: item.username });
-                            props.closeModal();
-                            setSearch('');
-                            clearSearchResults();
-                          }}>
-                            Add
-                          </SecondaryButton>
-                        )}
-                      </View>
-                    }
-                    bottomDivider
-                  />
-                )) :
-                <Text style={styles.noResults}>No users found</Text>
+                showResultsList() :
+                showNoResults()
             }
         </View>
       </TouchableWithoutFeedback>

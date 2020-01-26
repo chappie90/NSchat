@@ -20,7 +20,7 @@ import { Context as ChatContext } from '../context/ChatContext';
 import SecondaryButton from '../components/SecondaryButton';
 
 const AddContactScreen = (props) => {
-  const { state: { searchResults }, searchContacts, clearSearchResults, addContact } = useContext(ChatContext);
+  const { state: { searchResults, contacts }, searchContacts, clearSearchResults, addContact } = useContext(ChatContext);
   const { state: { username } } = useContext(AuthContext);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -66,14 +66,16 @@ const AddContactScreen = (props) => {
                     title={
                       <View style={styles.itemContainer}>
                         <Text style={styles.name}>{item.username}</Text>
-                        <SecondaryButton onPress={() => {
-                          addContact({ username: username, contact: item.username });
-                          props.closeModal();
-                          setSearch('');
-                          clearSearchResults();
-                        }}>
-                          Add
-                        </SecondaryButton>
+                        {!contacts.includes(item.username) && (
+                          <SecondaryButton onPress={() => {
+                            addContact({ username: username, contact: item.username });
+                            props.closeModal();
+                            setSearch('');
+                            clearSearchResults();
+                          }}>
+                            Add
+                          </SecondaryButton>
+                        )}
                       </View>
                     }
                     bottomDivider

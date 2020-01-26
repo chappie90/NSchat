@@ -17,12 +17,22 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
   const [password, setPassword] = useState('');
   const [usernameIsValid, setUsernameIsValid] = useState(null);
   const [passwordIsValid, setPasswordIsValid] = useState(null);
+  const [usernameError, setUsernameError] = useState('');
 
   let secondTextInput;
 
   const usernameChanged = text => {
-    text.trim().length === 0 ? setUsernameIsValid(false) : setUsernameIsValid(true);
-  
+    if (text.trim().length === 0) {
+      setUsernameIsValid(false);
+      setUsernameError('Username can\'t be an empty value');
+    } else if (/[^a-zA-Z0-9 ]/.test(text)) {
+      setUsernameIsValid(false); 
+      setUsernameError('Username must contain only letters, number and spaces');
+    } else {
+      setUsernameIsValid(true);
+      setUsernameError('');
+    }
+
     setUsername(text); 
   };
 
@@ -48,7 +58,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
       {
         usernameIsValid !== null 
         && !usernameIsValid 
-        && <BodyText style={styles.inputError}>Username can't be an empty value</BodyText>
+        && <BodyText style={styles.inputError}>{usernameError}</BodyText>
       }
       <TextInput
         style={styles.input} 
@@ -65,9 +75,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         && <BodyText style={styles.inputError}>Password must be at least 8 characters long</BodyText>
       }
       <PrimaryButton style={styles.button} onPress={() => {
-        if (usernameIsValid === null) {
-          setUsernameIsValid(false);
-        }
+        usernameChanged(username);
         if (passwordIsValid === null) {
           setPasswordIsValid(false);
         }

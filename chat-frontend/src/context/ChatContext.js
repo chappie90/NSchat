@@ -1,4 +1,5 @@
 import { AsyncStorage } from 'react-native';
+import axios from 'axios';
 
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
@@ -18,6 +19,8 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'get_chats':
       return { ...state, previousChats: action.payload, chatsIsLoading: false };
+    case 'get_active_status':
+      return { ...state, onlineContacts: action.payload };
     default:
       return state;
   }
@@ -61,9 +64,20 @@ const getContacts = dispatch => async ({ username }) => {
   }
 };
 
+const getActiveStatus = dispatch => (users) => {
+  if (Array.isArray(users)) {
+    dispatch({ type: 'get_active_status', payload: users });
+  } else {
+
+  }
+
+};
+
 const getChats = dispatch => async ({ username }) => {
+  const source = axios.CancelToken.source();
+
   try {
-    const response = await chatApi.post('/chats', { username });
+    const response = await chatApi.post('/chats', { username }, { cancelToken: source.token });
 
     const chats = response.data.chats.sort(function(a, b) {
       return new Date(b.date) - new Date(a.date)
@@ -72,6 +86,11 @@ const getChats = dispatch => async ({ username }) => {
     dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);
+    source.cancel();
+    if (axios.isCancel(err)) {
+      console.log(err);
+      console.log('request cancelled')
+    }
   }
 };
 
@@ -123,13 +142,15 @@ export const { Context, Provider } = createDataContext(
     addContact, 
     getContacts, 
     getChats, 
-    getMessages 
+    getMessages,
+    getActiveStatus 
   },
   { 
     searchResults: [], 
     contacts: [], 
     previousChats: [], 
     chat: [], 
+    onlineContacts: [],
     contactsIsLoading: true,
     chatsIsLoading: true 
   }

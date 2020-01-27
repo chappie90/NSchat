@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
-import { ListItem } from 'react-native-elements';
+import { ListItem, Badge } from 'react-native-elements';
 import Moment from 'moment';
 
 import Colors from '../constants/colors';
@@ -28,8 +28,10 @@ const ChatsListScreen = ({ navigation }) => {
   useEffect(() => {
     getChats({ username });
     socket.current = connectToSocket(username);   
-    socket.current.on('online', onlineContacts => {
-      getActiveStatus(onlineContacts);
+    socket.current.on('online', users => {
+      const onlineUsers = JSON.parse(users);
+      getActiveStatus(onlineUsers);
+      // console.log(`${users} component`);
     });
   }, []);
 
@@ -62,15 +64,17 @@ const ChatsListScreen = ({ navigation }) => {
                       <Text style={styles.name}>{item.contact}</Text><Text>{Moment(item.date).format('d MMM HH:mm')}</Text>
                     </View>
                   }
-                  badge={{ 
-                    badgeStyle: styles.badge, 
-                    containerStyle: styles.badgeContainer,
-                    options: { hidden: true }
-                  }}
                   subtitle={item.text}
                   bottomDivider
                   chevron
                 />
+                {onlineContacts.includes(item.contact) && (
+                  <Badge
+                    badgeStyle={styles.badge}
+                    status="error"
+                    containerStyle={styles.badgeContainer}
+                  />
+                )}  
               </TouchableOpacity>
             );
           }} />

@@ -47,17 +47,19 @@ module.exports = function(io) {
     }
     // console.log(`${onlineContacts} after`);
     // Get the clients in a room
-    // io.in(username).clients((err , clients) => {
-    //   console.log(clients);
-    // });
+    io.in(username).clients((err , clients) => {
+      console.log(clients);
+    });
     // need to send yourself array of online contacts and
     // send all clients in the room your name so they can add update their state and add you in their array
     // send to everyone in the room including the sender
     //io.sockets.in(username).emit('online', onlineContacts);
     // send to everyone in the room except the sender
-    socket.broadcast.to(username).emit('online', username);
+    // socket.broadcast.to(username).emit('online', username);
     // send to sender only
-    socket.emit('online', onlineContacts);
+    // socket.emit('online', onlineContacts);
+    const clientsStr = JSON.stringify(onlineContacts);
+    socket.emit('online', clientsStr);
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Something went wrong with your request' });

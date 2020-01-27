@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { 
   View, 
   ScrollView,
@@ -18,13 +18,19 @@ import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import HeadingText from '../components/HeadingText';
+import { connectToSocket } from '../socket/chat';
 
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
-  const { state: { previousChats, chatsIsLoading }, getChats } = useContext(ChatContext);
+  const { state: { previousChats, chatsIsLoading, onlineContacts }, getChats, getActiveStatus } = useContext(ChatContext);
+  const socket = useRef(null);
 
   useEffect(() => {
     getChats({ username });
+    socket.current = connectToSocket(username);   
+    socket.current.on('online', onlineContacts => {
+      getActiveStatus(onlineContacts);
+    });
   }, []);
 
   return (
@@ -50,12 +56,17 @@ const ChatsListScreen = ({ navigation }) => {
               <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item.contact })}>
                 <ListItem
                   key={index}
-                  leftAvatar={{ source: require('../../assets/avatar2.png') }}
+                  leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
                   title={
                     <View style={styles.itemContainer}>
                       <Text style={styles.name}>{item.contact}</Text><Text>{Moment(item.date).format('d MMM HH:mm')}</Text>
                     </View>
                   }
+                  badge={{ 
+                    badgeStyle: styles.badge, 
+                    containerStyle: styles.badgeContainer,
+                    options: { hidden: true }
+                  }}
                   subtitle={item.text}
                   bottomDivider
                   chevron
@@ -97,6 +108,19 @@ const styles = StyleSheet.create({
   },
   spinnerContainer: {
     padding: 40
+  },
+  badgeContainer: {
+    position: 'absolute', 
+    top: 43, 
+    left: 43
+  },
+  badge: {
+    backgroundColor: '#32CD32', 
+    width: 15, 
+    height: 15, 
+    borderRadius: 10, 
+    borderWidth: 2, 
+    borderColor: 'white'
   }
 });
 

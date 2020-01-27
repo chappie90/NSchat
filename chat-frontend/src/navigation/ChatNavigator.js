@@ -50,8 +50,6 @@ const ChatNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
   LoginFlow: createStackNavigator({
     Starter: StarterScreen,
-    // Signup: SignupScreen,
-    // Signin: SigninScreen
   }),
   MainFlow: createBottomTabNavigator({
     ChatsFlow,

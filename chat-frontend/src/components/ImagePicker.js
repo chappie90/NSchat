@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, TouchableWithoutFeedback, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import { Image, Tooltip, Overlay } from 'react-native-elements';
+import { Image, Overlay } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
@@ -69,7 +69,7 @@ const ImgPicker = props => {
     saveImage(username, libraryImage.uri);
   };
 
-  const deletePhotoHandler = async () => {
+  const deletePhotoHandler = () => {
     if (profileImage) {
       deleteImage(username);
     }

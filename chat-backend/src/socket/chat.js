@@ -1,16 +1,67 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Message = mongoose.model('Message');
+
 const users = {};
+let onlineContacts = [];
 
 module.exports = function(io) {
 
-  io.on('connection', socket => {
+  io.on('connection', async socket => {
   console.log('A user connected');
 
-  const user = socket.handshake.query.username;
+  const username = socket.handshake.query.username;
   const socketId = socket.id;
-  users[user] = socketId;
+
+  // To have a client join a room you need to get the clients obejct (socket)
+  // Could have everyone join an 'All' room instead of using users object?
+  users[username] = socket;
+  // every socket is automatically connected to their own room with the id socket.id 
+  // but we are creating our own to have more control
+  socket.join(username);
+
+  // show list of all rooms
+  // console.log(io.sockets.adapter.rooms);
+
+  try {
+    const user = await User.findOne({ username }, { 'contacts.username': 1, _id: 0 });
+    if (!user) {
+      return res.status(422).send({ error: 'Something went wrong with your request' });
+    }
+    const contacts = user.contacts.map(c => c.username);
+    // console.log(username);
+    // console.log(socketId);
+    // console.log(contacts);
+
+    // console.log(`${onlineContacts} before`);
+
+    for (const c of contacts) {
+      for (let [key, value] of Object.entries(users)) {
+        if (c === key) {
+          // console.log(key);
+          // console.log(value.id);
+          if (!onlineContacts.includes(key)) {
+            onlineContacts.push(key);
+          }
+          users[key].join(username); 
+        } else {
+          onlineContacts = onlineContacts.filter(item => item !== key);
+        }
+      }
+    }
+    // console.log(`${onlineContacts} after`);
+    // Get the clients in a room
+    // io.in(username).clients((err , clients) => {
+    //   console.log(clients);
+    // });
+    // need to send yourself array of online contacts and
+    // send all clients in the room your name so they can add update their state and add you in their array
+
+    io.sockets.in(username).emit('online', onlineContacts);
+  } catch (err) {
+    console.log(err);
+    return res.status(422).send({ error: 'Something went wrong with your request' });
+  }
 
   socket.on('message', async msgObj => {
     const { from, to, message: [{ text, createdAt }] } = msgObj;
@@ -75,7 +126,7 @@ module.exports = function(io) {
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
-    // delete users[socket.id];
+    delete users[username];
   });
 });
 }

@@ -55,7 +55,7 @@ module.exports = function(io) {
     // send to everyone in the room including the sender
     //io.sockets.in(username).emit('online', onlineContacts);
     // send to everyone in the room except the sender
-    // socket.broadcast.to(username).emit('online', username);
+    socket.broadcast.to(username).emit('online', username);
     // send to sender only
     // socket.emit('online', onlineContacts);
     const clientsStr = JSON.stringify(onlineContacts);

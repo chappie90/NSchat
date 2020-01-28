@@ -30,8 +30,12 @@ const ChatsListScreen = ({ navigation }) => {
     socket.current = connectToSocket(username);   
     socket.current.on('online', users => {
       const onlineUsers = JSON.parse(users);
-      getActiveStatus(onlineUsers);
-      // console.log(`${users} component`);
+      if (Array.isArray(onlineUsers)) {
+        getActiveStatus(onlineUsers);
+      } else {
+        onlineContacts.push(users);
+        getActiveStatus(onlineContacts);
+      }
     });
   }, []);
 

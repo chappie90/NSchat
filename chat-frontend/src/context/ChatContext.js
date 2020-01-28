@@ -65,12 +65,7 @@ const getContacts = dispatch => async ({ username }) => {
 };
 
 const getActiveStatus = dispatch => (users) => {
-  if (Array.isArray(users)) {
-    dispatch({ type: 'get_active_status', payload: users });
-  } else {
-
-  }
-
+  dispatch({ type: 'get_active_status', payload: users });
 };
 
 const getChats = dispatch => async ({ username }) => {

@@ -33,9 +33,14 @@ const ChatsListScreen = ({ navigation }) => {
       if (Array.isArray(onlineUsers)) {
         getActiveStatus(onlineUsers);
       } else {
+        // refactor to get new array - concat?
         onlineContacts.push(users);
         getActiveStatus(onlineContacts);
       }
+    });
+    socket.current.on('offline', user => {
+      const updatedContacts = onlineContacts.filter(item => item !== user);
+      getActiveStatus(updatedContacts);
     });
   }, []);
 

@@ -7,6 +7,7 @@ const messageSchema = new mongoose.Schema({
   message: {
     text: String,
     createdAt: Date
+    // createdAt: { type: Date, default: Date.now() }
   }
 });
 

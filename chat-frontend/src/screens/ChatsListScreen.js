@@ -70,12 +70,12 @@ const ChatsListScreen = ({ navigation }) => {
                   leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
                   title={
                     <View style={styles.itemContainer}>
-                      <Text style={styles.name}>{item.contact}</Text><Text>{Moment(item.date).format('d MMM HH:mm')}</Text>
+                      <Text style={styles.name}>{item.contact}</Text><Text style={styles.date}>{Moment(item.date).format('d MMM HH:mm')}</Text>
                     </View>
                   }
                   subtitle={item.text}
+                  subtitleStyle={{ color: 'grey' }}
                   bottomDivider
-                  chevron
                 />
                 {onlineContacts.includes(item.contact) && (
                   <Badge
@@ -110,6 +110,9 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: 'bold'
+  },
+  date: {
+    color: 'grey'
   },
   itemContainer: {
     flexDirection: 'row',

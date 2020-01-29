@@ -11,7 +11,7 @@ import {
   RefreshControl,
   ActivityIndicator 
 } from 'react-native';
-import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import { MaterialIcons, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ListItem } from 'react-native-elements';
 
 import AddContactScreen from './AddContactScreen';
@@ -79,8 +79,13 @@ const ContactsListScreen = ({ navigation }) => {
                       <Text style={styles.name}>{item}</Text>
                     </View>
                   }
+                  // subtitle={
+                  //   <View style={styles.iconWrapper}>
+                  //     <MaterialCommunityIcons name="hand-peace" size={28} color={Colors.tertiary} />
+                  //   </View>
+                  // }
+                  chevron={{ color: Colors.secondary }}
                   bottomDivider
-                  chevron
                 />
               </TouchableOpacity>
             );
@@ -154,6 +159,9 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 20
+  },
+  iconWrapper: {
+    alignSelf: 'flex-end'
   }
 });
 

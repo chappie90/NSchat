@@ -58,6 +58,7 @@ const AddContactScreen = (props) => {
             )}
           </View>
         }
+        checkmark={{ value: contacts.includes(item.username), color: Colors.secondary, size: 26 }}
         bottomDivider
       />
     ))

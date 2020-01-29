@@ -11,7 +11,6 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 import { Overlay } from 'react-native-elements';
-import io from 'socket.io-client';
 import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
@@ -24,6 +23,7 @@ import HeadingText from '../components/HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import chatApi from '../api/chat';
+import { connectToSocket } from '../socket/chat';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -32,7 +32,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [badgeNumber, setBadgeNumber] = useState(null);
+  // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
   const socket = useRef(null);
   let page;
@@ -42,18 +42,18 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     registerForPushNotificationsAsync();
-    socket.current = io('http://192.168.1.174:3000', { query: `username=${username}` });
+    socket.current = connectToSocket(username);
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
   }, []);
 
-  useEffect(() => {
-    async () => {
-      const resetBadgeNumber = await Notifications.setBadgeNumberAsync(0);
-    };
-    setBadgeNumber(0);
-  }, [badgeNumber]);
+  // useEffect(() => {
+  //   async () => {
+  //     const resetBadgeNumber = await Notifications.setBadgeNumberAsync(0);
+  //   };
+  //   setBadgeNumber(0);
+  // }, [badgeNumber]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -65,6 +65,7 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     }
+    console.log('recipient useeffect ran');
   }, [recipient]);
 
   const registerForPushNotificationsAsync = async () => {
@@ -73,7 +74,6 @@ const ChatDetailScreen = ({ navigation }) => {
       return;
     }
     let token = await Notifications.getExpoPushTokenAsync();
-
 
     // return fetch(PUSH_REGISTRATION_ENDPOINT, {
     //   method: 'POST',
@@ -101,7 +101,7 @@ const ChatDetailScreen = ({ navigation }) => {
     setNotification({ notification });
     console.log(notification);
 
-    const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
+    // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
     // setBadgeNumber(badgeNumber + 1);
   }
 
@@ -145,10 +145,22 @@ const ChatDetailScreen = ({ navigation }) => {
 
   };
 
+  const deleteMessage = async ({ username, recipient, message }) => {
+    console.log(username, recipient, message);
+  };
+
+  const deleteMessageHandler = () => {
+    deleteMessage({ username, recipient, message });
+    setOverlayMode(false);
+  };
+
   const renderBubble = (bubbleProps) => {
     return (
       <Bubble { ...bubbleProps }
-        onLongPress={() => setOverlayMode(true)}
+        onLongPress={(bubbleProps) => {
+          console.log(bubbleProps);
+          setOverlayMode(true)
+        }}
         wrapperStyle={{ left: styles.left, right: styles.right }}
         textStyle={{ left: styles.text, right: styles.text }} />
     );
@@ -162,7 +174,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderLoadEarlier = (props) => {
-    if (chat.length < 4 || !chat) {
+    if (!chat || chat.length < 50) {
       return;
     }
 
@@ -231,7 +243,7 @@ const ChatDetailScreen = ({ navigation }) => {
                       <BodyText style={styles.overlayText}>Copy message</BodyText>
                     </View>
                   </TouchableOpacity>
-                    <TouchableOpacity style={styles.overlayItemWrapper} onPress={() => {}}>
+                    <TouchableOpacity style={styles.overlayItemWrapper} onPress={deleteMessageHandler}>
                     <View style={styles.overlayItem}>
                       <View style={styles.deleteIconWrapper}>
                         <AntDesign color="white" name="delete" size={24} />
@@ -288,7 +300,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.tertiary
   },
   loadButtonText: {
-    fontFamily: 'open-sans'
+    fontFamily: 'open-sans',
+    fontSize: 14
   },
   overlayContainer: {
     padding: 15,

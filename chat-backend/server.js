@@ -9,6 +9,7 @@ const { Expo } = require('expo-server-sdk');
 const User = mongoose.model('User');
 const authRoutes = require('./src/routes/authRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
+const contactsRoutes = require('./src/routes/contactsRoutes');
 const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
@@ -22,6 +23,7 @@ const expo = new Expo();
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(chatRoutes);
+app.use(contactsRoutes);
 
 const mongoUri = 'mongodb+srv://stoyangarov:Daspak12@emaily-w8ewa.mongodb.net/ns-chat?retryWrites=true&w=majority';
 mongoose.connect(mongoUri, {

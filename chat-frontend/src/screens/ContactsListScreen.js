@@ -17,12 +17,12 @@ import { ListItem } from 'react-native-elements';
 import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
-import { Context as ChatContext } from '../context/ChatContext';
+import { Context as ContactsContext } from '../context/ContactsContext';
 import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 
 const ContactsListScreen = ({ navigation }) => {
-  const { state: { contacts, contactsIsLoading }, getContacts } = useContext(ChatContext);
+  const { state: { contacts, contactsIsLoading }, getContacts } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
 

@@ -6,6 +6,7 @@ import ChatNavigator from './src/navigation/ChatNavigator';
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as ChatProvider } from './src/context/ChatContext';
 import { Provider as ProfileProvider } from './src/context/ProfileContext'; 
+import { Provider as ContactsProvider } from './src/context/ContactsContext';
 import { setNavigator } from './src/components/navigationRef';
 import { init } from './src/database/db';
 
@@ -36,12 +37,14 @@ export default () => {
   }
 
   return (
-    <ProfileProvider>
-      <ChatProvider>
-        <AuthProvider>
-          <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
-        </AuthProvider>
-      </ChatProvider>
-    </ProfileProvider>
+    <ContactsProvider>
+      <ProfileProvider>
+        <ChatProvider>
+          <AuthProvider>
+            <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
+          </AuthProvider>
+        </ChatProvider>
+      </ProfileProvider>
+    </ContactsProvider>
   );
 };

@@ -16,11 +16,11 @@ import { ListItem } from 'react-native-elements';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
-import { Context as ChatContext } from '../context/ChatContext';
+import { Context as ContactsContext } from '../context/ContactsContext';
 import SecondaryButton from '../components/SecondaryButton';
 
 const AddContactScreen = (props) => {
-  const { state: { searchResults, contacts }, searchContacts, clearSearchResults, addContact } = useContext(ChatContext);
+  const { state: { searchResults, contacts }, searchContacts, clearSearchResults, addContact } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);

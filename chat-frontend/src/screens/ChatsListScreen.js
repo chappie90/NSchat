@@ -12,7 +12,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
 import { ListItem, Badge } from 'react-native-elements';
-import Moment from 'moment';
+import { formatDate } from '../helpers/formatDate';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -70,7 +70,7 @@ const ChatsListScreen = ({ navigation }) => {
                   leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
                   title={
                     <View style={styles.itemContainer}>
-                      <Text style={styles.name}>{item.contact}</Text><Text style={styles.date}>{Moment(item.date).format('d MMM HH:mm')}</Text>
+                      <Text style={styles.name}>{item.contact}</Text><Text style={styles.date}>{formatDate(item.date)}</Text>
                     </View>
                   }
                   subtitle={item.text}

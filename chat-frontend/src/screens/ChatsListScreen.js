@@ -48,56 +48,71 @@ const ChatsListScreen = ({ navigation }) => {
     });
   }, []);
 
+  const renderActivityIndicator = () => {
+    return (
+      <View style={styles.spinnerContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+       </View>
+    );
+  };
+
+  const renderChatsList = () => {
+    return (
+      <FlatList
+        refreshControl={
+          <RefreshControl
+            onRefresh={() => getChats({ username })}
+            refreshing={chatsIsLoading}
+            tintColor={Colors.primary} />
+        }
+        data={previousChats}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => {
+          return (
+            <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item.contact })}>
+              <ListItem
+                key={index}
+                leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
+                title={
+                  <View style={styles.itemContainer}>
+                    <HeadingText style={styles.name}>{item.contact}</HeadingText><BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
+                  </View>
+                }
+                subtitle={item.text}
+                subtitleStyle={styles.subtitle}
+                bottomDivider
+              />
+              {onlineContacts.includes(item.contact) && (
+                <Badge
+                  badgeStyle={styles.badge}
+                  status="error"
+                  containerStyle={styles.badgeContainer}
+                />
+              )}  
+            </TouchableOpacity>
+          );
+      }} />
+    );
+  };
+
+  const renderStarterView = () => {
+    return (
+      <View style={styles.imageContainer}>
+        <Image style={styles.image} source={require('../../assets/talk.png')} />
+        <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <HeadingText style={styles.header}>My Chats</HeadingText>   
       <View style={styles.divider} />
-      {chatsIsLoading ? (
-        <View style={styles.spinnerContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
-      ) :
-        previousChats.length > 0 ? (
-          <FlatList
-            refreshControl={
-              <RefreshControl
-                onRefresh={() => getChats({ username })}
-                refreshing={chatsIsLoading}
-                tintColor={Colors.primary} />
-            }
-            data={previousChats}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => {
-              return (
-                <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item.contact })}>
-                  <ListItem
-                    key={index}
-                    leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
-                    title={
-                      <View style={styles.itemContainer}>
-                        <HeadingText style={styles.name}>{item.contact}</HeadingText><BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
-                      </View>
-                    }
-                    subtitle={item.text}
-                    subtitleStyle={styles.subtitle}
-                    bottomDivider
-                  />
-                  {onlineContacts.includes(item.contact) && (
-                    <Badge
-                      badgeStyle={styles.badge}
-                      status="error"
-                      containerStyle={styles.badgeContainer}
-                    />
-                  )}  
-                </TouchableOpacity>
-              );
-            }} />
-          ) : (
-          <View style={styles.imageContainer}>
-            <Image style={styles.image} source={require('../../assets/talk.png')} />
-            <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-          </View>
-          )
+      {chatsIsLoading ?
+        renderActivityIndicator() :
+        previousChats.length > 0 ?
+          renderChatsList() :
+          renderStarterView()
       } 
     </View>
   );

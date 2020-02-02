@@ -23,7 +23,11 @@ import { connectToSocket } from '../socket/chat';
 
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
-  const { state: { previousChats, chatsIsLoading, onlineContacts }, getChats, getActiveStatus } = useContext(ChatContext);
+  const { 
+    state: { previousChats, chatsIsLoading, onlineContacts },
+    getChats, 
+    getActiveStatus,
+    markMessagesAsRead } = useContext(ChatContext);
   const socket = useRef(null);
 
   useEffect(() => {
@@ -69,7 +73,10 @@ const ChatsListScreen = ({ navigation }) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {
           return (
-            <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item.contact })}>
+            <TouchableOpacity onPress={() => {
+              markMessagesAsRead({ username, recipient: item.contact });
+              navigation.navigate('ChatDetail', { username: item.contact });
+            }}>
               <ListItem
                 key={index}
                 leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}

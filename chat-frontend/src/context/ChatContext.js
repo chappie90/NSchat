@@ -12,6 +12,11 @@ const chatReducer = (state, action) => {
       return { ...state, previousChats: action.payload, chatsIsLoading: false };
     case 'get_active_status':
       return { ...state, onlineContacts: action.payload };
+    case 'mark_messages_read':
+      const modifiedChats = state.previousChats.map(item => {
+        return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
+      });
+      return { ...state, previousChats: modifiedChats };
     default:
       return state;
   }
@@ -82,12 +87,28 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
   }
 };
 
+const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
+
+  try {
+    const response = await chatApi.patch('/messages/clear', { username, recipient });
+
+    if (!response.data) {
+      return;
+    }
+
+    dispatch({ type: 'mark_messages_read', payload: recipient });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { 
     getChats, 
     getMessages,
-    getActiveStatus 
+    getActiveStatus,
+    markMessagesAsRead 
   },
   {  
     previousChats: [], 

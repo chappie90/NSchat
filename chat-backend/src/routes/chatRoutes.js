@@ -67,10 +67,28 @@ router.post('/messages', checkAuth, async (req, res) => {
                                   .sort({ 'message.createdAt': -1 })
                                   .limit(50);
 
-    res.send({ messages });
+    res.status(200).send({ messages });
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Could not fetch messages' });
+  }
+});
+
+router.patch('/messages/clear', checkAuth, async (req, res) => {
+  const { username, recipient } = req.body;
+  try {
+    const messages = await Message.update(
+      { between: { $all: [username, recipient] }, to: username, read: false },
+      { $set: { read: true } },
+      { multi: true }
+    );
+    
+    let response = messages.nModified > 0 ? true : false;
+
+    res.status(200).send({ response });
+  } catch (err) {
+    console.log(err);
+    return res.status(422).send({ error: 'Could not clear messages' });
   }
 });
 

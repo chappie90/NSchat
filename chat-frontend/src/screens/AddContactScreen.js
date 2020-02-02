@@ -9,7 +9,8 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Modal,
-  ActivityIndicator 
+  ActivityIndicator,
+  KeyboardAvoidingView 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { ListItem, Image } from 'react-native-elements';
@@ -109,6 +110,7 @@ const AddContactScreen = (props) => {
                 showResultsList() :
                 showNoResults()
             }
+          {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
         </View>
       </TouchableWithoutFeedback>
     </Modal>

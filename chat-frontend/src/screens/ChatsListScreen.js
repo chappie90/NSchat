@@ -82,12 +82,12 @@ const ChatsListScreen = ({ navigation }) => {
                 leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
                 title={
                   <View style={styles.itemContainer}>
-                    <HeadingText style={styles.name}>{item.contact}</HeadingText><BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
+                    <HeadingText style={styles.name}>{item.contact}</HeadingText><BodyText style={styles.text}>{formatDate(item.date)}</BodyText>
                   </View>
                 }
                 subtitle={
                   <View style={styles.itemContainer}>
-                    <BodyText>{item.text}</BodyText>
+                    <BodyText style={item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>{item.text}</BodyText>
                     {item.unreadMessageCount !== 0 && (
                       <Badge value={item.unreadMessageCount > 99 ? '99+' : item.unreadMessageCount } badgeStyle={styles.unreadBadge} />
                     )}
@@ -150,8 +150,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 15
   },
-  date: {
+  text: {
     color: 'grey'
+  },
+  unreadMessage: {
+    fontFamily: 'open-sans-semi-bold'
   },
   subtitle: {
     color: 'grey', 

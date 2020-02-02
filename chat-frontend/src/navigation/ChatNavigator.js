@@ -1,4 +1,6 @@
 import React from 'react';
+import { Text, View } from 'react-native';
+import { Badge } from 'react-native-elements';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -20,7 +22,15 @@ const ChatsFlow = createStackNavigator({
 
 ChatsFlow.navigationOptions = {
   title: 'Chats',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="chat" size={27} />,
+  tabBarIcon: ({ tintColor }) => (
+    <View style={{ flexDirection: 'row' }}>
+      <Badge
+        value="6" 
+        containerStyle={{ position: 'absolute', top: 8, right: -10, zIndex: 1 }} 
+        badgeStyle={{ backgroundColor: Colors.tertiary }} />
+      <MaterialIcons color={tintColor} name="chat" size={26} />
+    </View>
+  ),
   tabBarOptions: {
     inactiveTintColor: 'white',
     activeTintColor: Colors.primary, 
@@ -46,7 +56,7 @@ const ContactsListFlow = createStackNavigator(
 
 ContactsListFlow.navigationOptions = {
   title: 'Contacts',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={27} />,
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={26} />,
   tabBarOptions: {
     inactiveTintColor: 'white',
     activeTintColor: Colors.primary,
@@ -61,7 +71,7 @@ ContactsListFlow.navigationOptions = {
 
 AccountScreen.navigationOptions = {
   title: 'Account',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={27} />,
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={26} />,
   tabBarOptions: {
     inactiveTintColor: 'white',
     activeTintColor: Colors.primary,
@@ -74,6 +84,10 @@ AccountScreen.navigationOptions = {
   }
 };
 
+const TabBar = props => {
+  return <Text>Custom Tab Bar</Text>;
+};
+
 const ChatNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
   LoginFlow: createStackNavigator({
@@ -84,7 +98,15 @@ const ChatNavigator = createSwitchNavigator({
     ContactsListFlow,
     Account: AccountScreen,
     // SpeechToText: SpeechToTextScreen
-  })
+  },
+  // {
+  //   tabBarComponent: props => <TabBar />,
+  //   tabBarOptions: {
+  //     activeTintColor: "#4F4F4F",
+  //     inactiveTintColor: "#ddd"
+  //   }
+  // }
+)
 });
 
 export default createAppContainer(ChatNavigator);

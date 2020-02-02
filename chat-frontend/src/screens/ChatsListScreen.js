@@ -89,7 +89,7 @@ const ChatsListScreen = ({ navigation }) => {
                   <View style={styles.itemContainer}>
                     <BodyText>{item.text}</BodyText>
                     {item.unreadMessageCount !== 0 && (
-                      <Badge value={item.unreadMessageCount} badgeStyle={styles.unreadBadge} />
+                      <Badge value={item.unreadMessageCount > 99 ? '99+' : item.unreadMessageCount } badgeStyle={styles.unreadBadge} />
                     )}
                   </View>
                 }

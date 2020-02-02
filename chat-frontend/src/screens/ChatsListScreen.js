@@ -31,9 +31,6 @@ const ChatsListScreen = ({ navigation }) => {
   const socket = useRef(null);
 
   useEffect(() => {
-    console.log('chats');
-    console.log(username);
-    console.log('end-chats');
     getChats({ username });
     socket.current = connectToSocket(username);   
     socket.current.on('online', users => {
@@ -49,6 +46,9 @@ const ChatsListScreen = ({ navigation }) => {
     socket.current.on('offline', user => {
       const updatedContacts = onlineContacts.filter(item => item !== user);
       getActiveStatus(updatedContacts);
+    });
+    socket.current.on('message', message => {
+      getChats({ username });
     });
   }, []);
 

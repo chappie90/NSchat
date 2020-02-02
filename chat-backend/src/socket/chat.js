@@ -79,7 +79,9 @@ module.exports = function(io) {
       });
       await message.save();
 
-      const recipientSocketId = users[to];
+      const recipientSocketId = users[to].id;
+
+      console.log(recipientSocketId);
 
       const returnMsg = 
         {

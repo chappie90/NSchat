@@ -8,7 +8,8 @@ const messageSchema = new mongoose.Schema({
     text: String,
     createdAt: Date
     // createdAt: { type: Date, default: Date.now() }
-  }
+  },
+  read: { type: Boolean, default: false }
 });
 
 mongoose.model('Message', messageSchema);

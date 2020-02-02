@@ -24,15 +24,29 @@ router.post('/chats', checkAuth, async (req, res) => {
     const contacts = user[0].contacts.filter(c => c.previousChat == true);
 
     const chats = [];
+    let unreadMessageCount;
 
     for (let c of contacts) {
       const lastMessage = await Message.find(
-                                        { between: { $all: [username, c.username] } },
-                                        { 'message.text': 1, 'message.createdAt': 1, _id: 0 })
-                                        .sort({ 'message.createdAt': -1 })
-                                        .limit(1);
+        { between: { $all: [username, c.username] } },
+        { 'message.text': 1, 'message.createdAt': 1, _id: 0 }
+      )
+      .sort({ 'message.createdAt': -1 })
+      .limit(1);
 
-      chats.push({ text: lastMessage[0].message.text, date: lastMessage[0].message.createdAt, contact: c.username });
+      unreadMessageCount = await Message.find(
+        { 
+          between: { $all: [username, c.username] },
+          to: username,
+          read: false 
+        }
+      ).count();
+
+      chats.push({ 
+        text: lastMessage[0].message.text, 
+        date: lastMessage[0].message.createdAt, 
+        contact: c.username, 
+        unreadMessageCount });
     }
 
     res.send({ chats });

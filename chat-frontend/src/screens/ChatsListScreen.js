@@ -78,14 +78,20 @@ const ChatsListScreen = ({ navigation }) => {
                     <HeadingText style={styles.name}>{item.contact}</HeadingText><BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
                   </View>
                 }
-                subtitle={item.text}
+                subtitle={
+                  <View style={styles.itemContainer}>
+                    <BodyText>{item.text}</BodyText>
+                    {item.unreadMessageCount !== 0 && (
+                      <Badge value={item.unreadMessageCount} badgeStyle={styles.unreadBadge} />
+                    )}
+                  </View>
+                }
                 subtitleStyle={styles.subtitle}
                 bottomDivider
               />
               {onlineContacts.includes(item.contact) && (
                 <Badge
                   badgeStyle={styles.badge}
-                  status="error"
                   containerStyle={styles.badgeContainer}
                 />
               )}  
@@ -146,7 +152,8 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   divider: {
     borderBottomColor: 'lightgrey',
@@ -168,14 +175,17 @@ const styles = StyleSheet.create({
     borderWidth: 2, 
     borderColor: 'white'
   },
+  unreadBadge: {
+    backgroundColor: Colors.tertiary,
+  },
   imageContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
   image: {
-    width: 128,
-    height: 128
+    width: 100,
+    height: 100
   },
   imageCaption: {
     fontSize: 18,

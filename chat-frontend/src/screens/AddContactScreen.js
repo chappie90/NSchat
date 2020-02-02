@@ -12,12 +12,13 @@ import {
   ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
-import { ListItem } from 'react-native-elements';
+import { ListItem, Image } from 'react-native-elements';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
 import SecondaryButton from '../components/SecondaryButton';
+import BodyText from '../components/BodyText';
 
 const AddContactScreen = (props) => {
   const { state: { searchResults, contacts }, searchContacts, clearSearchResults, addContact } = useContext(ContactsContext);
@@ -65,9 +66,12 @@ const AddContactScreen = (props) => {
   };
 
   const showNoResults = () => {
-    if (search) {
-      return <Text style={styles.noResults}>No users found</Text>;
-    }
+    return search ?
+      <Text style={styles.noResults}>No users found</Text> :
+      <View style={styles.imageContainer}>
+        <Image style={styles.image} source={require('../../assets/magnifying-glass.png')} />
+        <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+      </View>;
   };
 
   return (
@@ -174,6 +178,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 20
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  image: {
+    width: 100,
+    height: 100
+  },
+  imageCaption: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 10
   }
 });
 

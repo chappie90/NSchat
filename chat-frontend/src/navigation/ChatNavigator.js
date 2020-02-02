@@ -20,8 +20,18 @@ const ChatsFlow = createStackNavigator({
 
 ChatsFlow.navigationOptions = {
   title: 'Chats',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="chat" size={30} />,
-  tabBarOptions: { activeTintColor: Colors.primary, keyboardHidesTabBar: false }
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="chat" size={27} />,
+  tabBarOptions: {
+    inactiveTintColor: 'white',
+    activeTintColor: Colors.primary, 
+    keyboardHidesTabBar: false,
+    style: {
+      backgroundColor: '#202020'
+    },
+    labelStyle: {
+      fontFamily: 'open-sans',
+    }  
+  }
 };
 
 const ContactsListFlow = createStackNavigator(
@@ -36,14 +46,32 @@ const ContactsListFlow = createStackNavigator(
 
 ContactsListFlow.navigationOptions = {
   title: 'Contacts',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={30} />,
-  tabBarOptions: { activeTintColor: Colors.primary }
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={27} />,
+  tabBarOptions: {
+    inactiveTintColor: 'white',
+    activeTintColor: Colors.primary,
+    style: {
+      backgroundColor: '#202020'
+    },
+    labelStyle: {
+      fontFamily: 'open-sans',
+    }
+  }
 };
 
 AccountScreen.navigationOptions = {
   title: 'Account',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={30} />,
-  tabBarOptions: { activeTintColor: Colors.primary }
+  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={27} />,
+  tabBarOptions: {
+    inactiveTintColor: 'white',
+    activeTintColor: Colors.primary,
+    style: {
+      backgroundColor: '#202020'
+    },
+    labelStyle: {
+      fontFamily: 'open-sans',
+    } 
+  }
 };
 
 const ChatNavigator = createSwitchNavigator({

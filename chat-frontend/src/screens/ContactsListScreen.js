@@ -6,13 +6,12 @@ import {
   TextInput, 
   TouchableOpacity, 
   StyleSheet, 
-  Image,
   FlatList,
   RefreshControl,
   ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ListItem } from 'react-native-elements';
+import { ListItem, Image } from 'react-native-elements';
 
 import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
@@ -20,6 +19,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
 import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
+import BodyText from '../components/BodyText';
 
 const ContactsListScreen = ({ navigation }) => {
   const { state: { contacts, contactsIsLoading }, getContacts } = useContext(ContactsContext);
@@ -29,16 +29,6 @@ const ContactsListScreen = ({ navigation }) => {
   useEffect(() => {
     getContacts({ username });
   }, []);
-
-  function getAvatar(username) {
-    if (username === 'Stoyan') {
-      return <Image source={require('../../assets/profile.jpg')} style={styles.image} />;
-    } else if (username === 'Nora') {
-      return <Image source={require('../../assets/nora.jpg')} style={styles.image} />;
-    } else {
-      return <Image source={require('../../assets/avatar2.png')} style={styles.image2} />;
-    }
-  }
 
   const closeModal = () => {
     setNewContactMode(false);
@@ -58,7 +48,8 @@ const ContactsListScreen = ({ navigation }) => {
         <View style={styles.spinnerContainer}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
-      ) : (
+      ) : 
+        contacts.length > 0 ? (
         <FlatList
           refreshControl={
             <RefreshControl
@@ -90,7 +81,13 @@ const ContactsListScreen = ({ navigation }) => {
               </TouchableOpacity>
             );
           }} />
-      )}
+        ) : (
+        <View style={styles.imageContainer}>
+          <Image style={styles.image} source={require('../../assets/team.png')} />
+          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        </View>
+        )
+      }
     </View>
   );
 };
@@ -162,6 +159,20 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     alignSelf: 'flex-end'
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  image: {
+    width: 100,
+    height: 100
+  },
+  imageCaption: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 10
   }
 });
 

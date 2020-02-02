@@ -11,13 +11,14 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
-import { ListItem, Badge } from 'react-native-elements';
+import { ListItem, Badge, Image } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import HeadingText from '../components/HeadingText';
+import BodyText from '../components/BodyText';
 import { connectToSocket } from '../socket/chat';
 
 const ChatsListScreen = ({ navigation }) => {
@@ -26,6 +27,9 @@ const ChatsListScreen = ({ navigation }) => {
   const socket = useRef(null);
 
   useEffect(() => {
+    console.log('chats');
+    console.log(username);
+    console.log('end-chats');
     getChats({ username });
     socket.current = connectToSocket(username);   
     socket.current.on('online', users => {
@@ -52,42 +56,49 @@ const ChatsListScreen = ({ navigation }) => {
         <View style={styles.spinnerContainer}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
-      ) : (
-        <FlatList
-          refreshControl={
-            <RefreshControl
-              onRefresh={() => getChats({ username })}
-              refreshing={chatsIsLoading}
-              tintColor={Colors.primary} />
-          }
-          data={previousChats}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            return (
-              <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item.contact })}>
-                <ListItem
-                  key={index}
-                  leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
-                  title={
-                    <View style={styles.itemContainer}>
-                      <Text style={styles.name}>{item.contact}</Text><Text style={styles.date}>{formatDate(item.date)}</Text>
-                    </View>
-                  }
-                  subtitle={item.text}
-                  subtitleStyle={{ color: 'grey' }}
-                  bottomDivider
-                />
-                {onlineContacts.includes(item.contact) && (
-                  <Badge
-                    badgeStyle={styles.badge}
-                    status="error"
-                    containerStyle={styles.badgeContainer}
+      ) :
+        previousChats.length > 0 ? (
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                onRefresh={() => getChats({ username })}
+                refreshing={chatsIsLoading}
+                tintColor={Colors.primary} />
+            }
+            data={previousChats}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => {
+              return (
+                <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item.contact })}>
+                  <ListItem
+                    key={index}
+                    leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
+                    title={
+                      <View style={styles.itemContainer}>
+                        <HeadingText style={styles.name}>{item.contact}</HeadingText><BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
+                      </View>
+                    }
+                    subtitle={item.text}
+                    subtitleStyle={styles.subtitle}
+                    bottomDivider
                   />
-                )}  
-              </TouchableOpacity>
-            );
-          }} />
-      )} 
+                  {onlineContacts.includes(item.contact) && (
+                    <Badge
+                      badgeStyle={styles.badge}
+                      status="error"
+                      containerStyle={styles.badgeContainer}
+                    />
+                  )}  
+                </TouchableOpacity>
+              );
+            }} />
+          ) : (
+          <View style={styles.imageContainer}>
+            <Image style={styles.image} source={require('../../assets/talk.png')} />
+            <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+          </View>
+          )
+      } 
     </View>
   );
 };
@@ -109,10 +120,14 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   name: {
-    fontWeight: 'bold'
+    fontSize: 15
   },
   date: {
     color: 'grey'
+  },
+  subtitle: {
+    color: 'grey', 
+    marginTop: 2
   },
   itemContainer: {
     flexDirection: 'row',
@@ -137,6 +152,20 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     borderWidth: 2, 
     borderColor: 'white'
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  image: {
+    width: 128,
+    height: 128
+  },
+  imageCaption: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 10
   }
 });
 

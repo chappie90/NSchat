@@ -42,27 +42,31 @@ const AddContactScreen = (props) => {
 
   const showResultsList = () => {
     return searchResults.map((item, index) => (
-      <ListItem
-        key={index}
-        leftAvatar={{ source: require('../../assets/avatar2.png') }}
-        title={
-          <View style={styles.itemContainer}>
-            <Text style={styles.name}>{item.username}</Text>
-            {!contacts.includes(item.username) && (
-              <SecondaryButton onPress={() => {
-                addContact({ username: username, contact: item.username });
-                props.closeModal();
-                setSearch('');
-                clearSearchResults();
-              }}>
-                Add
-              </SecondaryButton>
-            )}
-          </View>
-        }
-        checkmark={{ value: contacts.includes(item.username), color: Colors.secondary, size: 26 }}
-        bottomDivider
-      />
+      <View style={styles.listItemContainer}>
+        <ListItem
+          key={index}
+          leftAvatar={{ source: require('../../assets/avatar2.png') }}
+          title={
+            <View style={styles.itemContainer}>
+              <Text style={styles.name}>{item.username}</Text>
+              {!contacts.includes(item.username) && (
+                <SecondaryButton
+                  style={styles.button}
+                  onPress={() => {
+                    addContact({ username: username, contact: item.username });
+                    props.closeModal();
+                    setSearch('');
+                    clearSearchResults();
+                  }}>
+                  Add
+                </SecondaryButton>
+              )}
+            </View>
+          }
+          bottomDivider
+        />
+        {contacts.includes(item.username) && <MaterialIcons style={styles.checkmark} name="check-circle" size={30} color={Colors.primary} />}
+      </View>
     ))
   };
 
@@ -110,7 +114,6 @@ const AddContactScreen = (props) => {
                 showResultsList() :
                 showNoResults()
             }
-          {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}
         </View>
       </TouchableWithoutFeedback>
     </Modal>
@@ -170,12 +173,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white'
   },
-  button: {
-    backgroundColor: Colors.secondary,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 3
-  },
   noResults: {
     fontSize: 18,
     textAlign: 'center',
@@ -194,6 +191,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 10
+  },
+  checkmark: {
+    position: 'absolute',
+    right: 10,
+    top: 20
   }
 });
 

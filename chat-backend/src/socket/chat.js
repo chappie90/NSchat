@@ -65,9 +65,9 @@ module.exports = function(io) {
     return res.status(422).send({ error: 'Something went wrong with your request' });
   }
 
-  socket.on('start_typing', recipient => {
-    if (users[recipient]) {
-      io.to(users[recipient].id).emit('is_typing');
+  socket.on('start_typing', data => {
+    if (users[data.recipient]) {
+      io.to(users[data.recipient].id).emit('is_typing', data.username);
     }
   });
 

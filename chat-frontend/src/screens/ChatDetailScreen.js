@@ -34,7 +34,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const [notification, setNotification] = useState(null);
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
-  // const [isTyping, setIsTyping] = useState(false);
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
@@ -50,7 +49,6 @@ const ChatDetailScreen = ({ navigation }) => {
     });
     socket.current.on('is_typing', () => {
       navigation.setParams({ isTyping: 'is typing...' });
-      console.log(navigation);
     });
     socket.current.on('is_not_typing', () => {
       navigation.setParams({ isTyping: '' });
@@ -101,9 +99,9 @@ const ChatDetailScreen = ({ navigation }) => {
     //   })
     // });
 
-    sendPushNotificationToken(token, 'Stoyan');
+    // sendPushNotificationToken(token, 'Stoyan');
 
-    const notificationSubscription = Notifications.addListener(handleNotification);
+    // const notificationSubscription = Notifications.addListener(handleNotification);
   };
 
   const handleNotification = async (notification) => {
@@ -164,16 +162,15 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const startTypingHandler = () => {
-    console.log('kepassa');
-    socket.current.emit('start_typing', recipient);
+    socket.current.emit('start_typing', { username, recipient });
 
     if (stopTypingTimeout) {
       clearTimeout(stopTypingTimeout);
     }
 
     stopTypingTimeout = setTimeout(() => {
-      console.log('stopped');
       socket.current.emit('stop_typing', recipient); 
+      // stopTypingTimeout = undefined;
     }, 3000);
   };
 
@@ -289,7 +286,6 @@ const ChatDetailScreen = ({ navigation }) => {
 ChatDetailScreen.navigationOptions = ({ navigation }) => {
   const { state: { params = {} } } = navigation;
 
-  console.log(params);
   return {
     title: `${params.username} ${params.isTyping ? params.isTyping : ''}`  || ''
   }

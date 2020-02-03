@@ -29,6 +29,8 @@ const ChatsListScreen = ({ navigation }) => {
     getActiveStatus,
     markMessagesAsRead } = useContext(ChatContext);
   const socket = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState(null);
 
   useEffect(() => {
     getChats({ username });
@@ -49,6 +51,14 @@ const ChatsListScreen = ({ navigation }) => {
     });
     socket.current.on('message', message => {
       getChats({ username });
+    });
+    socket.current.on('is_typing', username => {
+      setIsTyping(true);
+      setTypingUser(username);
+    });
+    socket.current.on('is_not_typing', () => {
+      setIsTyping(false);
+      setTypingUser(null);
     });
   }, []);
 
@@ -82,12 +92,16 @@ const ChatsListScreen = ({ navigation }) => {
                 leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
                 title={
                   <View style={styles.itemContainer}>
-                    <HeadingText style={styles.name}>{item.contact}</HeadingText><BodyText style={styles.text}>{formatDate(item.date)}</BodyText>
+                    <HeadingText style={styles.name}>{item.contact}</HeadingText>
+                    <BodyText style={styles.text}>{formatDate(item.date)}</BodyText>
                   </View>
                 }
                 subtitle={
                   <View style={styles.itemContainer}>
-                    <BodyText style={item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>{item.text}</BodyText>
+                    <BodyText
+                      style={item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>
+                      {isTyping && typingUser == item.contact ? 'is typing...' : item.text}
+                    </BodyText>
                     {item.unreadMessageCount !== 0 && (
                       <Badge value={item.unreadMessageCount > 99 ? '99+' : item.unreadMessageCount } badgeStyle={styles.unreadBadge} />
                     )}

@@ -174,16 +174,49 @@ const ChatDetailScreen = ({ navigation }) => {
     }, 3000);
   };
 
-  const renderBubble = (bubbleProps) => {
+  const renderBubble = (props) => {
     return (
-      <Bubble { ...bubbleProps }
+      <Bubble { ...props }
         onLongPress={(bubbleProps) => {
-          console.log(bubbleProps);
+          console.log(props);
           setOverlayMode(true)
         }}
         wrapperStyle={{ left: styles.left, right: styles.right }}
         textStyle={{ left: styles.text, right: styles.text }} />
     );
+  };
+
+  const renderCustomView = (props) => {
+    if (props.currentMessage.user._id === 1) {
+      return (
+        <View  { ...props}>
+          <Ionicons
+            style={{ position: 'absolute', right: -16, bottom: -45 }}
+            name="ios-checkmark"
+            size={24} color={Colors.primary} />
+          <Ionicons
+            style={{ position: 'absolute', right: -25, bottom: -45 }}
+            name="ios-checkmark"
+            size={24} color={Colors.primary} />
+          {/*<MaterialIcons
+            style={{ position: 'absolute', right: -16, bottom: -35 }}
+            name="check"
+            size={15} color={Colors.primary} />
+          <MaterialIcons
+            style={{ position: 'absolute', right: -25, bottom: -35 }}
+            name="check"
+            size={15} color={Colors.primary} /> */}
+          {/*} <Entypo
+            style={{ position: 'absolute', right: -15, bottom: -35 }}
+            name="check"
+            size={12} color={Colors.primary} />
+          <Entypo
+            style={{ position: 'absolute', right: -23, bottom: -35 }}
+            name="check"
+            size={12} color={Colors.primary} /> */}
+        </View>
+      );
+    }
   };
 
   const renderAvatar = (avatarProps) => {
@@ -233,6 +266,8 @@ const ChatDetailScreen = ({ navigation }) => {
           onLoadEarlier={() => {
             loadMoreMessages();
           }}
+          renderCustomView={false ? null : renderCustomView}
+          // renderLoading={() => {}}
           renderLoadEarlier={renderLoadEarlier}
           keyboardShouldPersistTaps={'handled'}
           onInputTextChanged={startTypingHandler}
@@ -304,7 +339,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8E8E8'
   },
   right: {
-    backgroundColor: Colors.secondary
+    backgroundColor: Colors.secondary,
+    marginRight: 25
+    // maringRight: 22
   },
   text: {
     fontFamily: 'open-sans'
@@ -316,7 +353,7 @@ const styles = StyleSheet.create({
     marginRight: -8
   },
   input: {
-    paddingTop: Platform.OS === 'ios' ? 9 : null,
+    paddingTop: Platform.OS === 'ios' ? 9 : null
   },
   loadButton: {
     backgroundColor: Colors.tertiary

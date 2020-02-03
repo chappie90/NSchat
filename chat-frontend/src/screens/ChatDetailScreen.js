@@ -34,10 +34,10 @@ const ChatDetailScreen = ({ navigation }) => {
   const [notification, setNotification] = useState(null);
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [stopTypingTimeout, setStopTypingTimeout] = useState(null);
+  // const [isTyping, setIsTyping] = useState(false);
   const socket = useRef(null);
   let page;
+  let stopTypingTimeout;
 
   const PUSH_REGISTRATION_ENDPOINT = `${chatApi}/token`;
   const MESSAGE_ENPOINT = `${chatApi}/message`;
@@ -49,9 +49,11 @@ const ChatDetailScreen = ({ navigation }) => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
     socket.current.on('is_typing', () => {
-      setIsTyping(true);
-      const {setParams} = navigation;
-      setParams({ isTyping: ' is typing...' });
+      navigation.setParams({ isTyping: 'is typing...' });
+      console.log(navigation);
+    });
+    socket.current.on('is_not_typing', () => {
+      navigation.setParams({ isTyping: '' });
     });
   }, []);
 
@@ -162,12 +164,17 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const startTypingHandler = () => {
+    console.log('kepassa');
     socket.current.emit('start_typing', recipient);
 
-    setStopTypingTimeout(setTimeout(() => {
-      setIsTyping(false);    
-      }, 3000)
-    );
+    if (stopTypingTimeout) {
+      clearTimeout(stopTypingTimeout);
+    }
+
+    stopTypingTimeout = setTimeout(() => {
+      console.log('stopped');
+      socket.current.emit('stop_typing', recipient); 
+    }, 3000);
   };
 
   const renderBubble = (bubbleProps) => {
@@ -282,6 +289,7 @@ const ChatDetailScreen = ({ navigation }) => {
 ChatDetailScreen.navigationOptions = ({ navigation }) => {
   const { state: { params = {} } } = navigation;
 
+  console.log(params);
   return {
     title: `${params.username} ${params.isTyping ? params.isTyping : ''}`  || ''
   }

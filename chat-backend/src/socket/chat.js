@@ -71,6 +71,12 @@ module.exports = function(io) {
     }
   });
 
+  socket.on('stop_typing', recipient => {
+    if (users[recipient]){
+      io.to(users[recipient].id).emit('is_not_typing');
+    }
+  });
+
   socket.on('message', async msgObj => {
     const { from, to, message: [{ text, createdAt }] } = msgObj;
     try {

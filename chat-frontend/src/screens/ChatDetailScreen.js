@@ -191,13 +191,13 @@ const ChatDetailScreen = ({ navigation }) => {
       return (
         <View  { ...props}>
           <Ionicons
-            style={{ position: 'absolute', right: -16, bottom: -45 }}
+            style={{ position: 'absolute', right: -15, bottom: -45 }}
             name="ios-checkmark"
-            size={24} color={Colors.primary} />
+            size={24} color="#87CEEB" />
           <Ionicons
-            style={{ position: 'absolute', right: -25, bottom: -45 }}
+            style={{ position: 'absolute', right: -24, bottom: -45 }}
             name="ios-checkmark"
-            size={24} color={Colors.primary} />
+            size={24} color="#87CEEB" />
           {/*<MaterialIcons
             style={{ position: 'absolute', right: -16, bottom: -35 }}
             name="check"
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   },
   right: {
     backgroundColor: Colors.secondary,
-    marginRight: 25
+    marginRight: 24
     // maringRight: 22
   },
   text: {

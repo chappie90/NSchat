@@ -65,6 +65,12 @@ module.exports = function(io) {
     return res.status(422).send({ error: 'Something went wrong with your request' });
   }
 
+  socket.on('start_typing', recipient => {
+    if (users[recipient]) {
+      io.to(users[recipient].id).emit('is_typing');
+    }
+  });
+
   socket.on('message', async msgObj => {
     const { from, to, message: [{ text, createdAt }] } = msgObj;
     try {
@@ -80,8 +86,6 @@ module.exports = function(io) {
       await message.save();
 
       const recipientSocketId = users[to].id;
-
-      console.log(recipientSocketId);
 
       const returnMsg = 
         {

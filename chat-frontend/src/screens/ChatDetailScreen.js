@@ -34,6 +34,8 @@ const ChatDetailScreen = ({ navigation }) => {
   const [notification, setNotification] = useState(null);
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [stopTypingTimeout, setStopTypingTimeout] = useState(null);
   const socket = useRef(null);
   let page;
 
@@ -45,6 +47,11 @@ const ChatDetailScreen = ({ navigation }) => {
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+    });
+    socket.current.on('is_typing', () => {
+      setIsTyping(true);
+      const {setParams} = navigation;
+      setParams({ isTyping: ' is typing...' });
     });
   }, []);
 
@@ -99,7 +106,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const handleNotification = async (notification) => {
     setNotification({ notification });
-    console.log(notification);
+    // console.log(notification);
 
     // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
     // setBadgeNumber(badgeNumber + 1);
@@ -109,7 +116,7 @@ const ChatDetailScreen = ({ navigation }) => {
     try {
       const response = await chatApi.post('/token', { token, username });
       
-      console.log(response.data); 
+      // console.log(response.data); 
 
     } catch (err) {
       console.log(err);
@@ -135,7 +142,7 @@ const ChatDetailScreen = ({ navigation }) => {
     const { message: [{ text }] } = msgObj;
     socket.current.emit('message', msgObj);
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-    getChats({ username });
+    // getChats({ username });
 
     try {
       const response = await chatApi.post('/message', { message: text });
@@ -152,6 +159,15 @@ const ChatDetailScreen = ({ navigation }) => {
   const deleteMessageHandler = () => {
     deleteMessage({ username, recipient, message });
     setOverlayMode(false);
+  };
+
+  const startTypingHandler = () => {
+    socket.current.emit('start_typing', recipient);
+
+    setStopTypingTimeout(setTimeout(() => {
+      setIsTyping(false);    
+      }, 3000)
+    );
   };
 
   const renderBubble = (bubbleProps) => {
@@ -215,6 +231,7 @@ const ChatDetailScreen = ({ navigation }) => {
           }}
           renderLoadEarlier={renderLoadEarlier}
           keyboardShouldPersistTaps={'handled'}
+          onInputTextChanged={startTypingHandler}
           //isLoadingEarlier={true}
           bottomOffset={ Platform.OS === 'android' ? null : 46 }
           scrollToBottom={true}
@@ -264,8 +281,9 @@ const ChatDetailScreen = ({ navigation }) => {
 
 ChatDetailScreen.navigationOptions = ({ navigation }) => {
   const { state: { params = {} } } = navigation;
+
   return {
-    title: params.username || ''
+    title: `${params.username} ${params.isTyping ? params.isTyping : ''}`  || ''
   }
 };
 

@@ -77,8 +77,15 @@ module.exports = function(io) {
     }
   });
 
+  socket.on('join_chat', data => {
+    if (users[data.recipient]) {
+      console.log(data.recipient);
+      console.log(data.username);
+      io.to(users[data.recipient].id).emit('has_joined_chat', data.username);
+    }
+  });
+
   socket.on('message', async msgObj => {
-    console.log(msgObj);
     const { from, to, message: [{ text, createdAt, _id }] } = msgObj;
     try {
       const message = new Message({

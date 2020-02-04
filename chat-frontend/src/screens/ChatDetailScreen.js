@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Overlay } from 'react-native-elements';
 import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
+import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
@@ -42,6 +43,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
+    console.log('use effect no argument');
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
@@ -58,6 +60,14 @@ const ChatDetailScreen = ({ navigation }) => {
     });
     socket.current.on('is_not_typing', () => {
       navigation.setParams({ isTyping: '' });
+    });
+    socket.current.on('has_joined_chat', user => {
+      if (user === recipient) {
+        getMessages({ username, recipient, page: currentPage })
+          .then((chat) => {
+            setIncomingMsgs(chat);
+        });
+      } 
     });
   }, []);
 
@@ -78,8 +88,11 @@ const ChatDetailScreen = ({ navigation }) => {
         setIncomingMsgs(chat);
       });
     }
-    console.log('recipient useeffect ran');
   }, [recipient]);
+
+  const didFocusHandler = () => {
+    socket.current.emit('join_chat', { username, recipient });
+  };
 
   const registerForPushNotificationsAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
@@ -258,6 +271,10 @@ const ChatDetailScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <NavigationEvents
+        onWillFocus={() => console.log('will focus')}
+        onDidFocus={didFocusHandler}
+        />
         <GiftedChat
           renderUsernameOnMessage 
           messages={incomingMsgs} 

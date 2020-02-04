@@ -53,6 +53,8 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
 
     const response = await chatApi.post('/messages', { username, recipient, page });
 
+    console.log(response);
+
     const chatArr = [];
 
     const chat = response.data.messages.map(message => {

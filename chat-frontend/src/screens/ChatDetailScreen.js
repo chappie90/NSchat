@@ -193,30 +193,42 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderCustomView = (props) => {
-    if (props.currentMessage.user._id === 1 && props.currentMessage.hasOwnProperty('read')) {
+    if (props.currentMessage.user._id === 1 && props.currentMessage.read) {
       return (
         <View  { ...props}>
           <Ionicons
             style={{ position: 'absolute', right: -15, bottom: -45 }}
             name="ios-checkmark"
-            size={24} color="#C8C8C8" />
-            {/* color="#87CEEB" */}
+            size={24} color="#87CEEB" />
           <Ionicons
             style={{ position: 'absolute', right: -24, bottom: -45 }}
             name="ios-checkmark"
-            size={24} color="#C8C8C8" />
+            size={24} color="#87CEEB" />
         </View>
       );
+    } else if (props.currentMessage.user._id === 1 && props.currentMessage.hasOwnProperty('read')) {
+        return (
+          <View  { ...props}>
+            <Ionicons
+              style={{ position: 'absolute', right: -15, bottom: -45 }}
+              name="ios-checkmark"
+              size={24} color="#C8C8C8" />
+            <Ionicons
+              style={{ position: 'absolute', right: -24, bottom: -45 }}
+              name="ios-checkmark"
+              size={24} color="#C8C8C8" />
+          </View>
+        );
     } else if (props.currentMessage.user._id === 1) {
-      return (
-        <View  { ...props}>
-          <Ionicons
-            style={{ position: 'absolute', right: -15, bottom: -45 }}
-            name="ios-checkmark"
-            size={24} color="#C8C8C8" />
-        </View>
-      );
-    }
+        return (
+          <View  { ...props}>
+            <Ionicons
+              style={{ position: 'absolute', right: -15, bottom: -45 }}
+              name="ios-checkmark"
+              size={24} color="#C8C8C8" />
+          </View>
+        );
+      }
   };
 
   const renderAvatar = (avatarProps) => {

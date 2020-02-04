@@ -197,7 +197,7 @@ const ChatDetailScreen = ({ navigation }) => {
     return (
       <Bubble { ...props }
         onLongPress={(bubbleProps) => {
-          console.log(props);
+          console.log(props.currentMessage);
           setOverlayMode(true)
         }}
         wrapperStyle={{ left: styles.left, right: styles.right }}

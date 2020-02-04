@@ -55,10 +55,12 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
 
     const chatArr = [];
 
+    console.log(response.data);
+
     const chat = response.data.messages.map(message => {
       if (message.from === username) {
         chatArr.push({
-          _id: message._id,
+          _id: message.message.id,
           text: message.message.text,
           createdAt: message.message.createdAt,
           user: {
@@ -69,7 +71,7 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
         });
       } else {
         chatArr.push({
-          _id: message._id,
+          _id: message.message.id,
           text: message.message.text,
           createdAt: message.message.createdAt,
           user: {

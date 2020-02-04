@@ -47,10 +47,6 @@ const ChatDetailScreen = ({ navigation }) => {
     socket.current.on('message', message => {
       if (message.user.name === username) {
         setIncomingMsgs(prevState => prevState.map(msg => {
-          console.log(msg);
-          if (msg._id == message._id) {
-            console.log(msg);
-          }
           return msg._id === message._id ? { ...msg, read: false } : msg;
         }));
         return;
@@ -203,11 +199,12 @@ const ChatDetailScreen = ({ navigation }) => {
           <Ionicons
             style={{ position: 'absolute', right: -15, bottom: -45 }}
             name="ios-checkmark"
-            size={24} color="#87CEEB" />
+            size={24} color="#C8C8C8" />
+            {/* color="#87CEEB" */}
           <Ionicons
             style={{ position: 'absolute', right: -24, bottom: -45 }}
             name="ios-checkmark"
-            size={24} color="#87CEEB" />
+            size={24} color="#C8C8C8" />
         </View>
       );
     } else if (props.currentMessage.user._id === 1) {

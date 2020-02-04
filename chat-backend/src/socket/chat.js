@@ -78,13 +78,15 @@ module.exports = function(io) {
   });
 
   socket.on('message', async msgObj => {
-    const { from, to, message: [{ text, createdAt }] } = msgObj;
+    console.log(msgObj);
+    const { from, to, message: [{ text, createdAt, _id }] } = msgObj;
     try {
       const message = new Message({
         between: [from, to],
         from,
         to,
         message: {
+          id: _id,
           text,
           createdAt
         }
@@ -98,7 +100,7 @@ module.exports = function(io) {
      
       const returnMsg = 
         {
-          _id: message._id,
+          _id: message.message.id,
           text,
           createdAt,
           user: {

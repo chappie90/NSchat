@@ -5,6 +5,7 @@ const messageSchema = new mongoose.Schema({
   from: String,
   to: String,
   message: {
+    id: String, 
     text: String,
     createdAt: Date
     // createdAt: { type: Date, default: Date.now() }

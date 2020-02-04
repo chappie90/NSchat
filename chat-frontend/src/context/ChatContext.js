@@ -64,7 +64,8 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
           user: {
             _id: 1,
             name: username
-          }
+          },
+          read: message.read
         });
       } else {
         chatArr.push({
@@ -74,7 +75,8 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
           user: {
             _id: 2,
             name: recipient
-          }
+          },
+          read: message.read
         });
       }
     });

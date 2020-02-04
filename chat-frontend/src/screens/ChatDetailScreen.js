@@ -45,6 +45,16 @@ const ChatDetailScreen = ({ navigation }) => {
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
+      if (message.user.name === username) {
+        setIncomingMsgs(prevState => prevState.map(msg => {
+          console.log(msg);
+          if (msg._id == message._id) {
+            console.log(msg);
+          }
+          return msg._id === message._id ? { ...msg, read: false } : msg;
+        }));
+        return;
+      }
       setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
     });
     socket.current.on('is_typing', () => {
@@ -187,7 +197,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderCustomView = (props) => {
-    if (props.currentMessage.user._id === 1) {
+    if (props.currentMessage.user._id === 1 && props.currentMessage.hasOwnProperty('read')) {
       return (
         <View  { ...props}>
           <Ionicons
@@ -198,22 +208,15 @@ const ChatDetailScreen = ({ navigation }) => {
             style={{ position: 'absolute', right: -24, bottom: -45 }}
             name="ios-checkmark"
             size={24} color="#87CEEB" />
-          {/*<MaterialIcons
-            style={{ position: 'absolute', right: -16, bottom: -35 }}
-            name="check"
-            size={15} color={Colors.primary} />
-          <MaterialIcons
-            style={{ position: 'absolute', right: -25, bottom: -35 }}
-            name="check"
-            size={15} color={Colors.primary} /> */}
-          {/*} <Entypo
-            style={{ position: 'absolute', right: -15, bottom: -35 }}
-            name="check"
-            size={12} color={Colors.primary} />
-          <Entypo
-            style={{ position: 'absolute', right: -23, bottom: -35 }}
-            name="check"
-            size={12} color={Colors.primary} /> */}
+        </View>
+      );
+    } else if (props.currentMessage.user._id === 1) {
+      return (
+        <View  { ...props}>
+          <Ionicons
+            style={{ position: 'absolute', right: -15, bottom: -45 }}
+            name="ios-checkmark"
+            size={24} color="#C8C8C8" />
         </View>
       );
     }

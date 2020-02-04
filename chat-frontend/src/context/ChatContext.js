@@ -16,6 +16,7 @@ const chatReducer = (state, action) => {
       const modifiedChats = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
       });
+      
       return { ...state, previousChats: modifiedChats };
     default:
       return state;

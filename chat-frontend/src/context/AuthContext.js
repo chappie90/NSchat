@@ -10,6 +10,7 @@ const authReducer = (state, action) => {
       return { token: action.payload.token, username: action.payload.username, errorMessage: '' };
     case 'signout':
       return { token: null, username: null, errorMessage: '' };
+      // return { state: undefined };
     case 'add_error':
       return { ...state, errorMessage: action.payload };
     case 'clear_error':
@@ -43,6 +44,11 @@ const signin = dispatch => async ({ username, password }) => {
     const dataObj = { username: response.data.username, token: response.data.token };
     await AsyncStorage.setItem('data', JSON.stringify(dataObj));
 
+    // console.log('context');
+    // console.log(dataObj);
+    // console.log(response.data.username);
+    // console.log('end-context');
+
     dispatch({ type: 'signin', payload: response.data });
 
     navigate('MainFlow');
@@ -74,6 +80,7 @@ const clearErrorMessage = dispatch => () => {
 const signout = dispatch => async () => {
   try {
     await AsyncStorage.removeItem('data');
+
     dispatch({ type: 'signout' });
 
     navigate('LoginFlow');

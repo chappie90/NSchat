@@ -91,8 +91,11 @@ module.exports = function(io) {
       });
       await message.save();
 
-      const recipientSocketId = users[to].id;
-
+      let recipientSocketId;
+      if (users[to]) {
+        recipientSocketId = users[to].id;
+      }
+     
       const returnMsg = 
         {
           _id: message._id,
@@ -101,10 +104,12 @@ module.exports = function(io) {
           user: {
             _id: 2,
             name: from
-          }
+          },
+          read: false
         };
 
       io.to(recipientSocketId).emit('message', returnMsg);
+      io.to(socketId).emit('message', returnMsg);
 
     // messageHandler.handleMessage(socket, users); 
 

@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 import { Overlay } from 'react-native-elements';
-import { GiftedChat, Bubble, Avatar, LoadEarlier } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
@@ -28,13 +28,14 @@ import { connectToSocket } from '../socket/chat';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
-  const { state: { chat }, getChats, getMessages } = useContext(ChatContext);
+  const { state: { chat }, getChats, getMessages, deleteMessage } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
   const [notification, setNotification] = useState(null);
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
@@ -43,7 +44,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
-    console.log('use effect no argument');
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
@@ -171,12 +171,8 @@ const ChatDetailScreen = ({ navigation }) => {
 
   };
 
-  const deleteMessage = async ({ username, recipient, message }) => {
-    console.log(username, recipient, message);
-  };
-
   const deleteMessageHandler = () => {
-    deleteMessage({ username, recipient, message });
+    deleteMessage({ messageId: selectedMessage._id });
     setOverlayMode(false);
   };
 
@@ -197,7 +193,7 @@ const ChatDetailScreen = ({ navigation }) => {
     return (
       <Bubble { ...props }
         onLongPress={(bubbleProps) => {
-          console.log(props.currentMessage);
+          setSelectedMessage(props.currentMessage);
           setOverlayMode(true)
         }}
         wrapperStyle={{ left: styles.left, right: styles.right }}
@@ -205,8 +201,17 @@ const ChatDetailScreen = ({ navigation }) => {
     );
   };
 
+  const renderMessageText = props => {
+    if (props.currentMessage.deleted) {
+      return <Text style={styles.deletedMessage}>Message deleted</Text>;
+    }
+    return <MessageText { ...props } />;
+  };
+ 
   const renderCustomView = (props) => {
-    if (props.currentMessage.user._id === 1 && props.currentMessage.read) {
+    if (props.currentMessage.user._id === 1 &&
+        props.currentMessage.read &&
+        !props.currentMessage.deleted) {
       return (
         <View  { ...props}>
           <Ionicons
@@ -219,7 +224,9 @@ const ChatDetailScreen = ({ navigation }) => {
             size={24} color="#87CEEB" />
         </View>
       );
-    } else if (props.currentMessage.user._id === 1 && props.currentMessage.hasOwnProperty('read')) {
+    } else if (props.currentMessage.user._id === 1 && 
+               props.currentMessage.hasOwnProperty('read') && 
+               !props.currentMessage.deleted) {
         return (
           <View  { ...props}>
             <Ionicons
@@ -232,7 +239,7 @@ const ChatDetailScreen = ({ navigation }) => {
               size={24} color="#C8C8C8" />
           </View>
         );
-    } else if (props.currentMessage.user._id === 1) {
+    } else if (props.currentMessage.user._id === 1 && !props.currentMessage.deleted) {
         return (
           <View  { ...props}>
             <Ionicons
@@ -296,6 +303,7 @@ const ChatDetailScreen = ({ navigation }) => {
             loadMoreMessages();
           }}
           renderCustomView={false ? null : renderCustomView}
+          renderMessageText={renderMessageText}
           // renderLoading={() => {}}
           renderLoadEarlier={renderLoadEarlier}
           keyboardShouldPersistTaps={'handled'}
@@ -439,6 +447,13 @@ const styles = StyleSheet.create({
   cancelText: {
     color: 'grey',
     fontSize: 18
+  },
+  deletedMessage: { 
+    color: '#282828', 
+    fontSize: 15,
+    fontStyle: 'italic', 
+    paddingHorizontal: 10, 
+    paddingVertical: 5 
   }
 });
 

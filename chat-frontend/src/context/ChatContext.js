@@ -13,11 +13,15 @@ const chatReducer = (state, action) => {
     case 'get_active_status':
       return { ...state, onlineContacts: action.payload };
     case 'mark_messages_read':
-      const modifiedChats = state.previousChats.map(item => {
+      const markedMessages = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
       });
-      
-      return { ...state, previousChats: modifiedChats };
+      return { ...state, previousChats: markedMessages };
+    case 'delete_message':
+      const deletedMessage = state.chat.map(item => {
+        return item._id === action.payload ? { ...item, text: '' } : item;
+      });
+      return { ...state, chats: deleteMessage };
     default:
       return state;
   }
@@ -55,8 +59,6 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
 
     const chatArr = [];
 
-    console.log(response.data);
-
     const chat = response.data.messages.map(message => {
       if (message.from === username) {
         chatArr.push({
@@ -67,7 +69,8 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
             _id: 1,
             name: username
           },
-          read: message.read
+          read: message.read,
+          deleted: message.deleted
         });
       } else {
         chatArr.push({
@@ -78,7 +81,8 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
             _id: 2,
             name: recipient
           },
-          read: message.read
+          read: message.read,
+          deleted: message.deleted
         });
       }
     });
@@ -107,13 +111,29 @@ const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
   }
 };
 
+const deleteMessage = dispatch => async ({ messageId }) => {
+  console.log(messageId);
+  try {
+    const response = await chatApi.patch('/message/delete', { messageId });
+
+    if (!response.data) {
+      return;
+    }
+
+    dispatch({ type: 'delete_message', payload: messageId });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { 
     getChats, 
     getMessages,
     getActiveStatus,
-    markMessagesAsRead 
+    markMessagesAsRead,
+    deleteMessage
   },
   {  
     previousChats: [], 

@@ -10,7 +10,8 @@ const messageSchema = new mongoose.Schema({
     createdAt: Date
     // createdAt: { type: Date, default: Date.now() }
   },
-  read: { type: Boolean, default: false }
+  read: { type: Boolean, default: false },
+  deleted: { type: Boolean, default: false }
 });
 
 mongoose.model('Message', messageSchema);

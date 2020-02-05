@@ -62,7 +62,7 @@ router.post('/messages', checkAuth, async (req, res) => {
   const skip = 50 * (page - 1);
 
   try {
-    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1 })
+    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1 })
                                   .skip(skip)
                                   .sort({ 'message.createdAt': -1 })
                                   .limit(50);
@@ -89,6 +89,24 @@ router.patch('/messages/clear', checkAuth, async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Could not clear messages' });
+  }
+});
+
+router.patch('/message/delete', checkAuth, async (req, res) => {
+  const { messageId } = req.body;
+  try {
+    const message = await Message.update(
+      { 'message.id': messageId },
+      { $set: { 'message.text': 'Message deleted', deleted: true } },
+      { new: true }
+    );
+
+    let response = message.nModified > 0 ? true : false;
+
+    res.status(200).send({ response });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not delete message' });
   }
 });
 

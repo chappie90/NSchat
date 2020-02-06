@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 import { Overlay } from 'react-native-elements';
-import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
@@ -36,6 +36,7 @@ const ChatDetailScreen = ({ navigation }) => {
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [showReplyBox, setShowReplyBox] = useState(false);
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
@@ -61,6 +62,14 @@ const ChatDetailScreen = ({ navigation }) => {
     socket.current.on('is_not_typing', () => {
       navigation.setParams({ isTyping: '' });
     });
+    // socket.current.on('message_deleted', message => {
+    //   if (message) {
+    //     const deletedMessage = chat.map(item => {
+    //     return item._id === message._id ? { ...item, text: 'Message deleted', deleted: true } : item;
+    //   });
+    //   setIncomingMsgs(deletedMessage);
+    //   }
+    // });
     socket.current.on('has_joined_chat', user => {
       if (user === recipient) {
         getMessages({ username, recipient, page: currentPage })
@@ -89,6 +98,9 @@ const ChatDetailScreen = ({ navigation }) => {
       });
     }
   }, [recipient]);
+
+   useEffect(() => {
+  }, [chat, deleteMessage]);
 
   const didFocusHandler = () => {
     socket.current.emit('join_chat', { username, recipient });
@@ -171,11 +183,41 @@ const ChatDetailScreen = ({ navigation }) => {
 
   };
 
+  const renderChatFooter = (props) => {
+    if (showReplyBox) {
+      return (
+        <View style={{ height: 50, flexDirection: 'row', backgroundColor: '#F8F8F8', borderTopWidth: 1, borderTopColor: 'lightgrey' }}>
+          <View style={{ height: 50, width: 5, backgroundColor: Colors.primary }}></View>
+          <View>
+            <Text style={{ color: Colors.tertiary, paddingLeft: 10, paddingTop: 5 }}>{selectedMessage.user.name}</Text>
+            <Text style={{ color: 'gray', paddingLeft: 10, paddingTop: 5 }}>{selectedMessage.text}</Text>
+          </View>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', paddingRight: 20 }}>
+            <TouchableOpacity onPress={() => setShowReplyBox(false)}>
+              <Ionicons name="ios-close-circle" color={Colors.tertiary} size={28} />
+            </TouchableOpacity>
+          </View> 
+        </View>
+      );
+    }
+  };
+
   const deleteMessageHandler = () => {
-    deleteMessage({ messageId: selectedMessage._id });
+    deleteMessage({ messageId: selectedMessage._id }).then(result => {
+      const deletedMessage = chat.map(item => {
+        return item._id === selectedMessage._id ? { ...item, text: 'Message deleted', deleted: true } : item;
+      });
+      setIncomingMsgs(deletedMessage);
+    });
+    // socket.current.emit('delete_message', selectedMessage);  
     setOverlayMode(false);
   };
 
+  const replyMessageHandler = () => {
+    setShowReplyBox(true);
+    setOverlayMode(false);
+  };
+ 
   const startTypingHandler = () => {
     socket.current.emit('start_typing', { username, recipient });
 
@@ -198,6 +240,32 @@ const ChatDetailScreen = ({ navigation }) => {
         }}
         wrapperStyle={{ left: styles.left, right: styles.right }}
         textStyle={{ left: styles.text, right: styles.text }} />
+    );
+  };
+
+  const renderMessage = (props) => {
+    const { recipient } = props.currentMessage;
+    return <RenderMessageReplyBubble { ...props } />;
+    // return <Message { ...props } />;
+  };  
+
+  const RenderMessageReplyBubble = props => {
+    return (
+      <View style={ props.containerStyle }>
+        <View style={{ padding: 5 }}>
+          <View style={{ borderRadius: 15, backgroundColor: '#76bf88' }}>
+            <View style={{flexDirection: 'row' }}>
+              <View style={{height:50, width: 10, backgroundColor: '#D8D8D8', borderTopLeftRadius: 15, borderBottomLeftRadius: 15}} />
+                <View style={{flexDirection: 'column'}}>
+                  <Text style={{color: 'white', paddingHorizontal: 10, paddingTop: 5, fontWeight: '700'}}>Reply to user</Text>
+                  <Text style={{color: 'white', paddingHorizontal: 10, paddingTop: 5}}>Original message</Text>
+                </View>
+              </View>
+              <MessageText {...props} />
+              <Time {...props} />
+            </View>
+          </View>
+        </View>
     );
   };
 
@@ -302,7 +370,9 @@ const ChatDetailScreen = ({ navigation }) => {
           onLoadEarlier={() => {
             loadMoreMessages();
           }}
+          renderChatFooter={renderChatFooter}
           renderCustomView={false ? null : renderCustomView}
+          renderMessage={renderMessage}
           renderMessageText={renderMessageText}
           // renderLoading={() => {}}
           renderLoadEarlier={renderLoadEarlier}
@@ -328,12 +398,12 @@ const ChatDetailScreen = ({ navigation }) => {
               height="auto"
               onBackdropPress={() => setOverlayMode(false)}>
                 <View style={styles.overlayContainer}>
-                  <TouchableOpacity style={styles.overlayItemWrapper} onPress={() => {}}>
+                  <TouchableOpacity style={styles.overlayItemWrapper} onPress={replyMessageHandler}>
                     <View style={styles.overlayItem}>
                       <View style={styles.iconWrapper}>
-                        <MaterialIcons color="white" name="content-copy" size={24} />
+                        <MaterialIcons color="white" name="reply" size={24} />
                       </View>
-                      <BodyText style={styles.overlayText}>Copy message</BodyText>
+                      <BodyText style={styles.overlayText}>Reply to message</BodyText>
                     </View>
                   </TouchableOpacity>
                     <TouchableOpacity style={styles.overlayItemWrapper} onPress={deleteMessageHandler}>
@@ -341,7 +411,7 @@ const ChatDetailScreen = ({ navigation }) => {
                       <View style={styles.deleteIconWrapper}>
                         <AntDesign color="white" name="delete" size={24} />
                       </View>
-                      <BodyText style={styles.overlayDelete}>Delete Message</BodyText>
+                      <BodyText style={styles.overlayDelete}>Delete message</BodyText>
                     </View>  
                   </TouchableOpacity>
                   <View style={styles.cancel}>

@@ -19,9 +19,9 @@ const chatReducer = (state, action) => {
       return { ...state, previousChats: markedMessages };
     case 'delete_message':
       const deletedMessage = state.chat.map(item => {
-        return item._id === action.payload ? { ...item, text: '' } : item;
+        return item._id === action.payload ? { ...item, text: 'Message deleted', deleted: true } : item;
       });
-      return { ...state, chats: deleteMessage };
+      return { ...state, chats: deletedMessage };
     default:
       return state;
   }
@@ -112,7 +112,6 @@ const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
 };
 
 const deleteMessage = dispatch => async ({ messageId }) => {
-  console.log(messageId);
   try {
     const response = await chatApi.patch('/message/delete', { messageId });
 

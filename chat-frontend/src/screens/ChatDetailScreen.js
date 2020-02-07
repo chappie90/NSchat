@@ -244,18 +244,19 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderMessage = (props) => {
-    const { recipient } = props.currentMessage;
-    return <RenderMessageReplyBubble { ...props } />;
-    // return <Message { ...props } />;
+    if (props.currentMessage.deleted) {
+      return <RenderMessageReplyBubble { ...props } />;
+    }
+    return <Message { ...props } />;
   };  
 
   const RenderMessageReplyBubble = props => {
     return (
-      <View style={ props.containerStyle }>
-        <View style={{ padding: 5 }}>
-          <View style={{ borderRadius: 15, backgroundColor: '#76bf88' }}>
-            <View style={{flexDirection: 'row' }}>
-              <View style={{height:50, width: 10, backgroundColor: '#D8D8D8', borderTopLeftRadius: 15, borderBottomLeftRadius: 15}} />
+      <View style={props.containerStyle}> 
+        <View style={{ paddingBottom: 2, marginRight: 32, marginLeft: 60 }}>
+          <View style={{ borderRadius: 15, backgroundColor: Colors.secondary }}>
+            <View style={{flexDirection: 'row', backgroundColor: '#76bf88', borderRadius: 15, marginTop: 8, marginHorizontal: 8 }}>
+              <View style={{height:50, width: 8, backgroundColor: '#D8D8D8', borderTopLeftRadius: 15, borderBottomLeftRadius: 15}} />
                 <View style={{flexDirection: 'column'}}>
                   <Text style={{color: 'white', paddingHorizontal: 10, paddingTop: 5, fontWeight: '700'}}>Reply to user</Text>
                   <Text style={{color: 'white', paddingHorizontal: 10, paddingTop: 5}}>Original message</Text>

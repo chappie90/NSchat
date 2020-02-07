@@ -77,6 +77,23 @@ module.exports = function(io) {
     }
   });
 
+  socket.on('delete_message', async (msg) => {
+
+    try {
+      const message = await Message.update(
+        { 'message.id': msg._id },
+        { $set: { 'message.text': 'Message deleted', deleted: true } },
+        { new: true }
+      );
+
+    let response = message.nModified > 0 ? msg : false;
+
+    io.to(socketId).emit('message_deleted', response);
+  } catch (err) {
+    console.log(err);
+  }
+  });
+
   socket.on('join_chat', data => {
     if (users[data.recipient]) {
       console.log(data.recipient);

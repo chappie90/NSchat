@@ -28,7 +28,7 @@ import { connectToSocket } from '../socket/chat';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
-  const { state: { chat }, getChats, getMessages, deleteMessage } = useContext(ChatContext);
+  const { state: { chat }, getChats, getMessages, updateMessages, deleteMessage } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
@@ -49,6 +49,7 @@ const ChatDetailScreen = ({ navigation }) => {
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
       if (message.user.name === username) {
+        updateMessages({ message });
         setIncomingMsgs(prevState => prevState.map(msg => {
           return msg._id === message._id ? { ...msg, read: false } : msg;
         }));
@@ -99,8 +100,9 @@ const ChatDetailScreen = ({ navigation }) => {
     }
   }, [recipient]);
 
-   useEffect(() => {
-  }, [chat, deleteMessage]);
+  useEffect(() => {
+    console.log(chat[0]);
+  }, [chat]);
 
   const didFocusHandler = () => {
     socket.current.emit('join_chat', { username, recipient });
@@ -173,7 +175,6 @@ const ChatDetailScreen = ({ navigation }) => {
     const { message: [{ text }] } = msgObj;
     socket.current.emit('message', msgObj);
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-    // getChats({ username });
 
     try {
       const response = await chatApi.post('/message', { message: text });

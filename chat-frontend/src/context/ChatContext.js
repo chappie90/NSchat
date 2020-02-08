@@ -8,6 +8,8 @@ const chatReducer = (state, action) => {
   switch (action.type) {
     case 'get_messages':
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
+    case 'update_messages':
+      return { ...state, chat: [action.payload].concat(state.chat) };
     case 'get_chats':
       return { ...state, previousChats: action.payload, chatsIsLoading: false };
     case 'get_active_status':
@@ -49,6 +51,14 @@ const getChats = dispatch => async ({ username }) => {
       console.log(err);
       console.log('request cancelled')
     }
+  }
+};
+
+const updateMessages = dispatch => ({ message }) => {
+  try {
+    dispatch({ type: 'update_messages', payload: message });
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -130,6 +140,7 @@ export const { Context, Provider } = createDataContext(
   { 
     getChats, 
     getMessages,
+    updateMessages,
     getActiveStatus,
     markMessagesAsRead,
     deleteMessage

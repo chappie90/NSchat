@@ -173,8 +173,25 @@ const ChatDetailScreen = ({ navigation }) => {
       to: recipient,
       message,
     };
+
+    if (showReplyBox) {
+      msgObj.replyTo = {
+         messageId: selectedMessage._id, 
+         messageText: selectedMessage.text,
+         messageAuthor: selectedMessage.user.name };
+    } else {
+      msgObj.replyTo = {};
+    }
+
     const { message: [{ text }] } = msgObj;
     socket.current.emit('message', msgObj);
+    if (showReplyBox) {
+      setShowReplyBox(false);
+      message[0].reply = selectedMessage.text;
+      message[0].replyAuthor = selectedMessage.user.name;
+    }
+
+    this.giftedChatRef.scrollToBottom();
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
 
     try {
@@ -241,9 +258,9 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderMessage = (props) => {
-    // if (props.currentMessage.deleted) {
-    //   return <RenderMessageReplyBubble { ...props } />;
-    // }
+    if (props.currentMessage.reply) {
+      return <RenderMessageReplyBubble { ...props } />;
+    }
     return <Message { ...props } />;
   };  
 
@@ -252,11 +269,19 @@ const ChatDetailScreen = ({ navigation }) => {
       <View style={props.containerStyle}> 
         <View style={{ paddingBottom: 2, marginRight: 32, marginLeft: 60 }}>
           <View style={{ borderRadius: 15, backgroundColor: Colors.secondary }}>
-            <View style={{flexDirection: 'row', backgroundColor: '#76bf88', borderRadius: 15, marginTop: 8, marginHorizontal: 8 }}>
-              <View style={{height:50, width: 8, backgroundColor: '#D8D8D8', borderTopLeftRadius: 15, borderBottomLeftRadius: 15}} />
+            <View style={{
+              flexDirection: 'row', 
+              backgroundColor: '#76bf88', 
+              padding: 5, 
+              alignItems: 'center', 
+              borderLeftWidth: 6, 
+              borderLeftColor: Colors.tertiary, 
+              //'#D8D8D8'
+              borderRadius: 8, 
+              marginTop: 8, marginHorizontal: 8 }}>
                 <View style={{flexDirection: 'column'}}>
-                  <Text style={{color: 'white', paddingHorizontal: 10, paddingTop: 5, fontWeight: '700'}}>Reply to user</Text>
-                  <Text style={{color: 'white', paddingHorizontal: 10, paddingTop: 5}}>Original message</Text>
+                  <Text style={{color: 'black', paddingHorizontal: 10, marginBottom: 4 }}>Reply to <Text style={{ fontFamily: 'open-sans-semi-bold' }}>{props.currentMessage.replyAuthor}</Text></Text>
+                  <Text style={{color: 'white', paddingHorizontal: 10 }}>{props.currentMessage.reply}</Text>
                 </View>
               </View>
               <MessageText {...props} />
@@ -368,6 +393,7 @@ const ChatDetailScreen = ({ navigation }) => {
           onLoadEarlier={() => {
             loadMoreMessages();
           }}
+          ref={ref => this.giftedChatRef = ref}
           renderChatFooter={renderChatFooter}
           renderCustomView={false ? null : renderCustomView}
           renderMessage={renderMessage}

@@ -103,7 +103,13 @@ module.exports = function(io) {
   });
 
   socket.on('message', async msgObj => {
-    const { from, to, message: [{ text, createdAt, _id }] } = msgObj;
+    const {
+      from, 
+      to, 
+      message: [{ text, createdAt, _id }],
+      replyTo: { messageId, messageText, messageAuthor }
+    } = msgObj;
+
     try {
       const message = new Message({
         between: [from, to],
@@ -113,8 +119,14 @@ module.exports = function(io) {
           id: _id,
           text,
           createdAt
+        },
+        replyTo: {
+          messageId,
+          messageText,
+          messageAuthor
         }
       });
+      
       await message.save();
 
       let recipientSocketId;
@@ -122,7 +134,7 @@ module.exports = function(io) {
         recipientSocketId = users[to].id;
       }
      
-      const returnMsg = 
+      const returnMsgRecipient = 
         {
           _id: message.message.id,
           text,
@@ -131,11 +143,29 @@ module.exports = function(io) {
             _id: 2,
             name: from
           },
-          read: false
+          read: false,
+          deleted: false,
+          reply: messageText,
+          replyAuthor: messageAuthor
         };
 
-      io.to(recipientSocketId).emit('message', returnMsg);
-      io.to(socketId).emit('message', returnMsg);
+      const returnMsgUser = 
+       {
+          _id: message.message.id,
+          text,
+          createdAt,
+          user: {
+            _id: 1,
+            name: from
+          },
+          read: false,
+          deleted: false,
+          reply: messageText,
+          replyAuthor: messageAuthor
+        };
+
+      io.to(recipientSocketId).emit('message', returnMsgRecipient);
+      io.to(socketId).emit('message', returnMsgUser);
 
     // messageHandler.handleMessage(socket, users); 
 

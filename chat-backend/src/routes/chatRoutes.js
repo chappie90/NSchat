@@ -62,10 +62,12 @@ router.post('/messages', checkAuth, async (req, res) => {
   const skip = 50 * (page - 1);
 
   try {
-    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1 })
+    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1, replyTo: 1 })
                                   .skip(skip)
                                   .sort({ 'message.createdAt': -1 })
                                   .limit(50);
+
+    console.log(messages);
 
     res.status(200).send({ messages });
   } catch (err) {

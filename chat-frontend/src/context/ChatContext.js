@@ -69,6 +69,8 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
 
     const chatArr = [];
 
+    console.log(response.data);
+
     const chat = response.data.messages.map(message => {
       if (message.from === username) {
         chatArr.push({
@@ -80,7 +82,9 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
             name: username
           },
           read: message.read,
-          deleted: message.deleted
+          deleted: message.deleted,
+          reply: message.replyTo ? message.replyTo.messageText : null,
+          replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
         });
       } else {
         chatArr.push({
@@ -92,7 +96,9 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
             name: recipient
           },
           read: message.read,
-          deleted: message.deleted
+          deleted: message.deleted,
+          reply: message.replyTo ? message.replyTo.messageText : null,
+          replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
         });
       }
     });

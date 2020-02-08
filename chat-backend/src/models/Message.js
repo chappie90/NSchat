@@ -14,7 +14,8 @@ const messageSchema = new mongoose.Schema({
   deleted: { type: Boolean, default: false },
   replyTo: { 
     messageId: String,
-    messageText: String
+    messageText: String,
+    messageAuthor: String
   }
 });
 

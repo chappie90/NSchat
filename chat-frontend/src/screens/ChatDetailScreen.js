@@ -101,7 +101,8 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
-    console.log(chat[0]);
+    // console.log(chat[0]);
+    setIncomingMsgs(chat);
   }, [chat]);
 
   const didFocusHandler = () => {
@@ -204,12 +205,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const deleteMessageHandler = () => {
-    deleteMessage({ messageId: selectedMessage._id }).then(result => {
-      const deletedMessage = chat.map(item => {
-        return item._id === selectedMessage._id ? { ...item, text: 'Message deleted', deleted: true } : item;
-      });
-      setIncomingMsgs(deletedMessage);
-    });
+    deleteMessage({ messageId: selectedMessage._id });
     // socket.current.emit('delete_message', selectedMessage);  
     setOverlayMode(false);
   };
@@ -245,9 +241,9 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderMessage = (props) => {
-    if (props.currentMessage.deleted) {
-      return <RenderMessageReplyBubble { ...props } />;
-    }
+    // if (props.currentMessage.deleted) {
+    //   return <RenderMessageReplyBubble { ...props } />;
+    // }
     return <Message { ...props } />;
   };  
 

@@ -23,7 +23,7 @@ const chatReducer = (state, action) => {
       const deletedMessage = state.chat.map(item => {
         return item._id === action.payload ? { ...item, text: 'Message deleted', deleted: true } : item;
       });
-      return { ...state, chats: deletedMessage };
+      return { ...state, chat: deletedMessage };
     default:
       return state;
   }

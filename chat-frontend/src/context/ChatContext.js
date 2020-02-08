@@ -12,8 +12,6 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [action.payload].concat(state.chat) };
     case 'get_chats':
       return { ...state, previousChats: action.payload, chatsIsLoading: false };
-    case 'get_active_status':
-      return { ...state, onlineContacts: action.payload };
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
@@ -27,10 +25,6 @@ const chatReducer = (state, action) => {
     default:
       return state;
   }
-};
-
-const getActiveStatus = dispatch => (users) => {
-  dispatch({ type: 'get_active_status', payload: users });
 };
 
 const getChats = dispatch => async ({ username }) => {
@@ -145,14 +139,12 @@ export const { Context, Provider } = createDataContext(
     getChats, 
     getMessages,
     updateMessages,
-    getActiveStatus,
     markMessagesAsRead,
     deleteMessage
   },
   {  
     previousChats: [], 
     chat: [], 
-    onlineContacts: [],
     chatsIsLoading: true 
   }
 );

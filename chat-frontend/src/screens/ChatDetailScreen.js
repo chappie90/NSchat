@@ -475,7 +475,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         flex: 1, 
         flexDirection: 'row', 
         alignItems: 'center',
-        paddingLeft: 65,
+        paddingLeft: 60,
         paddingTop: 20 }}>
         <View style={{ overflow: 'hidden', borderRadius: 17 }}>
           <Image

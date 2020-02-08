@@ -11,9 +11,15 @@ const contactsReducer = (state, action) => {
       return { ...state, contacts: [ ...state.contacts, action.payload ] };
     case 'get_contacts':
       return { ...state, contacts: action.payload, contactsIsLoading: false }; // change to contacts: action.payload
+    case 'get_active_status':
+      return { ...state, onlineContacts: action.payload };
     default:
       return state;  
   }
+};
+
+const getActiveStatus = dispatch => (users) => {
+  dispatch({ type: 'get_active_status', payload: users });
 };
 
 const searchContacts = dispatch => async ({ username, search }) => {
@@ -47,6 +53,8 @@ const getContacts = dispatch => async ({ username }) => {
   try {
     const response = await chatApi.post('/contacts', { username });
 
+    console.log(response.data);
+
     dispatch({ type: 'get_contacts', payload: response.data.contacts });
 
   } catch (err) {
@@ -60,11 +68,13 @@ export const { Context, Provider } = createDataContext(
     searchContacts, 
     clearSearchResults, 
     addContact, 
-    getContacts
+    getContacts,
+    getActiveStatus
   },
   { 
     searchResults: [], 
-    contacts: [], 
+    contacts: [],
+    onlineContacts: [], 
     contactsIsLoading: true
   }
 );

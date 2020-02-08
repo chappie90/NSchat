@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useContext, useCallback } from 'react';
 import { 
   View, 
   ScrollView, 
@@ -11,7 +11,7 @@ import {
   ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ListItem, Image } from 'react-native-elements';
+import { ListItem, Image, Badge } from 'react-native-elements';
 
 import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
@@ -20,14 +20,31 @@ import { Context as ContactsContext } from '../context/ContactsContext';
 import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
+import { connectToSocket } from '../socket/chat';
 
 const ContactsListScreen = ({ navigation }) => {
-  const { state: { contacts, contactsIsLoading }, getContacts } = useContext(ContactsContext);
+  const { state: { contacts, contactsIsLoading, onlineContacts }, getContacts, getActiveStatus } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
+  const socket = useRef(null);
 
   useEffect(() => {
     getContacts({ username });
+    socket.current = connectToSocket(username);
+    socket.current.on('online', users => {
+      const onlineUsers = JSON.parse(users);
+      if (Array.isArray(onlineUsers)) {
+        getActiveStatus(onlineUsers);
+      } else {
+        // refactor to get new array - concat?
+        onlineContacts.push(users);
+        getActiveStatus(onlineContacts);
+      }
+    });
+    socket.current.on('offline', user => {
+      const updatedContacts = onlineContacts.filter(item => item !== user);
+      getActiveStatus(updatedContacts);
+    });
   }, []);
 
   const closeModal = () => {
@@ -78,6 +95,12 @@ const ContactsListScreen = ({ navigation }) => {
                   chevron={{ color: Colors.secondary }}
                   bottomDivider
                 />
+                {onlineContacts.includes(item.contact) && (
+                  <Badge
+                    badgeStyle={styles.badge}
+                    containerStyle={styles.badgeContainer}
+                  />
+                )}
               </TouchableOpacity>
             );
           }} />
@@ -173,7 +196,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 10
-  }
+  },
+  badgeContainer: {
+    position: 'absolute', 
+    top: 43, 
+    left: 43
+  },
+  badge: {
+    backgroundColor: '#32CD32', 
+    width: 15, 
+    height: 15, 
+    borderRadius: 10, 
+    borderWidth: 2, 
+    borderColor: 'white'
+  },
 });
 
 export default ContactsListScreen;

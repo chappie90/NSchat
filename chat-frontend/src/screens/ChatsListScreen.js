@@ -17,6 +17,7 @@ import { formatDate } from '../helpers/formatDate';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
+import { Context as ContactsContext } from '../context/ContactsContext';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import { connectToSocket } from '../socket/chat';
@@ -24,10 +25,10 @@ import { connectToSocket } from '../socket/chat';
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
   const { 
-    state: { previousChats, chatsIsLoading, onlineContacts },
+    state: { previousChats, chatsIsLoading },
     getChats, 
-    getActiveStatus,
     markMessagesAsRead } = useContext(ChatContext);
+  const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
   const socket = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);

@@ -462,7 +462,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
 
   return {
     headerLeft: (
-      <TouchableOpacity onPress={() => navigation.navigate('ChatsList')}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <Ionicons
           name="ios-arrow-back" 
           size={34} 

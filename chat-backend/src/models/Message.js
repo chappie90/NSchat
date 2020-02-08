@@ -11,7 +11,11 @@ const messageSchema = new mongoose.Schema({
     // createdAt: { type: Date, default: Date.now() }
   },
   read: { type: Boolean, default: false },
-  deleted: { type: Boolean, default: false }
+  deleted: { type: Boolean, default: false },
+  replyTo: { 
+    messageId: String,
+    messageText: String
+  }
 });
 
 mongoose.model('Message', messageSchema);

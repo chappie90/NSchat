@@ -69,8 +69,6 @@ const getMessages = dispatch => async ({ username, recipient, page }) => {
 
     const chatArr = [];
 
-    console.log(response.data);
-
     const chat = response.data.messages.map(message => {
       if (message.from === username) {
         chatArr.push({

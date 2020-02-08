@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView
 } from 'react-native';
-import { Overlay } from 'react-native-elements';
+import { Overlay, Image } from 'react-native-elements';
 import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
@@ -40,6 +40,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
+  let giftedChatRef;
 
   const PUSH_REGISTRATION_ENDPOINT = `${chatApi}/token`;
   const MESSAGE_ENPOINT = `${chatApi}/message`;
@@ -191,7 +192,10 @@ const ChatDetailScreen = ({ navigation }) => {
       message[0].replyAuthor = selectedMessage.user.name;
     }
 
-    this.giftedChatRef.scrollToBottom();
+    if (giftedChatRef) {
+      giftedChatRef.scrollToBottom();
+    }
+    
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
 
     try {
@@ -275,8 +279,11 @@ const ChatDetailScreen = ({ navigation }) => {
               padding: 5, 
               alignItems: 'center', 
               borderLeftWidth: 6, 
-              borderLeftColor: Colors.tertiary, 
+              borderLeftColor: '#D8D8D8', 
               //'#D8D8D8'
+              // '#eda1a1'
+              // '#e6b5b5
+              // #18240b
               borderRadius: 8, 
               marginTop: 8, marginHorizontal: 8 }}>
                 <View style={{flexDirection: 'column'}}>
@@ -393,7 +400,7 @@ const ChatDetailScreen = ({ navigation }) => {
           onLoadEarlier={() => {
             loadMoreMessages();
           }}
-          ref={ref => this.giftedChatRef = ref}
+          ref={ref => giftedChatRef = ref}
           renderChatFooter={renderChatFooter}
           renderCustomView={false ? null : renderCustomView}
           renderMessage={renderMessage}
@@ -451,9 +458,34 @@ const ChatDetailScreen = ({ navigation }) => {
 
 ChatDetailScreen.navigationOptions = ({ navigation }) => {
   const { state: { params = {} } } = navigation;
+      {/* title:  `${params.username} ${params.isTyping ? params.isTyping : ''}`  || '' */}
 
   return {
-    title: `${params.username} ${params.isTyping ? params.isTyping : ''}`  || ''
+    headerLeft: (
+      <TouchableOpacity onPress={() => navigation.navigate('ChatsList')}>
+        <Ionicons
+          name="ios-arrow-back" 
+          size={34} 
+          color={Colors.primary} 
+          style={{ paddingHorizontal: 10,  paddingTop: 5, marginLeft: 10 }} />
+      </TouchableOpacity>
+    ), 
+    headerBackground: (
+      <View style={{
+        flex: 1, 
+        flexDirection: 'row', 
+        alignItems: 'center',
+        paddingLeft: 65,
+        paddingTop: 20 }}>
+        <View style={{ overflow: 'hidden', borderRadius: 17 }}>
+          <Image
+            style={{ width: 34, height: 34 }}
+            source={require('../../assets/avatar2.png')}
+          />
+        </View>
+        <Text style={{ marginLeft: 10, fontFamily: 'open-sans-semi-bold', fontSize: 18 }}>{params.username} {params.isTyping ? params.isTyping : ''}</Text>
+      </View>
+    )
   }
 };
 

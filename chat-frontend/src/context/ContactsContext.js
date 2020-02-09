@@ -1,5 +1,6 @@
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
+import { navigate } from '../components/navigationRef';
 
 const contactsReducer = (state, action) => {
   switch (action.type) {

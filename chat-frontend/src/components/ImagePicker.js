@@ -86,7 +86,7 @@ const ImgPicker = props => {
               {profileImage ?
                 <Image 
                   placeholderStyle={styles.placeholder}
-                  source={{ uri: profileImage}}
+                  source={{ uri: 'http://192.168.0.93:3000/public/uploads/1.jpg'}}
                   style={styles.image} /> : 
                 <Image source={require('../../assets/avatar2.png')} style={styles.image} />
               }

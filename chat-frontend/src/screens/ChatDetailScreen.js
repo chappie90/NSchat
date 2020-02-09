@@ -210,12 +210,12 @@ const ChatDetailScreen = ({ navigation }) => {
     if (showReplyBox) {
       return (
         <View style={{ minHeight: 50, flexDirection: 'row', backgroundColor: '#F8F8F8', borderTopWidth: 1, borderTopColor: 'lightgrey' }}>
-          <View style={{ minHeight: 50, width: 5, backgroundColor: Colors.primary }}></View>
+          <View style={{ minHeight: 50, width: 7, backgroundColor: Colors.primary }}></View>
           <View style={{ paddingVertical: 5 }}>
-            <Text style={{ color: Colors.tertiary, paddingLeft: 10 }}>{selectedMessage.user.name}</Text>
-            <Text style={{ color: 'gray', paddingLeft: 10, paddingTop: 5 }}>{selectedMessage.text}</Text>
+            <Text style={{ color: Colors.tertiary, fontFamily: 'open-sans-semi-bold', paddingLeft: 15 }}>{selectedMessage.user.name}</Text>
+            <Text style={{ color: 'gray', paddingLeft: 15, paddingTop: 3, paddingBottom: 2 }}>{selectedMessage.text}</Text>
           </View>
-          <View style={{ flex: 1, paddingTop: 5, justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: 20 }}>
+          <View style={{ flex: 1, paddingTop: 5, justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: 15 }}>
             <TouchableOpacity onPress={() => setShowReplyBox(false)}>
               <Ionicons name="ios-close-circle" color={Colors.tertiary} size={28} />
             </TouchableOpacity>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { Badge } from 'react-native-elements';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -13,6 +12,7 @@ import ChatsListScreen from '../screens/ChatsListScreen';
 import ContactsListScreen from '../screens/ContactsListScreen';
 import AccountScreen from '../screens/AccountScreen';
 import ChatDetailScreen from '../screens/ChatDetailScreen';
+import ChatsNavigatorTab from '../components/ChatsNavigatorTab';
 // import SpeechToTextScreen from '../screens/SpeechToTextScreen';
 
 const ChatsFlow = createStackNavigator({
@@ -23,13 +23,7 @@ const ChatsFlow = createStackNavigator({
 ChatsFlow.navigationOptions = {
   title: 'Chats',
   tabBarIcon: ({ tintColor }) => (
-    <View style={{ flexDirection: 'row' }}>
-      <Badge
-        value="6" 
-        containerStyle={{ position: 'absolute', top: 8, right: -10, zIndex: 1 }} 
-        badgeStyle={{ backgroundColor: Colors.tertiary }} />
-      <MaterialIcons color={tintColor} name="chat" size={26} />
-    </View>
+    <ChatsNavigatorTab color={tintColor} />
   ),
   tabBarOptions: {
     inactiveTintColor: 'white',
@@ -82,10 +76,6 @@ AccountScreen.navigationOptions = {
       fontFamily: 'open-sans',
     } 
   }
-};
-
-const TabBar = props => {
-  return <Text>Custom Tab Bar</Text>;
 };
 
 const BottomTabNavigator = createBottomTabNavigator({

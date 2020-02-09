@@ -209,13 +209,13 @@ const ChatDetailScreen = ({ navigation }) => {
   const renderChatFooter = (props) => {
     if (showReplyBox) {
       return (
-        <View style={{ height: 50, flexDirection: 'row', backgroundColor: '#F8F8F8', borderTopWidth: 1, borderTopColor: 'lightgrey' }}>
-          <View style={{ height: 50, width: 5, backgroundColor: Colors.primary }}></View>
-          <View>
-            <Text style={{ color: Colors.tertiary, paddingLeft: 10, paddingTop: 5 }}>{selectedMessage.user.name}</Text>
+        <View style={{ minHeight: 50, flexDirection: 'row', backgroundColor: '#F8F8F8', borderTopWidth: 1, borderTopColor: 'lightgrey' }}>
+          <View style={{ minHeight: 50, width: 5, backgroundColor: Colors.primary }}></View>
+          <View style={{ paddingVertical: 5 }}>
+            <Text style={{ color: Colors.tertiary, paddingLeft: 10 }}>{selectedMessage.user.name}</Text>
             <Text style={{ color: 'gray', paddingLeft: 10, paddingTop: 5 }}>{selectedMessage.text}</Text>
           </View>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', paddingRight: 20 }}>
+          <View style={{ flex: 1, paddingTop: 5, justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: 20 }}>
             <TouchableOpacity onPress={() => setShowReplyBox(false)}>
               <Ionicons name="ios-close-circle" color={Colors.tertiary} size={28} />
             </TouchableOpacity>
@@ -262,9 +262,9 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderMessage = (props) => {
-    if (props.currentMessage.reply) {
-      return <RenderMessageReplyBubble { ...props } />;
-    }
+    // if (props.currentMessage.reply) {
+    //   return <RenderMessageReplyBubble { ...props } />;
+    // }
     return <Message { ...props } />;
   };  
 

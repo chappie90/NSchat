@@ -112,7 +112,7 @@ const ContactsListScreen = ({ navigation }) => {
           }} />
         ) : (
         <View style={styles.imageContainer}>
-          <Image style={styles.image} source={require('../../assets/team.png')} />
+          <Image style={styles.image} source={require('../../assets/icons_256_contact.png')} />
           <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
         </View>
         )

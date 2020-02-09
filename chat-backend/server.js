@@ -10,6 +10,7 @@ const User = mongoose.model('User');
 const authRoutes = require('./src/routes/authRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
 const contactsRoutes = require('./src/routes/contactsRoutes');
+const profileRoutes = require('./src/routes/profileRoutes');
 const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
@@ -24,6 +25,12 @@ app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(chatRoutes);
 app.use(contactsRoutes);
+app.use(profileRoutes);
+
+// import { resolve } from  'path';
+// const Port = process.env.PORT || 3000;
+
+//app.use(express.static(resolve(__dirname, './uploads')))
 
 const mongoUri = 'mongodb+srv://stoyangarov:Daspak12@emaily-w8ewa.mongodb.net/ns-chat?retryWrites=true&w=majority';
 mongoose.connect(mongoUri, {

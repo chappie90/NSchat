@@ -126,7 +126,7 @@ const ChatsListScreen = ({ navigation }) => {
   const renderStarterView = () => {
     return (
       <View style={styles.imageContainer}>
-        <Image style={styles.image} source={require('../../assets/talk.png')} />
+        <Image style={styles.image} source={require('../../assets/icons_256_chat.png')} />
         <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
       </View>
     );

@@ -79,7 +79,7 @@ const AddContactScreen = (props) => {
     return search ?
       <Text style={styles.noResults}>No users found</Text> :
       <View style={styles.imageContainer}>
-        <Image style={styles.image} source={require('../../assets/magnifying-glass.png')} />
+        <Image style={styles.image} source={require('../../assets/icons_256_search.png')} />
         <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
       </View>;
   };
@@ -185,8 +185,9 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 100
   },
   image: {
     width: 100,

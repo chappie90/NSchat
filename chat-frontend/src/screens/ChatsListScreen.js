@@ -100,6 +100,8 @@ const ChatsListScreen = ({ navigation }) => {
                 subtitle={
                   <View style={styles.itemContainer}>
                     <BodyText
+                      numberOfLines={2}
+                      ellipsize="tail"
                       style={item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>
                       {isTyping && typingUser == item.contact ? 'is typing...' : item.text}
                     </BodyText>

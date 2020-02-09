@@ -53,6 +53,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         returnKeyType="next"
         onSubmitEditing={() => { secondTextInput.focus(); }} 
         autoCapitalize="none"
+        placeholderTextColor="#A0A0A0"
         // blurOnSubmit={false}
         autoCorrect={false} />
       {
@@ -68,6 +69,7 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
         autoCorrect={false}
         autoCapitalize="none"
         secureTextEntry
+        placeholderTextColor="#A0A0A0"
         ref={(input) => { secondTextInput = input; }} />
       {
         passwordIsValid !== null 
@@ -107,7 +109,8 @@ const styles = StyleSheet.create({
     height: 60,
     fontSize: 20,
     borderBottomWidth: 2,
-    borderBottomColor: 'lightgrey'
+    borderBottomColor: 'lightgrey',
+    color: '#000'
   },
   inputError: {
     color: 'red',

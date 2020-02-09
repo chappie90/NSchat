@@ -88,17 +88,16 @@ const TabBar = props => {
   return <Text>Custom Tab Bar</Text>;
 };
 
+const BottomTabNavigator = createBottomTabNavigator({
+  ChatsFlow,
+  ContactsListFlow,
+  Account: AccountScreen
+});
+
 const ChatNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
-  LoginFlow: createStackNavigator({
-    Starter: StarterScreen,
-  }),
-  MainFlow: createBottomTabNavigator({
-    ChatsFlow,
-    ContactsListFlow,
-    Account: AccountScreen,
-    // SpeechToText: SpeechToTextScreen
-  },
+  Starter: StarterScreen,
+  MainFlow: BottomTabNavigator
   // {
   //   tabBarComponent: props => <TabBar />,
   //   tabBarOptions: {
@@ -106,7 +105,6 @@ const ChatNavigator = createSwitchNavigator({
   //     inactiveTintColor: "#ddd"
   //   }
   // }
-)
 });
 
 export default createAppContainer(ChatNavigator);

@@ -4,7 +4,6 @@ const multer = require('multer');
 const path = require('path');
 
 const User = mongoose.model('User');
-const Message = mongoose.model('Message');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
@@ -25,9 +24,7 @@ const storage = multer.diskStorage({
     cb(error, './public/uploads/');
   },
   filename: (req, file, cb) => {
-    console.log(file)
     const name = file.originalname;
-    console.log(name);
     const ext = MIME_TYPE_PROFILE[file.mimetype];
     cb(null, `${name}`);
   }
@@ -38,11 +35,23 @@ router.post(
   checkAuth, 
   multer({ storage: storage }).single('profile'),
   async (req, res) => {
+    const username = req.body.user;
+    const url = req.protocol + '://' + req.get('host');
     try {
-      console.log('success');
-      res.status(200).send({ msg: 'success' });
+      const user = await User.update(
+        { username: username },
+        { profile: {
+          imgPath: url + '/public/uploads/' + req.file.filename,
+          imgName: req.file.originalname
+        } },
+        { new: true }
+      );
+      let response = user.nModified > 0 ? true : false;
+
+      res.status(200).send(response);
     } catch (err) {
-      res.status(422).send(err.message);
+      console.log(err);
+      res.status(422).send({ error: 'Could not save image' });
     }
 });
 

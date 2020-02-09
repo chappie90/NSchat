@@ -31,19 +31,20 @@ const saveImage = dispatch => async (user, image) => {
       name: `${user}.${fileType}`,
       type: `image/${fileType}` 
     });
+    formData.append('user', user);
 
     const response = await chatApi.post('/image/upload', formData , { headers: { 'Content-Type': 'multipart/form-data' }});
 
-    console.log(response.data);
+    if (response.data) {
+      await FileSystem.moveAsync({
+        from: image,
+        to: newPath
+      });
 
-    await FileSystem.moveAsync({
-      from: image,
-      to: newPath
-    });
+      const dbResult = await insertProfileImage(user, newPath);
 
-    const dbResult = await insertProfileImage(user, newPath);
-
-    dispatch({ type: 'update_image', payload: newPath });
+      dispatch({ type: 'update_image', payload: newPath });
+    }
   } catch (err) {
     console.log(err);
     throw err;

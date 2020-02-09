@@ -17,7 +17,11 @@ const userSchema = new mongoose.Schema({
        username: { type: String, required: true },
        previousChat: { type: Boolean, required: true }
      }
-  ]
+  ],
+  profile: {
+    imgPath: String,
+    imgName: String
+  }
 });
 
 userSchema.pre('save', function(next) {

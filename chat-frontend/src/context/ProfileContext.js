@@ -18,6 +18,21 @@ const saveImage = dispatch => async (user, image) => {
     const fileName = image.split('/').pop();
     const newPath = FileSystem.documentDirectory + fileName;
 
+    let uriParts = image.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+ 
+    let formData = new FormData();
+
+    formData.append('photo', {
+      image,
+      name: `${user}.${fileType}`,
+      type: `image/${fileType}` 
+    });
+
+    const response = await chatApi.post('/image/upload', formData , { headers: { 'Content-Type': 'multipart/form-data' }});
+
+    console.log(response.data);
+
     await FileSystem.moveAsync({
       from: image,
       to: newPath

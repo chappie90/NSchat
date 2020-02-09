@@ -5,15 +5,7 @@ const Message = mongoose.model('Message');
 
 const checkAuth = require('../middlewares/checkAuth');
 
-// // Speech stuff
-// const fs = require('fs')
-// const axios = require('axios')
-// const speech = require('@google-cloud/speech');
-// const ffmpeg = require('fluent-ffmpeg');
-
 const router = express.Router();
-
-// const client = new speech.SpeechClient();
 
 router.post('/chats', checkAuth, async (req, res) => {
   const { username } = req.body;
@@ -55,6 +47,26 @@ router.post('/chats', checkAuth, async (req, res) => {
   }
 
 });
+
+ // formPost(url, form) {
+ //    return new Promise((resolve, reject) => {
+ //      console.log(form.getHeaders()['content-type']);
+ //      axios({
+ //        method: 'post',
+ //        url,
+ //        data: form,
+ //        headers: { 'Content-Type': form.getHeaders()['content-type'] },
+ //        cancelToken: new CancelToken((c) => {
+ //          cancel = c;
+ //        }),
+ //      }).then((res) => {
+ //        resolve(res);
+ //      }).catch((err) => {
+ //        console.log(err);
+ //        reject(err);
+ //      });
+ //    });
+ //  },
 
 router.post('/messages', checkAuth, async (req, res) => {
   const { username, recipient, page } = req.body;

@@ -78,7 +78,7 @@ const ContactsListScreen = ({ navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity onPress={() => navigation.navigate('ChatDetail', { username: item })}>
+              <TouchableOpacity style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
                 <ListItem
                   key={index}
                   leftAvatar={{ source: require('../../assets/avatar2.png') }}
@@ -87,20 +87,26 @@ const ContactsListScreen = ({ navigation }) => {
                       <Text style={styles.name}>{item}</Text>
                     </View>
                   }
+                  // containerStyle={{ borderWidth: 1 }}
+                  linearGradientProps={{
+                    colors: ['#F8F8F8', '#E0E0E0'],
+                    start: [1, 0],
+                    end: [0.1, 0],
+                  }}
                   // subtitle={
                   //   <View style={styles.iconWrapper}>
                   //     <MaterialCommunityIcons name="hand-peace" size={28} color={Colors.tertiary} />
                   //   </View>
                   // }
-                  chevron={{ color: Colors.secondary }}
+                  chevron={{ color: 'darkgrey' }}
                   bottomDivider
                 />
-                {onlineContacts.includes(item.contact) && (
+                
                   <Badge
                     badgeStyle={styles.badge}
                     containerStyle={styles.badgeContainer}
                   />
-                )}
+              
               </TouchableOpacity>
             );
           }} />

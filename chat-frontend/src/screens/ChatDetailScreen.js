@@ -394,6 +394,7 @@ const ChatDetailScreen = ({ navigation }) => {
           //   }
           // }}
           textInputStyle={styles.input}
+          placeholderTextColor="#202020"
           renderBubble={renderBubble}
           renderAvatar={renderAvatar}
           loadEarlier={true} // enables load earlier messages button

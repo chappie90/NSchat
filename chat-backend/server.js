@@ -4,6 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const http = require('http');
+const path = require('path');
+// const serveIndex = require('serve-index');
 const { Expo } = require('expo-server-sdk');
 
 const User = mongoose.model('User');
@@ -22,6 +24,10 @@ require('./src/socket/chat')(io);
 const expo = new Expo();
 
 app.use(bodyParser.json());
+app.use(express.static(path.resolve(__dirname, '/public/uploads')));
+
+ // app.use('/ftp', express.static('public'), serveIndex('public', {'icons': true}));
+
 app.use(authRoutes);
 app.use(chatRoutes);
 app.use(contactsRoutes);

@@ -20,11 +20,14 @@ const saveImage = dispatch => async (user, image) => {
 
     let uriParts = image.split('.');
     let fileType = uriParts[uriParts.length - 1];
- 
     let formData = new FormData();
 
-    formData.append('photo', {
-      image,
+    //body.append('authToken', 'secret'); don't really need it
+
+    // make sure this name is the same as multer({ storage: storage }).single('profile'),
+    // otherwise will get MulterError: Unexpected field error
+    formData.append('profile', {
+      uri: image,
       name: `${user}.${fileType}`,
       type: `image/${fileType}` 
     });

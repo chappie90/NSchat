@@ -8,7 +8,8 @@ import {
   SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator
 } from 'react-native';
 import { Overlay, Image } from 'react-native-elements';
 import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time } from 'react-native-gifted-chat';
@@ -266,11 +267,19 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderMessage = (props) => {
-    // if (props.currentMessage.reply) {
-    //   return <RenderMessageReplyBubble { ...props } />;
-    // }
+    if (props.currentMessage.reply) {
+      return <RenderMessageReplyBubble { ...props } />;
+    }
     return <Message { ...props } />;
   };  
+
+  const renderLoading = () => {
+    return (
+      <View style={styles.spinnerContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+       </View>
+    );
+  };
 
   const RenderMessageReplyBubble = props => {
     return (
@@ -405,6 +414,7 @@ const ChatDetailScreen = ({ navigation }) => {
           onLoadEarlier={() => {
             loadMoreMessages();
           }}
+          renderLoading={renderLoading}
           ref={ref => giftedChatRef = ref}
           renderChatFooter={renderChatFooter}
           renderCustomView={false ? null : renderCustomView}
@@ -585,7 +595,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic', 
     paddingHorizontal: 10, 
     paddingVertical: 5 
-  }
+  },
+  spinnerContainer: {
+    padding: 40
+  },
 });
 
 export default ChatDetailScreen;

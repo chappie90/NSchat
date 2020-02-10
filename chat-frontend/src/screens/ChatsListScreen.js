@@ -179,7 +179,8 @@ const styles = StyleSheet.create({
     color: '#fff'
   },
   name: {
-    fontSize: 15
+    fontSize: 17,
+    color: Colors.primary
   },
   text: {
     color: 'grey'

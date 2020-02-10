@@ -13,7 +13,6 @@ import ContactsListScreen from '../screens/ContactsListScreen';
 import AccountScreen from '../screens/AccountScreen';
 import ChatDetailScreen from '../screens/ChatDetailScreen';
 import ChatsNavigatorTab from '../components/ChatsNavigatorTab';
-// import SpeechToTextScreen from '../screens/SpeechToTextScreen';
 
 const ChatsFlow = createStackNavigator({
   ChatsList: ChatsListScreen,

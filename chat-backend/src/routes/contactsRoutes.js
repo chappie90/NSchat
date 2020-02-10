@@ -58,7 +58,7 @@ router.post('/contacts', checkAuth, async (req, res) => {
   const { username } = req.body;
 
   try {
-    const user = await User.findOne({ username }, { 'contacts.username': 1, _id: 0 });
+    const user = await User.findOne({ username }, { 'contacts.username': 1, profile: 1, _id: 0 });
 
     if (!user) {
       return res.status(422).send({ error: 'Something went wrong with your request' });

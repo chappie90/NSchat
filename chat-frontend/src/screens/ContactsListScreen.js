@@ -54,13 +54,13 @@ const ContactsListScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <AddContactScreen visible={newContactMode} closeModal={closeModal} />
+      <View style={styles.background} />
       <View style={styles.headerContainer}>
         <HeadingText style={styles.header}>My Contacts</HeadingText>
         <TouchableOpacity onPress={() => setNewContactMode(true)}>
-          <FontAwesome5 name="user-plus" size={23} color={Colors.primary} />
+          <FontAwesome5 name="user-plus" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
-      <View style={styles.divider} />
       {contactsIsLoading ? (
         <View style={styles.spinnerContainer}>
           <ActivityIndicator size="large" color={Colors.primary} />
@@ -79,34 +79,22 @@ const ContactsListScreen = ({ navigation }) => {
           renderItem={({ item, index }) => {
             return (
               <TouchableOpacity style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
-                <ListItem
-                  key={index}
-                  leftAvatar={{ source: require('../../assets/avatar2.png') }}
-                  title={
-                    <View style={styles.itemContainer}>
-                      <Text style={styles.name}>{item}</Text>
-                    </View>
-                  }
-                  // containerStyle={{ borderWidth: 1 }}
-                  linearGradientProps={{
-                    colors: ['#F8F8F8', '#E0E0E0'],
-                    start: [1, 0],
-                    end: [0.1, 0],
-                  }}
-                  // subtitle={
-                  //   <View style={styles.iconWrapper}>
-                  //     <MaterialCommunityIcons name="hand-peace" size={28} color={Colors.tertiary} />
-                  //   </View>
-                  // }
-                  chevron={{ color: 'darkgrey' }}
-                  bottomDivider
-                />
-                
-                  <Badge
-                    badgeStyle={styles.badge}
-                    containerStyle={styles.badgeContainer}
-                  />
-              
+                <View 
+                  style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingHorizontal: 15}}
+                  shadowColor="grey"
+                  shadowOffset={{ width: '100%', height: 10 }}
+                  shadowOpacity="1"
+                  shadowRadius="40"
+                >
+                  <View style={{ overflow: 'hidden', borderRadius: 22}}>
+                    <Image style={{ width: 44, height: 44 }} source={require('../../assets/avatar2.png')} />
+                  </View>                  
+                  <View style={styles.itemContainer}>
+                    <Text style={styles.name}>{item}</Text>
+                  </View>
+                  <MaterialIcons style={{ marginLeft: 'auto' }} name="chevron-right" size={24} />
+                  <View style={styles.badge} />
+                </View>
               </TouchableOpacity>
             );
           }} />
@@ -130,8 +118,7 @@ ContactsListScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 30,
-    paddingHorizontal: 20
+    paddingVertical: 20,
   },
   name: {
     fontWeight: 'bold'
@@ -144,12 +131,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 15,
-    paddingHorizontal: 10
+    paddingRight: 15
+  },
+  background: {
+    width: '100%',
+    backgroundColor: Colors.primary,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: 80
   },
   header: {
     fontSize: 22,
-    paddingVertical: 5
+    paddingBottom: 20,
+    marginTop: 15,
+    paddingLeft: 20,
+    color: '#fff'
   },
   divider: {
     borderBottomColor: 'lightgrey',
@@ -171,6 +168,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'lightgrey'
   },
+  itemContainer: {
+     marginLeft: 15
+  },  
   image: {
     width: 35,
     height: 35,
@@ -203,18 +203,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10
   },
-  badgeContainer: {
-    position: 'absolute', 
-    top: 43, 
-    left: 43
-  },
   badge: {
     backgroundColor: '#32CD32', 
     width: 15, 
     height: 15, 
     borderRadius: 10, 
     borderWidth: 2, 
-    borderColor: 'white'
+    borderColor: 'white',
+     position: 'absolute', 
+    top: 32, 
+    left: 46
   },
 });
 

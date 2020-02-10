@@ -37,6 +37,9 @@ const getChats = dispatch => async ({ username }) => {
       return new Date(b.date) - new Date(a.date)
     });
 
+    console.log(chats);
+    console.log(response.data);
+
     dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);

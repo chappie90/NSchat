@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl, 
-  ActivityIndicator 
+  ActivityIndicator,
+  StatusBar 
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
@@ -111,7 +112,7 @@ const ChatsListScreen = ({ navigation }) => {
                   </View>
                 }
                 subtitleStyle={styles.subtitle}
-                bottomDivider
+                // bottomDivider
               />
               {onlineContacts.includes(item.contact) && (
                 <Badge
@@ -136,8 +137,12 @@ const ChatsListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+    <StatusBar
+        backgroundColor="blue"
+        barStyle="light-content"
+      />
+      <View style={styles.background} />
       <HeadingText style={styles.header}>My Chats</HeadingText>   
-      <View style={styles.divider} />
       {chatsIsLoading ?
         renderActivityIndicator() :
         previousChats.length > 0 ?
@@ -155,14 +160,23 @@ ChatsListScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 30,
-    paddingHorizontal: 20
+    paddingVertical: 20,
+    // paddingHorizontal: 20
+  },
+  background: {
+    width: '100%',
+    backgroundColor: Colors.primary,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: 80
   },
   header: {
     fontSize: 22,
-    paddingVertical: 5,
+    paddingBottom: 20,
     marginTop: 15,
-    paddingLeft: 10
+    paddingLeft: 20,
+    color: '#fff'
   },
   name: {
     fontSize: 15

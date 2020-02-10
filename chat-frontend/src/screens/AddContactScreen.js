@@ -92,6 +92,7 @@ const AddContactScreen = (props) => {
               <MaterialIcons name="search" size={40} color="white" />
               <TextInput
                 style={styles.input} 
+                selectionColor={'grey'}
                 placeholder="Find people..."
                 placeholderTextColor="white"
                 value={search}

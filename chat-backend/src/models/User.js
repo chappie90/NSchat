@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
   contacts: [
      { 
        username: { type: String, required: true },
+       profile: {
+        imgPath: String,
+        imgName: String
+       },
        previousChat: { type: Boolean, required: true }
      }
   ],

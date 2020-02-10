@@ -28,7 +28,7 @@ import { connectToSocket } from '../socket/chat';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
-  const { state: { chat }, getChats, getMessages, updateMessages, deleteMessage } = useContext(ChatContext);
+  const { state: { chat }, getChats, getMessages, updateMessages, deleteMessage, resetChatState } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
@@ -108,6 +108,10 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const didFocusHandler = () => {
     socket.current.emit('join_chat', { username, recipient });
+  };
+
+  const didBlurHandler = () => {
+    resetChatState();
   };
 
   const registerForPushNotificationsAsync = async () => {
@@ -377,7 +381,7 @@ const ChatDetailScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <NavigationEvents
-        onWillFocus={() => console.log('will focus')}
+        onWillBlur={didBlurHandler}
         onDidFocus={didFocusHandler}
         />
         <GiftedChat

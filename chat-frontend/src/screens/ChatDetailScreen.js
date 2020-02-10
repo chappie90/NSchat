@@ -102,18 +102,27 @@ const ChatDetailScreen = ({ navigation }) => {
     }
   }, [recipient]);
 
-  useEffect(() => {
-    // console.log(chat[0]);
+  useEffect(() => {;
     setIncomingMsgs(chat);
+    console.log('chat updated');
   }, [chat]);
 
   const didFocusHandler = () => {
     socket.current.emit('join_chat', { username, recipient });
   };
 
-  const didBlurHandler = () => {
+  const willBlurHandler = () => {
     resetChatState();
   };
+
+  // const willFocusHandler = () => {
+  //   const getRecipientParam = navigation.getParam('username');
+  //   setCurrentPage(1);
+  //   setRecipient(getRecipientParam);
+  //   console.log(username);
+  //   console.log(getRecipientParam);
+  //   getMessages({ username, recipient: getRecipientParam, page: 1 });
+  // };
 
   const registerForPushNotificationsAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
@@ -390,7 +399,8 @@ const ChatDetailScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <NavigationEvents
-        onWillBlur={didBlurHandler}
+        onWillBlur={willBlurHandler}
+        // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
         <GiftedChat

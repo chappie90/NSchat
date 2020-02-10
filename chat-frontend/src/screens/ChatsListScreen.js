@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
-import { ListItem, Badge, Image } from 'react-native-elements';
+import { Badge, Image } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
 
 import Colors from '../constants/colors';
@@ -89,16 +89,15 @@ const ChatsListScreen = ({ navigation }) => {
               markMessagesAsRead({ username, recipient: item.contact });
               navigation.navigate('ChatDetail', { username: item.contact });
             }}>
-              <ListItem
-                key={index}
-                leftAvatar={{ source: require('../../assets/avatar2.png'), rounded: true }}
-                title={
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, marginBottom: 8 }}>
+                <View style={{ overflow: 'hidden', borderRadius: 22 }}>
+                  <Image source={require('../../assets/avatar2.png')} style={{ width: 44, height: 44 }} />
+                </View>
+                <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
                   <View style={styles.itemContainer}>
-                    <HeadingText style={styles.name}>{item.contact}</HeadingText>
-                    <BodyText style={styles.text}>{formatDate(item.date)}</BodyText>
+                    <HeadingText numberOfLines={1} style={styles.name}>{item.contact}</HeadingText>
+                    <BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
                   </View>
-                }
-                subtitle={
                   <View style={styles.itemContainer}>
                     <BodyText
                       numberOfLines={2}
@@ -107,13 +106,13 @@ const ChatsListScreen = ({ navigation }) => {
                       {isTyping && typingUser == item.contact ? 'is typing...' : item.text}
                     </BodyText>
                     {item.unreadMessageCount !== 0 && (
-                      <Badge value={item.unreadMessageCount > 99 ? '99+' : item.unreadMessageCount } badgeStyle={styles.unreadBadge} />
+                      <View style={styles.unreadBadge}>
+                        <HeadingText style={styles.unreadBadgeText}>{item.unreadMessageCount > 99 ? '99+' : item.unreadMessageCount }</HeadingText>
+                      </View>
                     )}
                   </View>
-                }
-                subtitleStyle={styles.subtitle}
-                // bottomDivider
-              />
+                </View>
+              </View>
               {onlineContacts.includes(item.contact) && (
                 <Badge
                   badgeStyle={styles.badge}
@@ -180,22 +179,28 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 17,
-    color: Colors.primary
+    color: Colors.primary,
+    maxWidth: '55%'
   },
   text: {
+    color: 'grey',
+    maxWidth: '90%',
+    fontSize: 15
+  },
+  date: {
     color: 'grey'
   },
   unreadMessage: {
-    fontFamily: 'open-sans-semi-bold'
-  },
-  subtitle: {
-    color: 'grey', 
-    marginTop: 2
+    fontFamily: 'open-sans-semi-bold',
+    maxWidth: '90%',
+    fontSize: 15
   },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: 2,
+    color: 'grey',
   },
   divider: {
     borderBottomColor: 'lightgrey',
@@ -233,6 +238,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 10
+  },
+  badge: {
+    backgroundColor: '#32CD32', 
+    width: 15, 
+    height: 15, 
+    borderRadius: 10, 
+    borderWidth: 2, 
+    borderColor: 'white',
+    position: 'absolute', 
+    top: 32, 
+    left: 46
+  },
+  unreadBadge: {
+    backgroundColor: Colors.tertiary,
+    borderRadius: 10,
+    paddingHorizontal: 5.5,
+
+  },
+  unreadBadgeText: {
+    color: '#fff'
   }
 });
 

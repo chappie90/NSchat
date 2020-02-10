@@ -39,9 +39,6 @@ const getChats = dispatch => async ({ username }) => {
       return new Date(b.date) - new Date(a.date)
     });
 
-    console.log(chats);
-    console.log(response.data);
-
     dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);
@@ -63,6 +60,11 @@ const resetChatState = dispatch => () => {
 
 const getMessages = dispatch => async ({ username, recipient, page }) => {
   try {
+
+    console.log('chat context');
+    console.log(username);
+    console.log(recipient);
+    console.log(page);
 
     const response = await chatApi.post('/messages', { username, recipient, page });
 

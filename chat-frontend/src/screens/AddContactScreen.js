@@ -21,6 +21,8 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
 import SecondaryButton from '../components/SecondaryButton';
 import BodyText from '../components/BodyText';
+import ScaleImageAnim from '../components/animations/ScaleImageAnim';
+import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 
 const AddContactScreen = (props) => {
   const { state: { searchResults, contacts }, searchContacts, clearSearchResults, addContact } = useContext(ContactsContext);
@@ -79,8 +81,10 @@ const AddContactScreen = (props) => {
     return search ?
       <Text style={styles.noResults}>No users found</Text> :
       <View style={styles.imageContainer}>
-        <Image style={styles.image} source={require('../../assets/icons_256_search.png')} />
-        <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_search.png')} />
+        <TranslateFadeViewAnim>
+          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        </TranslateFadeViewAnim>
       </View>;
   };
 

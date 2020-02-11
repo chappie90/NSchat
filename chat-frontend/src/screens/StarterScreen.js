@@ -5,8 +5,7 @@ import {
  StyleSheet, 
  Image, 
  TouchableOpacity,
- Animated,
- // Easing
+ Animated
 } from 'react-native';
 
 import Colors from '../constants/colors';

@@ -14,6 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import Overlay from 'react-native-modal-overlay';
+import Modal from "react-native-modal";
 
 import Colors from '../constants/colors';
 import PrimaryButton from './PrimaryButton';
@@ -101,14 +102,14 @@ const ImgPicker = props => {
 
   return (
     <View style={styles.imagePickerContainer}>
-      <Overlay 
-        childrenWrapperStyle={{ borderRadius: 4, width: 220 }}
-        containerStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)', alignItems: 'center', justifyContent: 'center'}} 
-        animationType="zoomIn" 
-        animationDuration={200} 
-        visible={modalVisible} 
-        onClose={modalCloseHandler} 
-        closeOnTouchOutside>
+      <Modal
+        style={{ alignItems: 'center', justifyContent: 'center'}}
+        isVisible={modalVisible}
+        onBackdropPress={modalCloseHandler}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        animationInTiming={200}
+        backdropTransitionOutTiming={0}>
         <View style={styles.overlayContainer}>
           <TouchableOpacity style={styles.overlayItemWrapper} onPress={takePhotoHandler}>
             <View style={styles.overlayItem}>
@@ -140,7 +141,7 @@ const ImgPicker = props => {
             </TouchableOpacity>
           </View>
         </View>
-      </Overlay>
+      </Modal>
       <View style={styles.profileContainer}>
         <TouchableWithoutFeedback onPress={avatarClickHandler}>
           <View>
@@ -197,7 +198,11 @@ const styles = StyleSheet.create({
     padding: 5
   },
   overlayContainer: {
-
+    width: 230,
+    backgroundColor: '#fff',
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    borderRadius: 4
   },
   overlayItemWrapper: {
     marginBottom: 10,

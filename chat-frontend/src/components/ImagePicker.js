@@ -1,9 +1,19 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, TouchableWithoutFeedback, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import { Image, Overlay } from 'react-native-elements';
+import {
+  View, 
+  TouchableWithoutFeedback, 
+  TouchableOpacity, 
+  Text, 
+  StyleSheet, 
+  Alert,
+  NativeModules,
+  LayoutAnimation
+} from 'react-native';
+import { Image } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
+import Overlay from 'react-native-modal-overlay';
 
 import Colors from '../constants/colors';
 import PrimaryButton from './PrimaryButton';
@@ -12,14 +22,26 @@ import HeadingText from './HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ProfileContext } from '../context/ProfileContext';
 
+const { UIManager } = NativeModules;
+
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+
 const ImgPicker = props => {
   const { state: { username } } = useContext(AuthContext);
   const { state: { profileImage }, saveImage, getImage, deleteImage } = useContext(ProfileContext);
-  const [overlayMode, setOverlayMode] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const modalCloseHandler = () => {
+    setModalVisible(false);
+  };  
 
   useEffect(() => {
     getImage(username);
   }, []);
+
+  const avatarClickHandler = () => {
+    setModalVisible(true);
+  };
 
   const getCameraPermissions = async () => {
     const response = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
@@ -50,7 +72,7 @@ const ImgPicker = props => {
     if (!cameraImage.uri) {
       return;
     }
-    setOverlayMode(false);
+    setModalVisible(false);
     saveImage(username, cameraImage.uri);
   };
 
@@ -65,7 +87,7 @@ const ImgPicker = props => {
     if (!libraryImage.uri) {
       return;
     }
-    setOverlayMode(false);
+    setModalVisible(false);
     saveImage(username, libraryImage.uri);
   };
 
@@ -73,14 +95,54 @@ const ImgPicker = props => {
     if (profileImage) {
       deleteImage(username);
     }
-    setOverlayMode(false);
+    setModalVisible(false);
   };
 
 
   return (
     <View style={styles.imagePickerContainer}>
+      <Overlay 
+        childrenWrapperStyle={{ borderRadius: 4, width: 220 }}
+        containerStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)', alignItems: 'center', justifyContent: 'center'}} 
+        animationType="zoomIn" 
+        animationDuration={200} 
+        visible={modalVisible} 
+        onClose={modalCloseHandler} 
+        closeOnTouchOutside>
+        <View style={styles.overlayContainer}>
+          <TouchableOpacity style={styles.overlayItemWrapper} onPress={takePhotoHandler}>
+            <View style={styles.overlayItem}>
+              <View style={styles.iconWrapper}>
+                <MaterialIcons color="white" name="camera-alt" size={24} />
+              </View>
+              <BodyText style={styles.overlayText}>Take Photo</BodyText>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.overlayItemWrapper} onPress={choosePhotoHandler}>
+            <View style={styles.overlayItem}>
+              <View style={styles.iconWrapper}>
+                <Ionicons color="white" name="md-images" size={24} />
+              </View>
+              <BodyText style={styles.overlayText}>Choose Photo</BodyText>
+            </View>  
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.overlayItemWrapper} onPress={deletePhotoHandler}>
+            <View style={styles.overlayItem}>
+              <View style={styles.deleteIconWrapper}>
+                <AntDesign color="white" name="delete" size={24} />
+              </View>
+              <BodyText style={styles.overlayDelete}>Delete Photo</BodyText>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.cancel}>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <BodyText style={styles.cancelText}>Cancel</BodyText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Overlay>
       <View style={styles.profileContainer}>
-        <TouchableWithoutFeedback onPress={() => setOverlayMode(true)}>
+        <TouchableWithoutFeedback onPress={avatarClickHandler}>
           <View>
             <View style={styles.imagePreview}>
               {profileImage ?
@@ -90,47 +152,10 @@ const ImgPicker = props => {
                   style={styles.image} /> : 
                 <Image source={require('../../assets/avatar2.png')} style={styles.image} />
               }
+            </View>   
+            <View style={styles.cameraIconContainer}>
+              <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={36} />
             </View>
-            <Overlay
-              isVisible={overlayMode}
-              width="auto"
-              height="auto"
-              onBackdropPress={() => setOverlayMode(false)}>
-                <View style={styles.overlayContainer}>
-                  <TouchableOpacity style={styles.overlayItemWrapper} onPress={takePhotoHandler}>
-                    <View style={styles.overlayItem}>
-                      <View style={styles.iconWrapper}>
-                        <MaterialIcons color="white" name="camera-alt" size={24} />
-                      </View>
-                      <BodyText style={styles.overlayText}>Take Photo</BodyText>
-                    </View>
-                  </TouchableOpacity>
-                    <TouchableOpacity style={styles.overlayItemWrapper} onPress={choosePhotoHandler}>
-                    <View style={styles.overlayItem}>
-                      <View style={styles.iconWrapper}>
-                        <Ionicons color="white" name="md-images" size={24} />
-                      </View>
-                      <BodyText style={styles.overlayText}>Choose Photo</BodyText>
-                    </View>  
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.overlayItemWrapper} onPress={deletePhotoHandler}>
-                    <View style={styles.overlayItem}>
-                      <View style={styles.deleteIconWrapper}>
-                        <AntDesign color="white" name="delete" size={24} />
-                      </View>
-                      <BodyText style={styles.overlayDelete}>Delete Photo</BodyText>
-                    </View>
-                  </TouchableOpacity>
-                  <View style={styles.cancel}>
-                    <TouchableOpacity onPress={() => setOverlayMode(false)}>
-                      <BodyText style={styles.cancelText}>Cancel</BodyText>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-            </Overlay>
-             <View style={styles.cameraIconContainer}>
-                <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={36} />
-              </View>
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -172,8 +197,7 @@ const styles = StyleSheet.create({
     padding: 5
   },
   overlayContainer: {
-    padding: 15,
-    paddingBottom: 10,
+
   },
   overlayItemWrapper: {
     marginBottom: 10,

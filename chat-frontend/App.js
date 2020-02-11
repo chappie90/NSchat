@@ -8,8 +8,6 @@ import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as ChatProvider } from './src/context/ChatContext';
 import { Provider as ProfileProvider } from './src/context/ProfileContext'; 
 import { Provider as ContactsProvider } from './src/context/ContactsContext';
-import { Provider as AppProvider } from './src/context/AppContext';
-import Overlay from './src/components/Overlay';
 import { setNavigator } from './src/components/navigationRef';
 import { init } from './src/database/db';
 
@@ -40,17 +38,14 @@ export default () => {
   }
 
   return (
-    <AppProvider>  
-      <ContactsProvider>
-        <ProfileProvider>
-          <ChatProvider>
-            <AuthProvider>
-              <Overlay />
-              <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
-            </AuthProvider>
-          </ChatProvider>
-        </ProfileProvider>
-      </ContactsProvider>
-    </AppProvider>
+    <ContactsProvider>
+      <ProfileProvider>
+        <ChatProvider>
+          <AuthProvider>
+            <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
+          </AuthProvider>
+        </ChatProvider>
+      </ProfileProvider>
+    </ContactsProvider>
   );
 };

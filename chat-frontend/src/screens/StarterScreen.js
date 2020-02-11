@@ -1,11 +1,44 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+ View, 
+ Text, 
+ StyleSheet, 
+ Image, 
+ TouchableOpacity,
+ Animated
+} from 'react-native';
 
 import Colors from '../constants/colors';
 import HeadingText from '../components/HeadingText';
 import PrimaryButton from '../components/PrimaryButton';
 import SignupScreen from '../screens/SignupScreen';
 import SigninScreen from '../screens/SigninScreen';
+
+const FadeInView = props => {
+  const [fadeAnim, setFadeAnim] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    Animated.timing(
+      fadeAnim,
+      {
+        toValue: 1,
+        duration: 2000
+      }
+    ).start();
+  }, []);
+
+  return (
+    <Animated.View
+      style={{
+        ...props.style,
+        opacity: fadeAnim
+      }}
+    >
+      {props.children}
+    </Animated.View>
+  );
+};
+
 
 const StarterScreen = ({ navigation }) => {
   const [signupMode, setSignupMode] = useState(false);
@@ -28,7 +61,7 @@ const StarterScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <FadeInView style={styles.container}>
       <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
       <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
       <Image style={styles.image}  source={require('../../assets/starter-icon-min.jpg')} />
@@ -39,7 +72,7 @@ const StarterScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.signinButton} onPress={() => setSigninMode(true)}>
         <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
       </TouchableOpacity>
-    </View>
+    </FadeInView>
   );
 };
 

@@ -24,7 +24,7 @@ import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import { connectToSocket } from '../socket/chat';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
-import TranslateFadeTextAnim from '../components/animations/TranslateFadeTextAnim';
+import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -132,9 +132,9 @@ const ChatsListScreen = ({ navigation }) => {
     return (
       <View style={styles.imageContainer}>
         <ScaleImageAnim onLoad={() => console.log('image loaded')} style={styles.image} source={require('../../assets/icons_256_chat.png')} />
-        <TranslateFadeTextAnim>
+        <TranslateFadeViewAnim>
           <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-        </TranslateFadeTextAnim>
+        </TranslateFadeViewAnim>
       </View>
     );
   };

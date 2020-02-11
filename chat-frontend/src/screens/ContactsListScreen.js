@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useContext, useCallback } from 'rea
 import { 
   View, 
   ScrollView, 
+  Image,
   Text, 
   TextInput, 
   TouchableOpacity, 
@@ -11,7 +12,7 @@ import {
   ActivityIndicator 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ListItem, Image, Badge } from 'react-native-elements';
+import { ListItem, Badge } from 'react-native-elements';
 
 import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
@@ -21,6 +22,8 @@ import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import { connectToSocket } from '../socket/chat';
+import ScaleImageAnim from '../components/animations/ScaleImageAnim';
+import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 
 const ContactsListScreen = ({ navigation }) => {
   const { state: { contacts, contactsIsLoading, onlineContacts }, getContacts, getActiveStatus } = useContext(ContactsContext);
@@ -100,8 +103,10 @@ const ContactsListScreen = ({ navigation }) => {
           }} />
         ) : (
         <View style={styles.imageContainer}>
-          <Image style={styles.image} source={require('../../assets/icons_256_contact.png')} />
-          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+          <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_contact.png')} />
+          <TranslateFadeViewAnim>
+            <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+          </TranslateFadeViewAnim>
         </View>
         )
       }

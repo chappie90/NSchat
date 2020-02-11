@@ -10,14 +10,16 @@ const TranslateFadeViewAnim = props => {
       translateAnim,
       {
         toValue: 0,
-        duration: 600
+        duration: 600,
+        delay: 400
       }
     ).start();
     Animated.timing(
       fadeAnim,
       {
         toValue: 1,
-        duration: 1500
+        duration: 1500,
+        delay: 400
       }
     ).start();
   }, []);

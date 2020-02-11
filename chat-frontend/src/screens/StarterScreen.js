@@ -5,7 +5,8 @@ import {
  StyleSheet, 
  Image, 
  TouchableOpacity,
- Animated
+ Animated,
+ // Easing
 } from 'react-native';
 
 import Colors from '../constants/colors';
@@ -13,32 +14,7 @@ import HeadingText from '../components/HeadingText';
 import PrimaryButton from '../components/PrimaryButton';
 import SignupScreen from '../screens/SignupScreen';
 import SigninScreen from '../screens/SigninScreen';
-
-const FadeInView = props => {
-  const [fadeAnim, setFadeAnim] = useState(new Animated.Value(0));
-
-  useEffect(() => {
-    Animated.timing(
-      fadeAnim,
-      {
-        toValue: 1,
-        duration: 2000
-      }
-    ).start();
-  }, []);
-
-  return (
-    <Animated.View
-      style={{
-        ...props.style,
-        opacity: fadeAnim
-      }}
-    >
-      {props.children}
-    </Animated.View>
-  );
-};
-
+import FadeViewAnim from '../components/animations/FadeViewAnim';
 
 const StarterScreen = ({ navigation }) => {
   const [signupMode, setSignupMode] = useState(false);
@@ -61,18 +37,20 @@ const StarterScreen = ({ navigation }) => {
   };
 
   return (
-    <FadeInView style={styles.container}>
+    <FadeViewAnim style={styles.container}>
       <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
       <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
       <Image style={styles.image}  source={require('../../assets/starter-icon-min.jpg')} />
       <View style={styles.textWrapper}>
         <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
       </View>
-      <PrimaryButton style={styles.signupButton} onPress={() => setSignupMode(true)}>Get Started</PrimaryButton>
-      <TouchableOpacity style={styles.signinButton} onPress={() => setSigninMode(true)}>
-        <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
-      </TouchableOpacity>
-    </FadeInView>
+      <View style={{ marginTop: 'auto'}}>
+        <PrimaryButton style={styles.signupButton} onPress={() => setSignupMode(true)}>Get Started</PrimaryButton>
+        <TouchableOpacity style={styles.signinButton} onPress={() => setSigninMode(true)}>
+          <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
+        </TouchableOpacity>
+      </View>
+    </FadeViewAnim>
   );
 };
 

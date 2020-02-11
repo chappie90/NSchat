@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import HeadingText from '../components/HeadingText';
+import FadeViewAnim from '../components/animations/FadeViewAnim';
 
 const ResolveAuthScreen = () => {
   const { autoLogin } = useContext(AuthContext);
@@ -13,12 +14,12 @@ const ResolveAuthScreen = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <FadeViewAnim style={styles.container}>
       <Image style={styles.image}  source={require('../../assets/starter-icon.jpg')} />
       <View style={styles.textWrapper}>
         <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
       </View>
-    </View>
+    </FadeViewAnim>
   );
 };  
 

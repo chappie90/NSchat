@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Animated } from 'react-native';
 
-const TranslateFadeTextAnim = props => {
-  const [translateAnim] = useState(new Animated.Value(200));
+const TranslateFadeViewAnim = props => {
+  const [translateAnim] = useState(new Animated.Value(150));
   const [fadeAnim] = useState(new Animated.Value(0));
 
    useEffect(() => {
@@ -10,7 +10,7 @@ const TranslateFadeTextAnim = props => {
       translateAnim,
       {
         toValue: 0,
-        duration: 800
+        duration: 600
       }
     ).start();
     Animated.timing(
@@ -38,4 +38,4 @@ const TranslateFadeTextAnim = props => {
   );
 };
 
-export default TranslateFadeTextAnim;
+export default TranslateFadeViewAnim;

@@ -8,11 +8,12 @@ import {
   FlatList,
   RefreshControl, 
   ActivityIndicator,
-  StatusBar 
+  StatusBar,
+  Image
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
-import { Badge, Image } from 'react-native-elements';
+import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
 
 import Colors from '../constants/colors';
@@ -22,6 +23,8 @@ import { Context as ContactsContext } from '../context/ContactsContext';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import { connectToSocket } from '../socket/chat';
+import ScaleImageAnim from '../components/animations/ScaleImageAnim';
+import TranslateFadeTextAnim from '../components/animations/TranslateFadeTextAnim';
 
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -128,8 +131,10 @@ const ChatsListScreen = ({ navigation }) => {
   const renderStarterView = () => {
     return (
       <View style={styles.imageContainer}>
-        <Image style={styles.image} source={require('../../assets/icons_256_chat.png')} />
-        <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        <ScaleImageAnim onLoad={() => console.log('image loaded')} style={styles.image} source={require('../../assets/icons_256_chat.png')} />
+        <TranslateFadeTextAnim>
+          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        </TranslateFadeTextAnim>
       </View>
     );
   };

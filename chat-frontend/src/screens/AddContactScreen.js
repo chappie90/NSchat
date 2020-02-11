@@ -81,7 +81,7 @@ const AddContactScreen = (props) => {
     return search ?
       <Text style={styles.noResults}>No users found</Text> :
       <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_search.png')} />
+        <ScaleImageAnim style={styles.image} source={require('../../assets/icons-05.png')} />
         <TranslateFadeViewAnim>
           <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
         </TranslateFadeViewAnim>
@@ -89,7 +89,7 @@ const AddContactScreen = (props) => {
   };
 
   return (
-    <Modal visible={props.visible} animationType="slide">
+    <Modal visible={props.visible} transparent={true} animationType="slide">
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
             <View style={styles.inputContainer}>
@@ -99,6 +99,7 @@ const AddContactScreen = (props) => {
                 selectionColor={'grey'}
                 placeholder="Find people..."
                 placeholderTextColor="white"
+                autoFocus
                 value={search}
                 onChangeText={(search) => {               
                   setSearch(search);
@@ -137,7 +138,8 @@ AddContactScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 30,
+    backgroundColor: '#fff',
+    marginTop: 90
   },
   itemContainer: {
     flexDirection: 'row',
@@ -149,7 +151,10 @@ const styles = StyleSheet.create({
     height: 80,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.primary
+    backgroundColor: Colors.secondary,
+    // #EE7600
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25
   },
   input: {
     fontSize: 24,
@@ -192,7 +197,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 100
+    marginTop: 30
   },
   image: {
     width: 100,

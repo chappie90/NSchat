@@ -5,15 +5,12 @@ import {
   TouchableOpacity, 
   Text, 
   StyleSheet, 
-  Alert,
-  NativeModules,
-  LayoutAnimation
+  Alert
 } from 'react-native';
 import { Image } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
-import Overlay from 'react-native-modal-overlay';
 import Modal from "react-native-modal";
 
 import Colors from '../constants/colors';
@@ -22,10 +19,6 @@ import BodyText from './BodyText';
 import HeadingText from './HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ProfileContext } from '../context/ProfileContext';
-
-const { UIManager } = NativeModules;
-
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const ImgPicker = props => {
   const { state: { username } } = useContext(AuthContext);

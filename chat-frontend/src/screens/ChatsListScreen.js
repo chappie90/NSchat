@@ -131,7 +131,7 @@ const ChatsListScreen = ({ navigation }) => {
   const renderStarterView = () => {
     return (
       <View style={styles.imageContainer}>
-        <ScaleImageAnim onLoad={() => console.log('image loaded')} style={styles.image} source={require('../../assets/icons_256_chat.png')} />
+        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_chat.png')} />
         <TranslateFadeViewAnim>
           <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
         </TranslateFadeViewAnim>

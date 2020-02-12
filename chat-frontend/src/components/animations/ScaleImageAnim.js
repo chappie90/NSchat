@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Animated } from 'react-native';
 
 const ScaleImageAnim = props => {
-  console.log(props);
   const [scaleAnim] = useState(new Animated.Value(0));
 
    useEffect(() => {

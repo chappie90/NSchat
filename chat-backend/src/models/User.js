@@ -12,16 +12,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  // contacts: [
-  //    { 
-  //      username: { type: String, required: true },
-  //      profile: {
-  //       imgPath: String,
-  //       imgName: String
-  //      },
-  //      previousChat: { type: Boolean, required: true }
-  //    }
-  // ],
   contacts: [
      { 
        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

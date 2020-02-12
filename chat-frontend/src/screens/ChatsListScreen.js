@@ -153,7 +153,12 @@ const ChatsListScreen = ({ navigation }) => {
         barStyle="light-content"
       />
       <View style={styles.background} />
-      <HeadingText style={styles.header}>My Chats</HeadingText>   
+      <View style={styles.headerContainer}>
+        <HeadingText style={styles.header}>My Chats</HeadingText>
+        <TouchableOpacity onPress={() => {}}>
+          <MaterialIcons style={{ marginBottom: 10 }} name="group" size={36} color="#fff" />
+        </TouchableOpacity>   
+      </View>
       {chatsIsLoading ?
         renderActivityIndicator() :
         previousChats.length > 0 ?
@@ -181,6 +186,12 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     height: 80
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 15
   },
   header: {
     fontSize: 22,
@@ -222,8 +233,8 @@ const styles = StyleSheet.create({
   },
   badgeContainer: {
     position: 'absolute', 
-    top: 43, 
-    left: 43
+    top: 15, 
+    left: 9
   },
   badge: {
     backgroundColor: '#32CD32', 

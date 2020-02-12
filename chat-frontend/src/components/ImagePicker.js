@@ -186,8 +186,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'white',
     position: 'absolute',
-    top: '68%',
-    right: 10,
+    top: '72%',
+    right: 11,
     padding: 5
   },
   overlayContainer: {

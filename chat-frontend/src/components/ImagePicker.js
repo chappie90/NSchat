@@ -31,7 +31,7 @@ const ImgPicker = props => {
 
   useEffect(() => {
     getImage(username);
-  }, [profileImage]);
+  }, []);
 
   const avatarClickHandler = () => {
     setModalVisible(true);

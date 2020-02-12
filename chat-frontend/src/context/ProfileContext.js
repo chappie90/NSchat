@@ -28,7 +28,7 @@ const saveImage = dispatch => async (user, image) => {
     // otherwise will get MulterError: Unexpected field error
     formData.append('profile', {
       uri: image,
-      name: `${user}.${fileType}`,
+      name: `${user}`,
       type: `image/${fileType}` 
     });
     formData.append('user', user);
@@ -52,12 +52,21 @@ const saveImage = dispatch => async (user, image) => {
   }
 };
 
+
 const getImage = dispatch => async (user) => {
+  const params = { user };
+  let imagePayload;
+
   try {
-    const dbResult = await fetchProfileImage(user);
+    const response = await chatApi.get('/image', { params });
 
-    const imagePayload = dbResult.rows._array.length > 0 ? dbResult.rows._array[0].imageUri : null;
-
+    if (response.data) {
+      imagePayload = response.data.image;
+    } else {
+      const dbResult = await fetchProfileImage(user);
+      imagePayload = dbResult.rows._array.length > 0 ? dbResult.rows._array[0].imageUri : null;   
+    }
+   
     dispatch({ type: 'update_image', payload: imagePayload });
   } catch (err) {
     console.log(err);

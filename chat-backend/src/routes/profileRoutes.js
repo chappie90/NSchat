@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const name = file.originalname;
     const ext = MIME_TYPE_PROFILE[file.mimetype];
-    cb(null, `${name}`);
+    cb(null, name + '_' + Date.now() + '.' + ext);
   }
 });
 
@@ -43,7 +43,7 @@ router.post(
         { username: username },
         { profile: {
           imgPath,
-          imgName: req.file.originalname
+          imgName: req.file.filename
         } },
         { new: true }
       );
@@ -59,6 +59,23 @@ router.post(
       console.log(err);
       res.status(422).send({ error: 'Could not save image' });
     }
+});
+
+router.get('/image', checkAuth, async (req, res) => {
+  const username = req.query.user;
+
+  try {
+    const user = await User.find({ username });
+
+    if (!user) {
+      return res.status(422).send({ error: 'Could not fetch image' }); 
+    }
+
+    res.status(200).send({ image: user[0].profile.imgPath });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not fetch image' });
+  }
 });
 
 module.exports = router;

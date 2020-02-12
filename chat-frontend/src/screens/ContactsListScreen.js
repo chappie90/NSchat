@@ -81,7 +81,7 @@ const ContactsListScreen = ({ navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} onPress={() => navigation.navigate('ChatDetail', { username: item })}>
+              <TouchableOpacity style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} onPress={() => navigation.navigate('ChatDetail', { username: item.user.username })}>
                 <View 
                   style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingHorizontal: 15}}
                   shadowColor="grey"
@@ -89,8 +89,15 @@ const ContactsListScreen = ({ navigation }) => {
                   shadowOpacity="1"
                   shadowRadius="40"
                 >
-                  <View style={{ overflow: 'hidden', borderRadius: 22}}>
-                    <Image style={{ width: 44, height: 44 }} source={require('../../assets/avatar2.png')} />
+                  <View style={{ overflow: 'hidden', borderRadius: 24}}>
+                    {item.user.profile ?
+                      <Image 
+                        style={{ width: 48, height: 48 }} 
+                        placeholderStyle={styles.placeholder}
+                        source={{ uri: item.user.profile.imgPath }}
+                        /> : 
+                      <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar2.png')} />
+                    }
                   </View>                  
                   <View style={styles.itemContainer}>
                     <HeadingText style={styles.name}>{item.user.username}</HeadingText>
@@ -210,14 +217,14 @@ const styles = StyleSheet.create({
   },
   badge: {
     backgroundColor: '#32CD32', 
-    width: 15, 
-    height: 15, 
-    borderRadius: 10, 
+    width: 14, 
+    height: 14, 
+    borderRadius: 7, 
     borderWidth: 2, 
     borderColor: 'white',
      position: 'absolute', 
-    top: 32, 
-    left: 46
+    top: 36, 
+    left: 52
   },
 });
 

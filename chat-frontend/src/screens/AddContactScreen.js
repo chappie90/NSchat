@@ -19,14 +19,17 @@ import { ListItem, Image } from 'react-native-elements';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
+import { Context as ProfileContext } from '../context/ProfileContext';
 import SecondaryButton from '../components/SecondaryButton';
 import BodyText from '../components/BodyText';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
+import HeadingText from '../components/HeadingText';
 
 const AddContactScreen = (props) => {
   const { state: { searchResults, contacts }, searchContacts, clearSearchResults, addContact } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
+  const { state: { profileImage } } = useContext(ProfileContext);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,32 +50,40 @@ const AddContactScreen = (props) => {
     return (
       <ScrollView>
         {searchResults.map((item, index) => (
-          <View key={index} style={styles.listItemContainer}>
-            <ListItem
-              key={index}
-              leftAvatar={{ source: require('../../assets/avatar2.png') }}
-              title={
-                <View style={styles.itemContainer}>
-                  <Text style={styles.name}>{item.username}</Text>
-                  {contacts.find(c => c.user.username === item.username) ? (
-                    <MaterialIcons name="check-circle" size={30} color={Colors.primary} />
-                  ) : (
-                    <SecondaryButton
-                      style={styles.button}
-                      onPress={() => {
-                        addContact({ username: username, contact: item.username });
-                        props.closeModal();
-                        setSearch('');
-                        clearSearchResults();
-                      }}>
-                        Add
-                      </SecondaryButton>
-                  )}
-                </View>
-              }
-              bottomDivider
-            />
-          </View>
+          <TouchableOpacity
+            key={item.username}
+            style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
+            onPress={() => navigation.navigate('ChatDetail', { username: item.user.username })}>
+            <View key={index} style={styles.listItemContainer}>
+              <View style={{ overflow: 'hidden', borderRadius: 24}}>
+                {item.profile ?
+                  <Image 
+                    style={{ width: 48, height: 48 }} 
+                    placeholderStyle={styles.placeholder}
+                    source={{ uri: item.profile.imgPath }}
+                    /> : 
+                  <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar2.png')} />
+                }
+              </View>                  
+               <View style={styles.itemContainer}>
+                 <HeadingText style={styles.name}>{item.username}</HeadingText>
+                {contacts.find(c => c.user.username === item.username) ? (
+                  <MaterialIcons name="check-circle" size={30} color={Colors.primary} />
+                ) : (
+                  <SecondaryButton
+                    style={styles.button}
+                    onPress={() => {
+                      addContact({ username: username, contact: item.username });
+                      props.closeModal();
+                      setSearch('');
+                      clearSearchResults();
+                    }}>
+                      Add
+                    </SecondaryButton>
+                )}
+              </View>
+            </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     );
@@ -142,10 +153,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: 90
   },
+  listItemContainer: {
+     flexDirection: 'row', 
+     alignItems: 'center', 
+     paddingVertical: 2, 
+     paddingHorizontal: 15
+  },
   itemContainer: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginLeft: 15
   },
   inputContainer: {
     paddingHorizontal: 10,
@@ -157,15 +176,15 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25
   },
+  name: {
+    fontSize: 17
+  },
   input: {
     fontSize: 24,
     height: '100%',
     flex: 1,
     color: 'white',
     paddingLeft: 10
-  },
-  name: {
-    fontWeight: 'bold'
   },
   spinnerContainer: {
     padding: 40

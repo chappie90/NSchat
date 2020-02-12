@@ -93,7 +93,7 @@ const ContactsListScreen = ({ navigation }) => {
                     <Image style={{ width: 44, height: 44 }} source={require('../../assets/avatar2.png')} />
                   </View>                  
                   <View style={styles.itemContainer}>
-                    <HeadingText style={styles.name}>{item}</HeadingText>
+                    <HeadingText style={styles.name}>{item.user.username}</HeadingText>
                   </View>
                   <MaterialIcons style={{ marginLeft: 'auto' }} name="chevron-right" size={24} />
                   <View style={styles.badge} />

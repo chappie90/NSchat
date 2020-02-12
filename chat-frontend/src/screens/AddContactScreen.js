@@ -54,7 +54,9 @@ const AddContactScreen = (props) => {
               title={
                 <View style={styles.itemContainer}>
                   <Text style={styles.name}>{item.username}</Text>
-                  {!contacts.includes(item.username) && (
+                  {contacts.find(c => c.user.username === item.username) ? (
+                    <MaterialIcons name="check-circle" size={30} color={Colors.primary} />
+                  ) : (
                     <SecondaryButton
                       style={styles.button}
                       onPress={() => {
@@ -63,14 +65,13 @@ const AddContactScreen = (props) => {
                         setSearch('');
                         clearSearchResults();
                       }}>
-                      Add
-                    </SecondaryButton>
+                        Add
+                      </SecondaryButton>
                   )}
                 </View>
               }
               bottomDivider
             />
-            {contacts.includes(item.username) && <MaterialIcons style={styles.checkmark} name="check-circle" size={30} color={Colors.primary} />}
           </View>
         ))}
       </ScrollView>
@@ -207,11 +208,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 10
-  },
-  checkmark: {
-    position: 'absolute',
-    right: 10,
-    top: 20
   }
 });
 

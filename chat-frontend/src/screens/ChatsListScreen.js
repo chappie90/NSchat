@@ -92,9 +92,13 @@ const ChatsListScreen = ({ navigation }) => {
               markMessagesAsRead({ username, recipient: item.contact });
               navigation.navigate('ChatDetail', { username: item.contact });
             }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, marginBottom: 8 }}>
-                <View style={{ overflow: 'hidden', borderRadius: 22 }}>
-                  <Image source={require('../../assets/avatar2.png')} style={{ width: 44, height: 44 }} />
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 10, paddingVertical: 5 }}>
+                <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4 }}>
+                  { item.profile ? (
+                    <Image source={{ uri: item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
+                  ) : (
+                    <Image source={require('../../assets/avatar2.png')} style={{ width: '100%', height: '100%' }} />
+                  )}
                 </View>
                 <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
                   <View style={styles.itemContainer}>
@@ -164,7 +168,7 @@ ChatsListScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 20,
+    paddingTop: 20,
     // paddingHorizontal: 20
   },
   background: {
@@ -177,7 +181,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 22,
-    paddingBottom: 20,
+    paddingBottom: 30,
     marginTop: 15,
     paddingLeft: 20,
     color: '#fff'
@@ -204,7 +208,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 2,
     color: 'grey',
   },
   divider: {

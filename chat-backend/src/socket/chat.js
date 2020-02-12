@@ -169,9 +169,15 @@ module.exports = function(io) {
 
     // messageHandler.handleMessage(socket, users); 
 
+    // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
+
+    const tempUserId = await User.find({ username: from });
+
+    const tempUserId2 = await User.find({ username: to });
+
       const contactRecipient = await User.find({
         username: to, 
-        'contacts.username': from
+        'contacts.user': tempUserId[0]._id
       });
       
       if (contactRecipient.length == 0) {
@@ -179,8 +185,8 @@ module.exports = function(io) {
           { username: to },
           { $addToSet: {
               contacts: {
-                username: from,
-                previousChat: 1
+                user: tempUserId[0]._id,
+                previousChat: true
               }
             }
           },
@@ -189,8 +195,8 @@ module.exports = function(io) {
       }
 
       const myChat = await User.updateOne(
-        { username: from, 'contacts.username': to }, 
-        { $set: { 'contacts.$.previousChat': 1 } },
+        { username: from, 'contacts.user': tempUserId2[0]._id }, 
+        { $set: { 'contacts.$.previousChat': true } },
         { new: true }
       );
 

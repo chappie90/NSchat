@@ -67,7 +67,7 @@ const autoLogin = dispatch => async () => {
     dispatch({ type: 'signin', payload: data });
     setTimeout(() => {
       navigate('MainFlow');
-    }, 3500);
+    }, 3000);
   } else {
     navigate('Starter');
   }

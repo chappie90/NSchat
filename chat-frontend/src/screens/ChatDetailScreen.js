@@ -9,9 +9,10 @@ import {
   ScrollView, 
   TouchableOpacity,
   KeyboardAvoidingView,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
-import { Overlay, Image } from 'react-native-elements';
+import { Overlay } from 'react-native-elements';
 import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
@@ -26,6 +27,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import chatApi from '../api/chat';
 import { connectToSocket } from '../socket/chat';
+import FadeViewAnim from '../components/animations/FadeViewAnim';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -335,11 +337,11 @@ const ChatDetailScreen = ({ navigation }) => {
       return (
         <View  { ...props}>
           <Ionicons
-            style={{ position: 'absolute', right: -15, bottom: -45 }}
+            style={styles.leftCheckmark}
             name="ios-checkmark"
             size={24} color="#87CEEB" />
           <Ionicons
-            style={{ position: 'absolute', right: -24, bottom: -45 }}
+            style={styles.rightCheckmark}
             name="ios-checkmark"
             size={24} color="#87CEEB" />
         </View>
@@ -350,11 +352,11 @@ const ChatDetailScreen = ({ navigation }) => {
         return (
           <View  { ...props}>
             <Ionicons
-              style={{ position: 'absolute', right: -15, bottom: -45 }}
+              style={styles.leftCheckmark}
               name="ios-checkmark"
               size={24} color="#C8C8C8" />
             <Ionicons
-              style={{ position: 'absolute', right: -24, bottom: -45 }}
+              style={styles.rightCheckmark}
               name="ios-checkmark"
               size={24} color="#C8C8C8" />
           </View>
@@ -363,7 +365,7 @@ const ChatDetailScreen = ({ navigation }) => {
         return (
           <View  { ...props}>
             <Ionicons
-              style={{ position: 'absolute', right: -15, bottom: -45 }}
+              style={styles.leftCheckmark}
               name="ios-checkmark"
               size={24} color="#C8C8C8" />
           </View>
@@ -428,6 +430,7 @@ const ChatDetailScreen = ({ navigation }) => {
           ref={ref => giftedChatRef = ref}
           renderChatFooter={renderChatFooter}
           renderCustomView={false ? null : renderCustomView}
+          isCustomViewBottom={true}
           renderMessage={renderMessage}
           renderMessageText={renderMessageText}
           // renderLoading={() => {}}
@@ -504,13 +507,13 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         alignItems: 'center',
         paddingLeft: 55,
         paddingTop: 20 }}>
-        <View style={{ overflow: 'hidden', width: 40, height: 40, borderRadius: 20 }}>
+        <FadeViewAnim style={{ overflow: 'hidden', width: 40, height: 40, borderRadius: 20 }}>
           {params.image ? (
             <Image source={{ uri: params.image }} style={{ width: '100%', height: '100%' }} />
           ) : (
             <Image style={{ width: '100%', height: '100%' }} source={require('../../assets/avatar2.png')} />
           )}
-        </View>
+        </FadeViewAnim>
         <Text style={{ marginLeft: 10, fontFamily: 'open-sans-semi-bold', fontSize: 18 }}>{params.username} {params.isTyping ? params.isTyping : ''}</Text>
       </View>
     )
@@ -612,6 +615,16 @@ const styles = StyleSheet.create({
   spinnerContainer: {
     padding: 40
   },
+  leftCheckmark: {
+    position: 'absolute', 
+    right: -15, 
+    bottom: -20
+  },
+  rightCheckmark: {
+    position: 'absolute', 
+    right: -24, 
+    bottom: -20
+  }
 });
 
 export default ChatDetailScreen;

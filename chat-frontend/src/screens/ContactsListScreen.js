@@ -81,7 +81,14 @@ const ContactsListScreen = ({ navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} onPress={() => navigation.navigate('ChatDetail', { username: item.user.username })}>
+              <TouchableOpacity 
+                style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
+                onPress={() => {
+                  navigation.navigate('ChatDetail', {
+                    username: item.user.username,
+                    image: item.user.profile ? item.user.profile.imgPath : '' 
+                  })
+                }}>
                 <View 
                   style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingHorizontal: 15}}
                   shadowColor="grey"
@@ -89,7 +96,7 @@ const ContactsListScreen = ({ navigation }) => {
                   shadowOpacity="1"
                   shadowRadius="40"
                 >
-                  <View style={{ overflow: 'hidden', borderRadius: 24}}>
+                  <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
                     {item.user.profile ?
                       <Image 
                         style={{ width: 48, height: 48 }} 

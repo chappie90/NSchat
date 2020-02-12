@@ -485,6 +485,8 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
   const { state: { params = {} } } = navigation;
       {/* title:  `${params.username} ${params.isTyping ? params.isTyping : ''}`  || '' */}
 
+  console.log(params.image);
+
   return {
     headerLeft: (
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -500,13 +502,14 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         flex: 1, 
         flexDirection: 'row', 
         alignItems: 'center',
-        paddingLeft: 60,
+        paddingLeft: 55,
         paddingTop: 20 }}>
-        <View style={{ overflow: 'hidden', borderRadius: 17 }}>
-          <Image
-            style={{ width: 34, height: 34 }}
-            source={require('../../assets/avatar2.png')}
-          />
+        <View style={{ overflow: 'hidden', width: 40, height: 40, borderRadius: 20 }}>
+          {params.image ? (
+            <Image source={{ uri: params.image }} style={{ width: '100%', height: '100%' }} />
+          ) : (
+            <Image style={{ width: 34, height: 34 }} source={require('../../assets/avatar2.png')} />
+          )}
         </View>
         <Text style={{ marginLeft: 10, fontFamily: 'open-sans-semi-bold', fontSize: 18 }}>{params.username} {params.isTyping ? params.isTyping : ''}</Text>
       </View>

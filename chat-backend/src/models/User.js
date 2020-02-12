@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
   contacts: [
      { 
        username: { type: mongoose.Schema.Types.ObjectId },
-       // ref: 'User'
+       previousChat: { type: Boolean, default: false }
      }
   ],
   profile: {

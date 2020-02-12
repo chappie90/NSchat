@@ -90,7 +90,10 @@ const ChatsListScreen = ({ navigation }) => {
           return (
             <TouchableOpacity onPress={() => {
               markMessagesAsRead({ username, recipient: item.contact });
-              navigation.navigate('ChatDetail', { username: item.contact });
+              navigation.navigate('ChatDetail', {
+                username: item.contact,
+                image: item.profile ? item.profile.imgPath : ''
+              });
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 10, paddingVertical: 5 }}>
                 <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4 }}>

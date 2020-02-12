@@ -43,7 +43,7 @@ const saveImage = dispatch => async (user, image) => {
 
       const dbResult = await insertProfileImage(user, newPath);
 
-      dispatch({ type: 'update_image', payload: newPath });
+      dispatch({ type: 'update_image', payload: response.data.img });
     }
   } catch (err) {
     console.log(err);

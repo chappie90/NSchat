@@ -31,7 +31,7 @@ const ImgPicker = props => {
 
   useEffect(() => {
     getImage(username);
-  }, []);
+  }, [profileImage]);
 
   const avatarClickHandler = () => {
     setModalVisible(true);
@@ -142,7 +142,7 @@ const ImgPicker = props => {
               {profileImage ?
                 <Image 
                   placeholderStyle={styles.placeholder}
-                  source={{ uri: 'http://192.168.0.93:3000/public/uploads/1.jpg'}}
+                  source={{ uri: profileImage }}
                   style={styles.image} /> : 
                 <Image source={require('../../assets/avatar2.png')} style={styles.image} />
               }

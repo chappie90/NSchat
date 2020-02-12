@@ -37,18 +37,24 @@ router.post(
   async (req, res) => {
     const username = req.body.user;
     const url = req.protocol + '://' + req.get('host');
+    const imgPath = url + '/public/uploads/' + req.file.filename;
     try {
-      const user = await User.update(
+      const user = await User.findOneAndUpdate(
         { username: username },
         { profile: {
-          imgPath: url + '/public/uploads/' + req.file.filename,
+          imgPath,
           imgName: req.file.originalname
         } },
         { new: true }
       );
-      let response = user.nModified > 0 ? true : false;
 
-      res.status(200).send(response);
+      if (!user) {
+        return res.status(422).send({ error: 'Could not save image' });
+      } 
+
+      const path = user.profile.imgPath; 
+      
+      res.status(200).send({ img: path });
     } catch (err) {
       console.log(err);
       res.status(422).send({ error: 'Could not save image' });

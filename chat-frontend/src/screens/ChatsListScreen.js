@@ -97,7 +97,7 @@ const ChatsListScreen = ({ navigation }) => {
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 10, paddingVertical: 5 }}>
                 <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4 }}>
-                  { item.profile ? (
+                  { item.profile.imgPath ? (
                     <Image source={{ uri: item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
                   ) : (
                     <Image source={require('../../assets/avatar2.png')} style={{ width: '100%', height: '100%' }} />

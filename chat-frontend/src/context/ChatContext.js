@@ -35,8 +35,6 @@ const getChats = dispatch => async ({ username }) => {
   try {
     const response = await chatApi.post('/chats', { username }, { cancelToken: source.token });
 
-    console.log(response.data);
-
     const chats = response.data.chats.sort(function(a, b) {
       return new Date(b.date) - new Date(a.date)
     });

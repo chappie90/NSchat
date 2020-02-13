@@ -25,6 +25,7 @@ import BodyText from '../components/BodyText';
 import { connectToSocket } from '../socket/chat';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
+import AddGroupScreen from './AddGroupScreen';
 
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -36,6 +37,7 @@ const ChatsListScreen = ({ navigation }) => {
   const socket = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
+  const [newGroupMode, setNewGroupMode] = useState(false);
 
   useEffect(() => {
     getChats({ username });
@@ -66,6 +68,10 @@ const ChatsListScreen = ({ navigation }) => {
       setTypingUser(null);
     });
   }, []);
+
+  const closeModal = () => {
+    setNewGroupMode(false);
+  };
 
   const renderActivityIndicator = () => {
     return (
@@ -148,14 +154,12 @@ const ChatsListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-    <StatusBar
-        backgroundColor="blue"
-        barStyle="light-content"
-      />
+    <StatusBar backgroundColor="blue" barStyle="light-content" />
+    <AddGroupScreen visible={newGroupMode} closeModal={closeModal} />
       <View style={styles.background} />
       <View style={styles.headerContainer}>
         <HeadingText style={styles.header}>My Chats</HeadingText>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => setNewGroupMode(true)}>
           <MaterialIcons style={{ marginBottom: 10 }} name="group" size={36} color="#fff" />
         </TouchableOpacity>   
       </View>

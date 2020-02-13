@@ -14,7 +14,7 @@ import {
   KeyboardAvoidingView 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
-import { ListItem, Image } from 'react-native-elements';
+import { Image } from 'react-native-elements';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';

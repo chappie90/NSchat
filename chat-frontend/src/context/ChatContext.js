@@ -135,6 +135,34 @@ const deleteMessage = dispatch => async ({ messageId }) => {
   }
 };
 
+const createGroup = dispatch => async ({ username, groupName, groupImage = '', groupMembers = '' }) => {
+  
+  try {
+    let uriParts = groupImage.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+
+    const groupMembersStr = JSON.stringify(groupMembers);
+
+    let formData = new FormData();
+
+    formData.append('group', {
+      uri: groupImage,
+      name: `${username}_${groupName}`,
+      type: `image/${fileType}`
+    });
+    formData.append('user', username);
+    formData.append('groupName', groupName);
+    formData.append('groupMembers', groupMembersStr);
+
+    const response = await chatApi.post('/group/new', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+    console.log(response);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { 
@@ -143,6 +171,7 @@ export const { Context, Provider } = createDataContext(
     updateMessages,
     markMessagesAsRead,
     deleteMessage,
+    createGroup,
     resetChatState
   },
   {  

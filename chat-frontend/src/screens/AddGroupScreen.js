@@ -175,6 +175,10 @@ const AddGroupScreen = props => {
             <View style={styles.headerTop}>
               <TouchableOpacity onPress={() => {
                 setAddToGroupArr([]);
+                setGroupContacts(contacts);
+                setDisableCreateBtn(true);
+                setSearch('');
+                setGroupName('');
                 props.closeModal();
               }}>
                 <MaterialIcons name="close" size={28} color="white" />

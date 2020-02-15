@@ -60,7 +60,10 @@ const AddGroupScreen = props => {
           <View style={styles.header}>
             <View style={styles.headerTop}>
               <HeadingText style={styles.heading}>New Group</HeadingText>
-              <TouchableOpacity onPress={() => props.closeModal()}>
+              <TouchableOpacity onPress={() => {
+                setAddToGroupArr([]);
+                props.closeModal();
+              }}>
                 <MaterialIcons name="close" size={28} color="white" />
               </TouchableOpacity>
             </View>

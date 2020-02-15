@@ -1,11 +1,35 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const multer = require('multer');
+
 const User = mongoose.model('User');
 const Message = mongoose.model('Message');
-
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
+
+const MIME_TYPE_GROUPIMAGE = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg'
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const isValid = MIME_TYPE_GROUPIMAGE[file.mimetype];
+    let error = new Error('Invalid mime type');
+    if (isValid) {
+      error = null;
+    }
+    cb(error, './public/uploads');
+  },
+  filename: (req, file, cb) => {
+    const nameArr = file.originalname.split(' ');
+    const name = nameArr.join('-');
+    const ext = MIME_TYPE_GROUPIMAGE[file.mimetype];
+    cb(null, name + '_' + Date.now() + '.' + ext);
+  }
+});
 
 router.post('/chats', checkAuth, async (req, res) => {
   const { username } = req.body;
@@ -124,15 +148,28 @@ router.patch('/message/delete', checkAuth, async (req, res) => {
   }
 });
 
-// router.post('/speech', async (req, res) => {
-//   console.log(req.body);
+router.post(
+  '/group/new', 
+  checkAuth,
+  multer({ storage: storage }).single('group'),
+  async (req, res) => {
+    const username = req.body.username;
+    const groupName = req.body.groupName;
+    let groupMembers = req.body.groupMembers;
+    groupMembers = JSON.parse(groupMembers);
+    const url = req.protocol + '://' + req.get('host');
+    const imgPath = url + '/public/uploads/' + username + '/' + req.file.filename;
 
-//   try {
-  
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(422).send({ error: 'Could not fetch messages' });
-//   }
-// });
+    try {
+      const user = await User.findOneAndUpdate(
+        { username: username }
+      );
+      res.status(200).send({ user });
+    } catch (err) {
+      console.log(err);
+      res.status(422).send({ error: 'Could not create group' });
+    }
+  }
+);
 
 module.exports = router;

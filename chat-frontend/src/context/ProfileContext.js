@@ -13,8 +13,7 @@ const profileReducer = (state, action) => {
   }
 };
 
-const saveImage = dispatch => async (user, image, groupName = '') => {
-  console.log(groupName);
+const saveImage = dispatch => async (user, image) => {
 
   try {
     const fileName = image.split('/').pop();

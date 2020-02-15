@@ -150,7 +150,7 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
       name: `${username}_${groupName}`,
       type: `image/${fileType}`
     });
-    formData.append('user', username);
+    formData.append('username', username);
     formData.append('groupName', groupName);
     formData.append('groupMembers', groupMembersStr);
 

@@ -68,7 +68,7 @@ const AddContactScreen = (props) => {
                <View style={styles.itemContainer}>
                  <HeadingText style={styles.name}>{item.username}</HeadingText>
                 {contacts.find(c => c.user.username === item.username) ? (
-                  <MaterialIcons name="check-circle" size={30} color={Colors.primary} />
+                  <MaterialIcons name="check-circle" size={30} color={Colors.secondary} />
                 ) : (
                   <SecondaryButton
                     style={styles.button}

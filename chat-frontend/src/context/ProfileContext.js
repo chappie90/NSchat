@@ -14,6 +14,8 @@ const profileReducer = (state, action) => {
 };
 
 const saveImage = dispatch => async (user, image, groupName = '') => {
+  console.log(groupName);
+
   try {
     const fileName = image.split('/').pop();
     const newPath = FileSystem.documentDirectory + fileName;

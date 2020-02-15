@@ -41,6 +41,7 @@ const AddGroupScreen = props => {
   const [expandHeader, setExpandHeader] = useState(false);
   const [groupContacts, setGroupContacts] = useState([]);
   const [disableCreateBtn, setDisableCreateBtn] = useState(true);
+  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
     getContacts({ username });
@@ -102,7 +103,7 @@ const AddGroupScreen = props => {
       return;
     }
     setModalVisible(false);
-    saveImage(username, cameraImage.uri);
+    setImagePreview(libraryImage.uri);
   };
 
   const choosePhotoHandler = async () => {
@@ -117,7 +118,7 @@ const AddGroupScreen = props => {
       return;
     }
     setModalVisible(false);
-    saveImage(username, libraryImage.uri);
+    setImagePreview(libraryImage.uri);
   };
 
   const deletePhotoHandler = () => {
@@ -125,6 +126,7 @@ const AddGroupScreen = props => {
       deleteImage(username);
     }
     setModalVisible(false);
+    setImagePreview('');
   };
 
   return (
@@ -185,22 +187,34 @@ const AddGroupScreen = props => {
               </TouchableOpacity>
               <HeadingText style={styles.heading}>New Group</HeadingText>
               <TouchableOpacity disabled={disableCreateBtn} onPress={() => {}}>
-                <Ionicons color={disableCreateBtn ? 'grey' : '#fff'} name="ios-add-circle-outline" size={34} />
+                <Ionicons color={disableCreateBtn ? '#C0C0C0' : '#fff'} name="ios-add-circle-outline" size={34} />
               </TouchableOpacity>
             </View>
             <View style={styles.headerMiddle}>
 
               <TouchableOpacity onPress={cameraClickHandler}>
-                <View style={{ 
-                  height: 40, 
-                  width: 40, 
-                  marginRight: 10,
-                  borderRadius: 20, 
-                  backgroundColor: 'indianred',
-                  justifyContent: 'center',
-                  alignItems: 'center' }}> 
-                  <MaterialIcons color="#ffe6f2" name="camera-alt" size={26} />
-                </View>
+                {imagePreview ? (
+                  <View style={{ 
+                    height: 40, 
+                    width: 40, 
+                    marginRight: 10,
+                    borderRadius: 20, 
+                    overflow: 'hidden'
+                  }}> 
+                    <Image source={{ uri: imagePreview }} style={{ width: '100%', height: '100%' }} />
+                  </View>
+                ) : (
+                  <View style={{ 
+                    height: 40, 
+                    width: 40, 
+                    marginRight: 10,
+                    borderRadius: 20, 
+                    backgroundColor: 'indianred',
+                    justifyContent: 'center',
+                    alignItems: 'center' }}> 
+                    <MaterialIcons color="#ffe6f2" name="camera-alt" size={26} />
+                  </View>
+                )}
               </TouchableOpacity>
               <TextInput
                 style={styles.input} 

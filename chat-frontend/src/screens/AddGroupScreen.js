@@ -158,6 +158,8 @@ const AddGroupScreen = props => {
                 onPress={() => {
                   setExpandHeader(true);
                   updateGroupHandler(item.user.username);
+                  setGroupContacts(contacts);
+                  setSearch('');
                 }}>
                 <View 
                   style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 15}}

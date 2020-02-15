@@ -21,6 +21,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
+import TranslateViewAnim from '../components/animations/TranslateViewAnim';
 import ScaleViewAnim from '../components/animations/ScaleViewAnim';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
@@ -32,10 +33,17 @@ const AddGroupScreen = props => {
   const [checked, setChecked] = useState(false);
   const [search, setSearch] = useState('');
   const [addToGroupArr, setAddToGroupArr] = useState([]);
+  const [expandHeader, setExpandHeader] = useState(false);
 
   useEffect(() => {
     getContacts({ username });
   }, []);
+
+  useEffect(() => {
+    if (addToGroupArr.length === 0) {
+      setExpandHeader(false);
+    }
+  }, [addToGroupArr]);
 
   const updateGroupHandler = contactName => {
     if (addToGroupArr.includes(contactName)) {
@@ -100,9 +108,19 @@ const AddGroupScreen = props => {
                 autoCapitalize="none"
                 autoCorrect={false} />
             </View>
+          </View>
+          <TranslateViewAnim
+            triggerAnim={expandHeader}
+            style={{ backgroundColor: Colors.tertiary, height: 80, paddingBottom: 10, paddingHorizontal: 8 }}>
             <ScrollView horizontal={true}>
               {addToGroupArr.map(item => {
-                return (
+                const contact = contacts.find(contact => contact.user.username === item);
+                return contact.user.profile ? (
+                  <ScaleViewAnim key={item} style={{ justifyContent: 'center', alignItems: 'center', marginRight: 15, marginTop: 10 }}>
+                    <Image style={{ width: 48, height: 48, borderRadius: 24 }} source={{ uri: contact.user.profile.imgPath }} />
+                    <Text style={{ marginTop: 4,color: '#fff' }} key={item}>{item}</Text>
+                  </ScaleViewAnim>
+                ) : (
                   <ScaleViewAnim key={item} style={{ justifyContent: 'center', alignItems: 'center', marginRight: 15, marginTop: 10 }}>
                     <Image style={{ width: 48, height: 48, borderRadius: 24 }} source={require('../../assets/avatar2.png')} />
                     <Text style={{ marginTop: 4,color: '#fff' }} key={item}>{item}</Text>
@@ -110,7 +128,7 @@ const AddGroupScreen = props => {
                 );
               })}
             </ScrollView>
-          </View>
+          </TranslateViewAnim>
       <View style={{ flex: 1 }}>
       {contacts.length > 0 ? (
         <FlatList
@@ -121,7 +139,10 @@ const AddGroupScreen = props => {
             return (
               <TouchableWithoutFeedback 
                 style={{ borderRadius: 5, overflow: 'hidden' }} 
-                onPress={() => updateGroupHandler(item.user.username)}>
+                onPress={() => {
+                  setExpandHeader(true);
+                  updateGroupHandler(item.user.username);
+                }}>
                 <View 
                   style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 15}}
                 >

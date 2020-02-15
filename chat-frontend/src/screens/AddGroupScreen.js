@@ -21,6 +21,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
+import ScaleViewAnim from '../components/animations/ScaleViewAnim';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 
@@ -107,7 +108,7 @@ const AddGroupScreen = props => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity 
+              <TouchableWithoutFeedback 
                 style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
                 onPress={() => updateGroupHandler(item.user.username)}>
                 <View 
@@ -127,23 +128,27 @@ const AddGroupScreen = props => {
                     <HeadingText style={styles.name}>{item.user.username}</HeadingText>
                   </View>
                   {addToGroupArr.includes(item.user.username) ? (
-                    <View style={{
-                    width: 24, 
-                    height: 24, 
-                    borderRadius: 12, 
-                    backgroundColor: Colors.tertiary,
-                    borderWidth: 2,
-                    borderColor: Colors.tertiary }}></View>
+                    <ScaleViewAnim style={{
+                      width: 26, 
+                      height: 26, 
+                      borderRadius: 13, 
+                      backgroundColor: Colors.tertiary,
+                      borderWidth: 2,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderColor: Colors.tertiary }}>
+                      <MaterialIcons name="check" size={20} color="#fff" />
+                    </ScaleViewAnim>
                   ) : (
                     <View style={{
-                      width: 24, 
-                      height: 24, 
-                      borderRadius: 12, 
+                      width: 26, 
+                      height: 26, 
+                      borderRadius: 13, 
                       borderWidth: 2,
                       borderColor: Colors.tertiary }}></View>
                   )}
                 </View>
-              </TouchableOpacity>
+              </TouchableWithoutFeedback>
             );
           }} />
         ) : (

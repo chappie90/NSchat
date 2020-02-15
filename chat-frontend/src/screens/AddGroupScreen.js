@@ -35,6 +35,7 @@ const AddGroupScreen = props => {
   const [addToGroupArr, setAddToGroupArr] = useState([]);
   const [expandHeader, setExpandHeader] = useState(false);
   const [groupContacts, setGroupContacts] = useState([]);
+  const [disableCreateBtn, setDisableCreateBtn] = useState(true);
 
   useEffect(() => {
     getContacts({ username });
@@ -71,13 +72,13 @@ const AddGroupScreen = props => {
                 <MaterialIcons name="close" size={28} color="white" />
               </TouchableOpacity>
               <HeadingText style={styles.heading}>New Group</HeadingText>
-               <TouchableOpacity onPress={() => {}}>
+               <TouchableOpacity disabled={disableCreateBtn} onPress={() => {}}>
                 <View style={{ 
                   borderRadius: 4, 
                   backgroundColor: '#fff',
                   paddingHorizontal: 8,
                   paddingVertical: 4 }}> 
-                    <HeadingText style={{ fontSize: 16, color: 'indianred' }}>Create</HeadingText>
+                    <HeadingText style={{ fontSize: 16, color: disableCreateBtn ? 'grey' : 'indianred' }}>Create</HeadingText>
                 </View>
               </TouchableOpacity>
             </View>
@@ -100,7 +101,14 @@ const AddGroupScreen = props => {
                 placeholder="Group Name"
                 placeholderTextColor="white"
                 value={groupName}
-                onChangeText={(name) => setGroupName(name)}
+                onChangeText={(name) => {
+                  setGroupName(name);
+                  if (name) {
+                    setDisableCreateBtn(false);
+                  } else {
+                    setDisableCreateBtn(true);
+                  }
+                }}
                 autoCapitalize="none"
                 autoCorrect={false} />
             </View>

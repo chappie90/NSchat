@@ -64,12 +64,21 @@ const AddGroupScreen = props => {
         <View style={styles.container}>
           <View style={styles.header}>
             <View style={styles.headerTop}>
-              <HeadingText style={styles.heading}>New Group</HeadingText>
               <TouchableOpacity onPress={() => {
                 setAddToGroupArr([]);
                 props.closeModal();
               }}>
                 <MaterialIcons name="close" size={28} color="white" />
+              </TouchableOpacity>
+              <HeadingText style={styles.heading}>New Group</HeadingText>
+               <TouchableOpacity onPress={() => {}}>
+                <View style={{ 
+                  borderRadius: 4, 
+                  backgroundColor: '#fff',
+                  paddingHorizontal: 8,
+                  paddingVertical: 4 }}> 
+                    <HeadingText style={{ fontSize: 16, color: 'indianred' }}>Create</HeadingText>
+                </View>
               </TouchableOpacity>
             </View>
             <View style={styles.headerMiddle}>
@@ -98,7 +107,7 @@ const AddGroupScreen = props => {
           </View>
           <TranslateViewAnim
             triggerAnim={expandHeader}
-            style={{ backgroundColor: Colors.tertiary, height: 80, paddingBottom: 10, paddingHorizontal: 8 }}>
+            style={{ backgroundColor: Colors.tertiary, height: 80, paddingBottom: 10, paddingHorizontal: 15 }}>
             <ScrollView horizontal={true}>
               {addToGroupArr.map(item => {
                 const contact = contacts.find(contact => contact.user.username === item);

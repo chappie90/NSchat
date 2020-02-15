@@ -11,14 +11,17 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  ActivityIndicator,
-  Modal, 
+  Modal as ScreenModal,
+  ActivityIndicator
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-
+import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+import Modal from "react-native-modal";
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
+import { Context as ProfileContext } from '../context/ProfileContext';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 import TranslateViewAnim from '../components/animations/TranslateViewAnim';
@@ -29,6 +32,8 @@ import BodyText from '../components/BodyText';
 const AddGroupScreen = props => {
   const { state: { contacts }, getContacts } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
+   const { state: { profileImage }, saveImage, getImage, deleteImage } = useContext(ProfileContext);
+  const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [checked, setChecked] = useState(false);
   const [search, setSearch] = useState('');
@@ -59,8 +64,111 @@ const AddGroupScreen = props => {
     }
   };
 
+  const modalCloseHandler = () => {
+    setModalVisible(false);
+  };  
+
+  const cameraClickHandler = () => {
+    setModalVisible(true);
+  };
+
+  const getCameraPermissions = async () => {
+    const response = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
+    if (response.status !== 'granted') {
+      Alert.alert('You don\'t have the required permissions to access the camera', [{text: 'Okay'}]);
+      return false;
+    }
+    return true;
+  };
+
+  const getImageLibraryPermissions = async () => {
+    const response = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (response.status !== 'granted') {
+      Alert.alert('You don\'t have the required permissions to access the image library', [{text: 'Okay'}]);
+      return false;
+    }
+    return true;
+  };
+
+  const takePhotoHandler = async () => {
+    const hasCameraPermissions = await getCameraPermissions();
+    if (!hasCameraPermissions) {
+      return;
+    }
+    const cameraImage = await ImagePicker.launchCameraAsync({
+      allowsEditing: true
+    });
+    if (!cameraImage.uri) {
+      return;
+    }
+    setModalVisible(false);
+    saveImage(username, cameraImage.uri);
+  };
+
+  const choosePhotoHandler = async () => {
+    const hasImageLibraryPermissions = await getImageLibraryPermissions();
+    if (!hasImageLibraryPermissions) {
+      return;
+    }
+    const libraryImage = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true
+    });
+    if (!libraryImage.uri) {
+      return;
+    }
+    setModalVisible(false);
+    saveImage(username, libraryImage.uri);
+  };
+
+  const deletePhotoHandler = () => {
+    if (profileImage) {
+      deleteImage(username);
+    }
+    setModalVisible(false);
+  };
+
   return (
-    <Modal visible={props.visible} transparent={true} animationType="slide">
+    <ScreenModal visible={props.visible} transparent={true} animationType="slide">
+    <Modal
+        style={{ alignItems: 'center', justifyContent: 'center'}}
+        isVisible={modalVisible}
+        onBackdropPress={modalCloseHandler}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        animationInTiming={200}
+        backdropTransitionOutTiming={0}>
+        <View style={styles.overlayContainer}>
+          <TouchableOpacity style={styles.overlayItemWrapper} onPress={takePhotoHandler}>
+            <View style={styles.overlayItem}>
+              <View style={styles.iconWrapper}>
+                <MaterialIcons color="white" name="camera-alt" size={24} />
+              </View>
+              <BodyText style={styles.overlayText}>Take Photo</BodyText>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.overlayItemWrapper} onPress={choosePhotoHandler}>
+            <View style={styles.overlayItem}>
+              <View style={styles.iconWrapper}>
+                <Ionicons color="white" name="md-images" size={24} />
+              </View>
+              <BodyText style={styles.overlayText}>Choose Photo</BodyText>
+            </View>  
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.overlayItemWrapper} onPress={deletePhotoHandler}>
+            <View style={styles.overlayItem}>
+              <View style={styles.deleteIconWrapper}>
+                <AntDesign color="white" name="delete" size={24} />
+              </View>
+              <BodyText style={styles.overlayDelete}>Delete Photo</BodyText>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.cancel}>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <BodyText style={styles.cancelText}>Cancel</BodyText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
           <View style={styles.header}>
@@ -83,7 +191,8 @@ const AddGroupScreen = props => {
               </TouchableOpacity>
             </View>
             <View style={styles.headerMiddle}>
-              <TouchableOpacity onPress={() => {}}>
+
+              <TouchableOpacity onPress={cameraClickHandler}>
                 <View style={{ 
                   height: 40, 
                   width: 40, 
@@ -230,7 +339,7 @@ const AddGroupScreen = props => {
           </View>
         </View>
       </TouchableWithoutFeedback>
-    </Modal>
+    </ScreenModal>
   );
 };
 
@@ -304,6 +413,58 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center'
+  },
+  overlayContainer: {
+    width: 230,
+    backgroundColor: '#fff',
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    borderRadius: 4
+  },
+  overlayItemWrapper: {
+    marginBottom: 10,
+  },
+  overlayItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 5,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1 
+  },
+  overlayText: {
+    fontSize: 18,
+    marginLeft: 8,
+    color: 'grey'
+  },
+  overlayDelete: {
+    fontSize: 18,
+    marginLeft: 8,
+    color: Colors.tertiary
+  },
+  iconWrapper: {
+    backgroundColor: Colors.primary,
+    borderRadius: 100,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  deleteIconWrapper: {
+    backgroundColor: Colors.tertiary,
+    borderRadius: 100,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  cancel: {
+    marginTop: 10,
+    padding: 5,
+    alignSelf: 'center',
+  },
+  cancelText: {
+    color: 'grey',
+    fontSize: 18
   }
 });
 

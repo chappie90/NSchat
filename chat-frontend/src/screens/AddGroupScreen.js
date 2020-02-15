@@ -69,34 +69,13 @@ const AddGroupScreen = props => {
                 <View style={{ 
                   height: 40, 
                   width: 40, 
+                  marginRight: 10,
                   borderRadius: 20, 
                   backgroundColor: 'indianred',
                   justifyContent: 'center',
                   alignItems: 'center' }}> 
                   <MaterialIcons color="#ffe6f2" name="camera-alt" size={26} />
                 </View>
-              </TouchableOpacity>
-              <TouchableOpacity style={{ }} onPress={() => {}}>
-                <View style={{ 
-                  height: 36, 
-                  width: 105,
-                  borderRadius: 4,
-                  marginHorizontal: 5,
-                  backgroundColor: 'indianred',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center' }}> 
-                  <MaterialIcons color="#ffe6f2" name="search" size={28} />
-                   <TextInput
-                      style={styles.searchInput}
-                      selectionColor={'white'}
-                      placeholder="Search"
-                      placeholderTextColor="white"
-                      value={search}
-                      onChangeText={(contact) => setSearch(contact)}
-                      autoCapitalize="none"
-                      autoCorrect={false} />
-                  </View>
               </TouchableOpacity>
               <TextInput
                 style={styles.input} 
@@ -130,6 +109,28 @@ const AddGroupScreen = props => {
             </ScrollView>
           </TranslateViewAnim>
       <View style={{ flex: 1 }}>
+      <TouchableOpacity style={{ marginVertical: 8, marginHorizontal: 10 }} onPress={() => {}}>
+        <View style={{ 
+          height: 32, 
+          borderRadius: 4,
+          marginHorizontal: 5,
+          paddingHorizontal: 8,
+          backgroundColor: '#F0F0F0',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center' }}> 
+          <MaterialIcons color="#909090" name="search" size={28} />
+           <TextInput
+              style={styles.searchInput}
+              selectionColor={'#909090'}
+              placeholder="Search"
+              placeholderTextColor="#909090"
+              value={search}
+              onChangeText={(contact) => setSearch(contact)}
+              autoCapitalize="none"
+              autoCorrect={false} />
+          </View>
+      </TouchableOpacity>
       {contacts.length > 0 ? (
         <FlatList
           data={contacts}
@@ -207,7 +208,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingTop: 10,
     backgroundColor: Colors.tertiary,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25
@@ -233,8 +234,11 @@ const styles = StyleSheet.create({
     flex: 1
   },
   searchInput: {
-    fontSize: 16,
-    fontFamily: 'open-sans'
+    fontSize: 18,
+    fontFamily: 'open-sans',
+    color: '#909090',
+    flex: 1,
+    height: '100%'
   },  
   input: {
     backgroundColor: 'indianred',
@@ -242,10 +246,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     height: 36,
     borderRadius: 4,
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: 'open-sans',
-    flex: 1,
-    marginRight: 8
+    flex: 1
   },
   image: {
     width: 100,

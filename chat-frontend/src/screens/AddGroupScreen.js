@@ -180,14 +180,8 @@ const AddGroupScreen = props => {
                 <MaterialIcons name="close" size={28} color="white" />
               </TouchableOpacity>
               <HeadingText style={styles.heading}>New Group</HeadingText>
-               <TouchableOpacity disabled={disableCreateBtn} onPress={() => {}}>
-                <View style={{ 
-                  borderRadius: 4, 
-                  backgroundColor: '#fff',
-                  paddingHorizontal: 8,
-                  paddingVertical: 4 }}> 
-                    <HeadingText style={{ fontSize: 16, color: disableCreateBtn ? 'grey' : 'indianred' }}>Create</HeadingText>
-                </View>
+              <TouchableOpacity disabled={disableCreateBtn} onPress={() => {}}>
+                <Ionicons color={disableCreateBtn ? 'grey' : '#fff'} name="ios-add-circle-outline" size={34} />
               </TouchableOpacity>
             </View>
             <View style={styles.headerMiddle}>

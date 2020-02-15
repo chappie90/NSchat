@@ -13,7 +13,7 @@ import {
   Image
 } from 'react-native';
 import { Overlay } from 'react-native-elements';
-import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time, Send } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
@@ -292,6 +292,16 @@ const ChatDetailScreen = ({ navigation }) => {
     );
   };
 
+  const renderSend = (props) => {
+    return (
+      <Send {...props}>
+        <View style={{marginRight: 10, marginBottom: 8}}>
+          <MaterialIcons name="send" size={26} color={Colors.primary} />
+        </View>
+      </Send>
+    );
+  }
+
   const RenderMessageReplyBubble = props => {
     return (
       <View style={props.containerStyle}> 
@@ -428,6 +438,7 @@ const ChatDetailScreen = ({ navigation }) => {
           }}
           renderLoading={renderLoading}
           ref={ref => giftedChatRef = ref}
+          renderSend={renderSend}
           renderChatFooter={renderChatFooter}
           renderCustomView={false ? null : renderCustomView}
           isCustomViewBottom={true}

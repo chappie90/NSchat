@@ -100,19 +100,30 @@ const AddGroupScreen = props => {
                 autoCapitalize="none"
                 autoCorrect={false} />
             </View>
+            <ScrollView horizontal={true}>
+              {addToGroupArr.map(item => {
+                return (
+                  <ScaleViewAnim key={item} style={{ justifyContent: 'center', alignItems: 'center', marginRight: 15, marginTop: 10 }}>
+                    <Image style={{ width: 48, height: 48, borderRadius: 24 }} source={require('../../assets/avatar2.png')} />
+                    <Text style={{ marginTop: 4,color: '#fff' }} key={item}>{item}</Text>
+                  </ScaleViewAnim>
+                );
+              })}
+            </ScrollView>
           </View>
       <View style={{ flex: 1 }}>
       {contacts.length > 0 ? (
         <FlatList
           data={contacts}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return (
               <TouchableWithoutFeedback 
-                style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
+                style={{ borderRadius: 5, overflow: 'hidden' }} 
                 onPress={() => updateGroupHandler(item.user.username)}>
                 <View 
-                  style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingHorizontal: 15}}
+                  style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 15}}
                 >
                   <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
                     {item.user.profile ?
@@ -231,6 +242,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: '#000'
   },
+  headerBottom: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
+  }
 });
 
 export default AddGroupScreen;

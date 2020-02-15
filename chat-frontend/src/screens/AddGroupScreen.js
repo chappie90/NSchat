@@ -34,6 +34,7 @@ const AddGroupScreen = props => {
   const [search, setSearch] = useState('');
   const [addToGroupArr, setAddToGroupArr] = useState([]);
   const [expandHeader, setExpandHeader] = useState(false);
+  const [groupContacts, setGroupContacts] = useState([]);
 
   useEffect(() => {
     getContacts({ username });
@@ -44,6 +45,10 @@ const AddGroupScreen = props => {
       setExpandHeader(false);
     }
   }, [addToGroupArr]);
+
+  useEffect(() => {
+    setGroupContacts(contacts);
+  }, [contacts]);
 
   const updateGroupHandler = contactName => {
     if (addToGroupArr.includes(contactName)) {
@@ -129,14 +134,21 @@ const AddGroupScreen = props => {
               placeholder="Search"
               placeholderTextColor="#909090"
               value={search}
-              onChangeText={(contact) => setSearch(contact)}
+              onChangeText={(contact) => {
+                setSearch(contact);
+                if (!contact) {
+                  setGroupContacts(contacts);
+                  return;
+                }
+                setGroupContacts(prevState => contacts.filter(c => c.user.username.includes(contact)));
+              }}
               autoCapitalize="none"
               autoCorrect={false} />
           </View>
       </TouchableOpacity>
       {contacts.length > 0 ? (
         <FlatList
-          data={contacts}
+          data={groupContacts}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {

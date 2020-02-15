@@ -241,15 +241,29 @@ const AddGroupScreen = props => {
               {addToGroupArr.map(item => {
                 const contact = contacts.find(contact => contact.user.username === item);
                 return contact.user.profile ? (
-                  <ScaleViewAnim key={item} style={{ justifyContent: 'center', alignItems: 'center', marginRight: 15, marginTop: 10 }}>
-                    <Image style={{ width: 48, height: 48, borderRadius: 24 }} source={{ uri: contact.user.profile.imgPath }} />
-                    <Text style={{ marginTop: 4,color: '#fff' }} key={item}>{item}</Text>
-                  </ScaleViewAnim>
+                  <TouchableOpacity key={item} onPress={() => {
+                    setAddToGroupArr(prevState => addToGroupArr.filter(contact => contact !== item));
+                  }}>
+                    <ScaleViewAnim style={{ justifyContent: 'center', alignItems: 'center', marginRight: 15, marginTop: 10 }}>
+                      <View style={{ position: 'absolute', top: -3, right: -3, zIndex: 1, backgroundColor: '#fff', borderRadius: 20 }}>
+                        <MaterialIcons name="close" size={18} color="indianred" />
+                      </View>
+                      <Image style={{ width: 48, height: 48, borderRadius: 24 }} source={{ uri: contact.user.profile.imgPath }} />
+                      <Text style={{ marginTop: 4,color: '#fff' }} key={item}>{item}</Text>
+                    </ScaleViewAnim>
+                  </TouchableOpacity>
                 ) : (
-                  <ScaleViewAnim key={item} style={{ justifyContent: 'center', alignItems: 'center', marginRight: 15, marginTop: 10 }}>
-                    <Image style={{ width: 48, height: 48, borderRadius: 24 }} source={require('../../assets/avatar2.png')} />
-                    <Text style={{ marginTop: 4,color: '#fff' }} key={item}>{item}</Text>
-                  </ScaleViewAnim>
+                  <TouchableOpacity key={item} onPress={() => {
+                     setAddToGroupArr(prevState => addToGroupArr.filter(contact => contact !== item));
+                  }}>
+                    <ScaleViewAnim key={item} style={{ justifyContent: 'center', alignItems: 'center', marginRight: 15, marginTop: 10 }}>
+                        <View style={{ position: 'absolute', top: -3, right: -3, zIndex: 1, backgroundColor: '#fff', borderRadius: 20 }}>
+                          <MaterialIcons name="close" size={18} color="indianred" />
+                        </View>
+                      <Image style={{ width: 48, height: 48, borderRadius: 24 }} source={require('../../assets/avatar2.png')} />
+                      <Text style={{ marginTop: 4,color: '#fff' }} key={item}>{item}</Text>
+                    </ScaleViewAnim>
+                  </TouchableOpacity>
                 );
               })}
             </ScrollView>

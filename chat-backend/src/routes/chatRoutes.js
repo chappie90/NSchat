@@ -69,11 +69,27 @@ router.post('/chats', checkAuth, async (req, res) => {
         unreadMessageCount });
     }
 
-    // const groups = user[0].groups;
+    const groups = user[0].groups;
 
-    // for (let g of groups) {
+    for (let g of groups) {
+      const lastGroupMessage = await GroupMessage.find(
+        { group: g.group._id }
+      )
+      .sort({ 'message.created': -1 })
+      .limit(1);
 
-    // }
+      chats.push({
+        text: lastGroupMessage[0].message.text,
+        date: lastGroupMessage[0].message.created,
+        contact: g.group.name,
+        profile: {
+          imgPath: g.group.avatar.imagePath,
+          imgName: g.group.avatar.imageName
+        }
+      });
+    }
+
+    console.log(chats);
 
     res.send({ chats });
   } catch (err) {

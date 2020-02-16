@@ -91,8 +91,6 @@ router.post('/chats', checkAuth, async (req, res) => {
       });
     }
 
-    console.log(chats);
-
     res.send({ chats });
   } catch (err) {
     return res.status(422).send(err.message);
@@ -130,8 +128,6 @@ router.post('/messages', checkAuth, async (req, res) => {
                                   .skip(skip)
                                   .sort({ 'message.createdAt': -1 })
                                   .limit(50);
-
-    console.log(messages);
 
     res.status(200).send({ messages });
   } catch (err) {

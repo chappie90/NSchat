@@ -52,6 +52,7 @@ const ChatDetailScreen = ({ navigation }) => {
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
+      getChats({ username });
       if (message.user.name === username) {
         updateMessages({ message });
         setIncomingMsgs(prevState => prevState.map(msg => {
@@ -511,6 +512,15 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
           style={{ paddingHorizontal: 10,  paddingTop: 5, marginLeft: 10 }} />
       </TouchableOpacity>
     ), 
+    headerRight: (
+       <TouchableOpacity onPress={() => {}}>
+        <MaterialIcons
+          name="settings" 
+          size={28} 
+          color="#D0D0D0"
+          style={{ paddingHorizontal: 10,  paddingTop: 3 }} />
+      </TouchableOpacity>
+    ),
     headerBackground: (
       <View style={{
         flex: 1, 

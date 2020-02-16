@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   View,
   Image,
@@ -29,11 +29,12 @@ import TranslateViewAnim from "../components/animations/TranslateViewAnim";
 import ScaleViewAnim from "../components/animations/ScaleViewAnim";
 import HeadingText from "../components/HeadingText";
 import BodyText from "../components/BodyText";
+import { connectToSocket } from '../socket/chat';
 
 const AddGroupScreen = props => {
   const { state: { contacts }, getContacts } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
-  const { createGroup } = useContext(ChatContext);
+  const { createGroup, getChats } = useContext(ChatContext);
   const {
     state: { profileImage },
     saveImage,
@@ -49,6 +50,7 @@ const AddGroupScreen = props => {
   const [groupContacts, setGroupContacts] = useState([]);
   const [disableCreateBtn, setDisableCreateBtn] = useState(true);
   const [imagePreview, setImagePreview] = useState("");
+  const socket = useRef(null);
 
   useEffect(() => {
     getContacts({ username });
@@ -65,7 +67,8 @@ const AddGroupScreen = props => {
   }, [contacts]);
 
   const createGroupHandler = (username, groupName, groupImage, groupMembers) => {
-    createGroup({ username, groupName, groupImage, groupMembers });
+    createGroup({ username, groupName, groupImage, groupMembers })
+    .then(results => getChats({username}));
     setAddToGroupArr([]);
     setGroupContacts(contacts);
     setDisableCreateBtn(true);

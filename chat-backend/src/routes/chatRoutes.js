@@ -85,7 +85,9 @@ router.post('/chats', checkAuth, async (req, res) => {
         profile: {
           imgPath: g.group.avatar.imagePath,
           imgName: g.group.avatar.imageName
-        }
+        },
+        groupOwner: g.group.owner,
+        unreadMessageCount: 0
       });
     }
 
@@ -184,7 +186,7 @@ router.post(
     let groupMembers = req.body.groupMembers;
     groupMembers = JSON.parse(groupMembers);
     const url = req.protocol + '://' + req.get('host');
-    const imgPath = url + '/public/uploads/' + username + '/' + req.file.filename;
+    const imgPath = url + '/public/uploads/' + req.file.filename;
 
     try {
       const group = new Group({

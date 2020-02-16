@@ -81,6 +81,16 @@ const ChatsListScreen = ({ navigation }) => {
     );
   };
 
+  const renderLastMessageText = (item) => {
+    if (isTyping && typingUser == item.contact) {
+      return 'is typing...';
+    } else if (item.groupOwner && item.groupOwner === username) {
+      return item.text.replace(username, 'You');
+    } else {
+      return item.text
+    }
+  };
+
   const renderChatsList = () => {
     return (
       <FlatList
@@ -111,7 +121,7 @@ const ChatsListScreen = ({ navigation }) => {
                 </View>
                 <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
                   <View style={styles.itemContainer}>
-                    <HeadingText numberOfLines={1} style={styles.name}>{item.contact}</HeadingText>
+                    <HeadingText numberOfLines={1} style={item.groupOwner ? styles.groupName : styles.name}>{item.contact}</HeadingText>
                     <BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
                   </View>
                   <View style={styles.itemContainer}>
@@ -119,7 +129,7 @@ const ChatsListScreen = ({ navigation }) => {
                       numberOfLines={2}
                       ellipsize="tail"
                       style={item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>
-                      {isTyping && typingUser == item.contact ? 'is typing...' : item.text}
+                      {renderLastMessageText(item)}
                     </BodyText>
                     {item.unreadMessageCount !== 0 && (
                       <View style={styles.unreadBadge}>
@@ -207,6 +217,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 17,
     color: Colors.primary,
+    maxWidth: '55%'
+  },
+  groupName: {
+    fontSize: 17,
+    color: Colors.secondary,
     maxWidth: '55%'
   },
   text: {

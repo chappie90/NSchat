@@ -28,6 +28,7 @@ import { Context as ChatContext } from '../context/ChatContext';
 import chatApi from '../api/chat';
 import { connectToSocket } from '../socket/chat';
 import FadeViewAnim from '../components/animations/FadeViewAnim';
+import GroupSettingsScreen from './GroupSettingsScreen';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -40,6 +41,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
+  const [groupSettingsModal, setGroupSettingsModal] = useState(false);
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
@@ -49,6 +51,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
+    navigation.setParams({ openModal: openModalHandler })
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
@@ -107,7 +110,6 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {;
     setIncomingMsgs(chat);
-    console.log('chat updated');
   }, [chat]);
 
   const didFocusHandler = () => {
@@ -116,6 +118,14 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const willBlurHandler = () => {
     resetChatState();
+  };
+
+  const openModalHandler = () => {
+    setGroupSettingsModal(true);
+  };
+
+  const closeModalHandler = () => {
+    setGroupSettingsModal(false);
   };
 
   // const willFocusHandler = () => {
@@ -416,6 +426,7 @@ const ChatDetailScreen = ({ navigation }) => {
         // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
+        <GroupSettingsScreen visible={groupSettingsModal} closeModal={closeModalHandler} />
         <GiftedChat
           renderUsernameOnMessage 
           messages={incomingMsgs} 
@@ -500,8 +511,6 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
   const { state: { params = {} } } = navigation;
       {/* title:  `${params.username} ${params.isTyping ? params.isTyping : ''}`  || '' */}
 
-  console.log(params.image);
-
   return {
     headerLeft: (
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -513,7 +522,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
       </TouchableOpacity>
     ), 
     headerRight: (
-       <TouchableOpacity onPress={() => {}}>
+       <TouchableOpacity onPress={() => params.openModal()}>
         <MaterialIcons
           name="settings" 
           size={28} 

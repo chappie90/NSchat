@@ -1,7 +1,7 @@
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
 
-const contactsReducer = (state, action) => {
+const groupsReducer = (state, action) => {
   switch (action.type) {
     case 'get_group':
       return { ...state, group: action.payload };

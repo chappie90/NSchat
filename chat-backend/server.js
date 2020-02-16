@@ -6,7 +6,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const http = require('http');
-// const path = require('path');
 const serveIndex = require('serve-index');
 const { Expo } = require('expo-server-sdk');
 
@@ -15,6 +14,7 @@ const authRoutes = require('./src/routes/authRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
 const contactsRoutes = require('./src/routes/contactsRoutes');
 const profileRoutes = require('./src/routes/profileRoutes');
+const groupsRoutes = require('./src/routes/groupsRoutes');
 const messageHandler = require('./src/handlers/message.handler');
 
 const app = express();
@@ -34,6 +34,7 @@ app.use(authRoutes);
 app.use(chatRoutes);
 app.use(contactsRoutes);
 app.use(profileRoutes);
+app.use(groupsRoutes);
 
 // import { resolve } from  'path';
 // const Port = process.env.PORT || 3000;

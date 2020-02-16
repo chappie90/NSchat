@@ -66,6 +66,13 @@ const AddGroupScreen = props => {
 
   const createGroupHandler = (username, groupName, groupImage, groupMembers) => {
     createGroup({ username, groupName, groupImage, groupMembers });
+    setAddToGroupArr([]);
+    setGroupContacts(contacts);
+    setDisableCreateBtn(true);
+    setSearch("");
+    setGroupName("");
+    setImagePreview('');
+    props.closeModal();
   };
 
   const updateGroupHandler = contactName => {
@@ -125,7 +132,7 @@ const AddGroupScreen = props => {
       return;
     }
     setModalVisible(false);
-    setImagePreview(libraryImage.uri);
+    setImagePreview(cameraImage.uri);
   };
 
   const choosePhotoHandler = async () => {
@@ -302,7 +309,7 @@ const AddGroupScreen = props => {
             <ScrollView horizontal={true}>
               {addToGroupArr.map(item => {
                 const contact = contacts.find(
-                  contact => contact.user.username === item
+                  contact => contact && contact.user.username === item
                 );
                 return contact.user.profile ? (
                   <TouchableOpacity

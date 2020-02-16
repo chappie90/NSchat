@@ -4,6 +4,7 @@ const multer = require('multer');
 
 const User = mongoose.model('User');
 const Message = mongoose.model('Message');
+const Group = mongoose.model('Group');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
@@ -161,10 +162,32 @@ router.post(
     const imgPath = url + '/public/uploads/' + username + '/' + req.file.filename;
 
     try {
-      const user = await User.findOneAndUpdate(
-        { username: username }
-      );
-      res.status(200).send({ user });
+      const group = new Group({
+        name: groupName,
+        owner: username,
+        members: groupMembers,
+        avatar: {
+          imagePath: imgPath,
+          imageName: req.file.filename
+        }
+      });
+      await group.save();
+
+      let newMembers = [];
+
+      for (const member of groupMembers) {
+        newMembers.push(await User.findOneAndUpdate(
+          { username: member },
+          { $addToSet: {
+            groups: {
+              group: group._id
+            }
+          } },
+          { new: true }
+        ));  
+      }
+      
+      res.status(200).send({ group });
     } catch (err) {
       console.log(err);
       res.status(422).send({ error: 'Could not create group' });

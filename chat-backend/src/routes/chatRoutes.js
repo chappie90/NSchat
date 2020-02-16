@@ -5,6 +5,7 @@ const multer = require('multer');
 const User = mongoose.model('User');
 const Message = mongoose.model('Message');
 const Group = mongoose.model('Group');
+const GroupMessage = mongoose.model('GroupMessage');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
@@ -71,7 +72,7 @@ router.post('/chats', checkAuth, async (req, res) => {
     // const groups = user[0].groups;
 
     // for (let g of groups) {
-      
+
     // }
 
     res.send({ chats });
@@ -194,6 +195,19 @@ router.post(
           { new: true }
         ));  
       }
+
+      const initialGroupMessage = new GroupMessage({
+        group: group._id,
+        from: username,
+        message: {
+          text: `${username} created group "${groupName}"`,
+          created: Date.now()
+        }
+      });
+
+      await initialGroupMessage.save();
+
+      console.log(initialGroupMessage);
       
       res.status(200).send({ group });
     } catch (err) {

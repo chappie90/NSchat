@@ -87,6 +87,7 @@ router.post('/chats', checkAuth, async (req, res) => {
           imgName: g.group.avatar.imageName
         },
         groupOwner: g.group.owner,
+        groupId: g.group._id,
         unreadMessageCount: 0
       });
     }

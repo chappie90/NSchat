@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 
-const User = mongoose.model('Group');
+const Group = mongoose.model('Group');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
@@ -41,9 +41,7 @@ router.get('/group', checkAuth, async (req, res) => {
       return res.status(422).send({ error: 'Could not fetch image' }); 
     }
 
-    console.log(group);
-
-    res.status(200).send({ group });
+    res.status(200).send({ group: group[0] });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not fetch image' });

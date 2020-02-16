@@ -15,6 +15,7 @@ import { MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 
 import { Context as AuthContext } from '../context/AuthContext';
+import { Context as GroupsContext } from '../context/GroupsContext';
 import AuthForm from '../components/AuthForm';
 import Colors from '../constants/colors';
 import HeadingText from '../components/HeadingText';
@@ -22,9 +23,12 @@ import BodyText from "../components/BodyText";
 
 const GroupSettingsScreen = (props) => {
   const { state: { errorMessage }, signup, clearErrorMessage } = useContext(AuthContext);
+  const { state: { currentGroupId, group }, getGroup } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
 
-  let profileImage = '';
+  useEffect(() => {
+    getGroup(currentGroupId);
+  }, []);
 
   const avatarEditHandler = () => {
     setModalVisible(true);
@@ -92,7 +96,7 @@ const GroupSettingsScreen = (props) => {
   };
 
   const deletePhotoHandler = () => {
-    if (profileImage) {
+    if (group.avatar) {
       deleteImage(username);
     }
     setModalVisible(false);
@@ -164,10 +168,10 @@ const GroupSettingsScreen = (props) => {
           <TouchableWithoutFeedback onPress={avatarEditHandler}>
           <View>
             <View style={styles.imagePreview}>
-              {profileImage ?
+              {group.avatar ?
                 <Image 
                   placeholderStyle={styles.placeholder}
-                  source={{ uri: profileImage }}
+                  source={{ uri: group.avatar.imagePath }}
                   style={styles.image} /> : 
                 <Image source={require('../../assets/avatar2.png')} style={styles.image} />
               }
@@ -213,7 +217,8 @@ const styles = StyleSheet.create({
     borderRadius: 80,
     borderWidth: 4,
     borderColor: 'white',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginTop: 30
   },
   placeholder: {
     backgroundColor: 'white'

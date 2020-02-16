@@ -286,7 +286,6 @@ const AddGroupScreen = props => {
                     setDisableCreateBtn(true);
                   }
                 }}
-                autoCapitalize="none"
                 autoCorrect={false}
               />
             </View>

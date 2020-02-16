@@ -21,7 +21,12 @@ const userSchema = new mongoose.Schema({
   profile: {
     imgPath: String,
     imgName: String
-  }
+  },
+  groups: [
+    {
+      group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' }
+    }
+  ]
 });
 
 userSchema.pre('save', function(next) {

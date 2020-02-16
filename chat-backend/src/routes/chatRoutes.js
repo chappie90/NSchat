@@ -36,7 +36,9 @@ router.post('/chats', checkAuth, async (req, res) => {
   const { username } = req.body;
 
   try {
-    const user = await User.find({ username }).populate('contacts.user'); 
+    const user = await User.find({ username })
+      .populate('contacts.user')
+      .populate('groups.group'); 
     const contacts = user[0].contacts.filter(c => c.previousChat == true);
 
     const chats = [];
@@ -65,6 +67,12 @@ router.post('/chats', checkAuth, async (req, res) => {
         profile: c.user.profile,
         unreadMessageCount });
     }
+
+    // const groups = user[0].groups;
+
+    // for (let g of groups) {
+      
+    // }
 
     res.send({ chats });
   } catch (err) {

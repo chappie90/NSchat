@@ -1,6 +1,7 @@
 require('./src/models/User');
 require('./src/models/Message');
 require('./src/models/Group');
+require('./src/models/GroupMessage');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');

@@ -24,6 +24,8 @@ const chatReducer = (state, action) => {
         return item._id === action.payload ? { ...item, text: 'Message deleted', deleted: true } : item;
       });
       return { ...state, chat: deletedMessage };
+    case 'create_group':
+      return { ...state, previousChats: [action.payload].concat(state.previousChats) }; // [action.payload, ...state.previousChats]
     default:
       return state;
   }
@@ -158,7 +160,7 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
 
     const response = await chatApi.post('/group/new', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
-    console.log(response);
+    dispatch({ type: 'create_group', payload: response.data.newGroup });
   } catch (err) {
     console.log(err);
     throw err;

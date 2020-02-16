@@ -218,12 +218,21 @@ router.post(
           created: Date.now()
         }
       });
-
       await initialGroupMessage.save();
 
-      console.log(initialGroupMessage);
-      
-      res.status(200).send({ group });
+      const newGroup = {
+        text: initialGroupMessage.message.text,
+        date: initialGroupMessage.message.created,
+        contact: groupName,
+        profile: {
+          imgPath: imgPath,
+          imgName: req.file.filename
+        },
+        groupOwner: username,
+        unreadMessageCount: 0
+      };
+
+      res.status(200).send({ newGroup });
     } catch (err) {
       console.log(err);
       res.status(422).send({ error: 'Could not create group' });

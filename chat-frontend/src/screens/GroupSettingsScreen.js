@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: 'white',
     overflow: 'hidden',
-    marginTop: 30
+    marginTop: 20
   },
   placeholder: {
     backgroundColor: 'white'

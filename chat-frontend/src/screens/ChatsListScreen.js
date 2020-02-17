@@ -5,16 +5,18 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity,
+  TouchableWithoutFeedback,
   FlatList,
   RefreshControl, 
   ActivityIndicator,
   StatusBar,
   Image
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Entypo, AntDesign } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -95,7 +97,7 @@ const ChatsListScreen = ({ navigation }) => {
 
   const renderChatsList = () => {
     return (
-      <FlatList
+      <SwipeListView
         refreshControl={
           <RefreshControl
             onRefresh={() => getChats({ username })}
@@ -103,54 +105,94 @@ const ChatsListScreen = ({ navigation }) => {
             tintColor={Colors.primary} />
         }
         data={previousChats}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => {
+        keyExtractor={(data, index) => index.toString()}
+        renderItem={ (data, rowMap) => {
           return (
-            <TouchableOpacity onPress={() => {
-              markMessagesAsRead({ username, recipient: item.contact });
-              getCurrentGroupId(item.groupId);
-              navigation.navigate('ChatDetail', {
-                username: item.contact,
-                image: item.profile ? item.profile.imgPath : ''
-              });
+            <TouchableWithoutFeedback
+              onPress={() => {
+                markMessagesAsRead({ username, recipient: data.item.contact });
+                if (data.item.groupId) {
+                  getCurrentGroupId(data.item.groupId);
+                }
+                navigation.navigate('ChatDetail', {
+                  username: data.item.contact,
+                  image: data.item.profile ? data.item.profile.imgPath : ''
+                });
             }}>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 10, paddingVertical: 5 }}>
+            <View>
+              <View style={{
+               flexDirection: 'row', 
+               alignItems: 'flex-start', 
+               paddingHorizontal: 10, 
+               paddingVertical: 5,
+               backgroundColor: '#fff' }}>
                 <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4 }}>
-                  { item.profile.imgPath ? (
-                    <Image source={{ uri: item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
+                  { data.item.profile.imgPath ? (
+                    <Image source={{ uri: data.item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
                   ) : (
                     <Image source={require('../../assets/avatar2.png')} style={{ width: '100%', height: '100%' }} />
                   )}
                 </View>
                 <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
                   <View style={styles.itemContainer}>
-                    <HeadingText numberOfLines={1} style={item.groupOwner ? styles.groupName : styles.name}>{item.contact}</HeadingText>
-                    <BodyText style={styles.date}>{formatDate(item.date)}</BodyText>
+                    <HeadingText numberOfLines={1} style={data.item.groupOwner ? styles.groupName : styles.name}>{data.item.contact}</HeadingText>
+                    <BodyText style={styles.date}>{formatDate(data.item.date)}</BodyText>
                   </View>
                   <View style={styles.itemContainer}>
                     <BodyText
                       numberOfLines={2}
                       ellipsize="tail"
-                      style={item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>
-                      {renderLastMessageText(item)}
+                      style={data.item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>
+                      {renderLastMessageText(data.item)}
                     </BodyText>
-                    {item.unreadMessageCount !== 0 && (
+                    {data.item.unreadMessageCount !== 0 && (
                       <View style={styles.unreadBadge}>
-                        <HeadingText style={styles.unreadBadgeText}>{item.unreadMessageCount > 99 ? '99+' : item.unreadMessageCount }</HeadingText>
+                        <HeadingText style={styles.unreadBadgeText}>{data.item.unreadMessageCount > 99 ? '99+' : data.item.unreadMessageCount }</HeadingText>
                       </View>
                     )}
                   </View>
                 </View>
               </View>
-              {onlineContacts.includes(item.contact) && (
+              {onlineContacts.includes(data.item.contact) && (
                 <Badge
                   badgeStyle={styles.badge}
                   containerStyle={styles.badgeContainer}
                 />
               )}  
-            </TouchableOpacity>
-          );
-      }} />
+              </View>
+            </TouchableWithoutFeedback>
+        )}}
+        renderHiddenItem={ (item, rowMap) => (
+            <View style={styles.rowBack}>
+             <TouchableOpacity style={{ }} onPress={() => {}}>
+                <View style={{
+                  backgroundColor: Colors.secondary,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  marginHorizontal: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center' }}>
+                    <AntDesign name="pushpin" size={24} color="#fff" />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ }} onPress={() => {}}>
+                <View style={{
+                  backgroundColor: Colors.tertiary,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  marginHorizontal: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center' }}>
+                    <Entypo name="trash" size={24} color="#fff" />
+                </View>
+              </TouchableOpacity>
+            </View>
+        )}
+        leftOpenValue={65}
+        rightOpenValue={-65}
+        />
     );
   };
 
@@ -176,6 +218,7 @@ const ChatsListScreen = ({ navigation }) => {
           <MaterialIcons style={{ marginBottom: 10 }} name="group" size={36} color="#fff" />
         </TouchableOpacity>   
       </View>
+
       {chatsIsLoading ?
         renderActivityIndicator() :
         previousChats.length > 0 ?
@@ -302,7 +345,22 @@ const styles = StyleSheet.create({
   },
   unreadBadgeText: {
     color: '#fff'
-  }
+  },
+   rowFront: {
+    alignItems: 'center',
+    backgroundColor: '#CCC',
+    borderBottomColor: 'black',
+    borderBottomWidth: 1,
+    justifyContent: 'center',
+    height: 50,
+  },
+  rowBack: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 });
 
 export default ChatsListScreen;

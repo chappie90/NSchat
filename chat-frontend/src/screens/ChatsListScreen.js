@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useContext } from 'react';
 import { 
   View, 
   ScrollView,
@@ -10,7 +10,9 @@ import {
   RefreshControl, 
   ActivityIndicator,
   StatusBar,
-  Image
+  Image,
+  PanResponder,
+  Animated
 } from 'react-native';
 import { MaterialIcons, Entypo, AntDesign } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
@@ -42,6 +44,28 @@ const ChatsListScreen = ({ navigation }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
+  const position = useRef(new Animated.ValueXY()).current;
+  const panResponder = React.useMemo(() => PanResponder.create({
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onMoveShouldSetResponderCapture: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderGrant: (e, gestureState) => {
+        console.log(position);
+        console.log(e.touchHistory.touchBank[1].currentPageX);
+        position.setOffset({ x: position.x._value, y: position.y._value });
+        position.setValue({x: 0, y: 0});
+      },
+      onPanResponderStart: (e, gestureState) => {
+      
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        position.setValue({x: gestureState.dx, y: gestureState.dy});
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        position.flattenOffset();
+      },
+    }), []);
+
 
   useEffect(() => {
     getChats({ username });
@@ -211,6 +235,13 @@ const ChatsListScreen = ({ navigation }) => {
     <View style={styles.container}>
     <StatusBar backgroundColor="blue" barStyle="light-content" />
     <AddGroupScreen visible={newGroupMode} closeModal={closeModal} />
+     <Animated.View
+            {...panResponder.panHandlers}
+            style={[
+              {transform: position.getTranslateTransform()},
+              styles.appStyles,
+            ]}>
+        </Animated.View>
       <View style={styles.background} />
       <View style={styles.headerContainer}>
         <HeadingText style={styles.header}>My Chats</HeadingText>
@@ -238,6 +269,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     // paddingHorizontal: 20
+  },
+  appStyles: {
+    backgroundColor: Colors.primary,
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 4,
+    borderColor: '#fff',
+    zIndex: 2
   },
   background: {
     width: '100%',

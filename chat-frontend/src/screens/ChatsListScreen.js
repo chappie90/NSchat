@@ -114,6 +114,9 @@ const ChatsListScreen = ({ navigation }) => {
   const onSwipeValueChange = (swipeData) => {
     console.log(swipeData);
   }
+  const swipeGestureBegan = data => {
+    console.log(data);
+  };  
 
   const renderLastMessageText = (item) => {
     if (isTyping && typingUser == item.contact) {
@@ -226,6 +229,8 @@ const ChatsListScreen = ({ navigation }) => {
         rightOpenValue={-65}
         stopLeftSwipe={screenWidth - 100}
         stopRightSwipe={-screenWidth + 100}
+        swipeGestureBegan={swipeGestureBegan}
+        tension={30}  
         />
     );
   };

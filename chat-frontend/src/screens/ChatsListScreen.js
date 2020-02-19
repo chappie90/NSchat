@@ -133,17 +133,17 @@ const ChatsListScreen = ({ navigation }) => {
         }
         data={previousChats}
         keyExtractor={(data, index) => index.toString()}
-        renderItem={ (data, rowMap) => {
+        renderItem={ (rowData, rowMap) => {
           return (
             <TouchableWithoutFeedback
               onPress={() => {
-                markMessagesAsRead({ username, recipient: data.item.contact });
-                if (data.item.groupId) {
-                  getCurrentGroupId(data.item.groupId);
+                markMessagesAsRead({ username, recipient: rowData.item.contact });
+                if (rowData.item.groupId) {
+                  getCurrentGroupId(rowData.item.groupId);
                 }
                 navigation.navigate('ChatDetail', {
-                  username: data.item.contact,
-                  image: data.item.profile ? data.item.profile.imgPath : ''
+                  username: rowData.item.contact,
+                  image: rowData.item.profile ? rowData.item.profile.imgPath : ''
                 });
             }}>
             <View>
@@ -154,33 +154,33 @@ const ChatsListScreen = ({ navigation }) => {
                paddingVertical: 5,
                backgroundColor: '#fff' }}>
                 <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4 }}>
-                  { data.item.profile.imgPath ? (
-                    <Image source={{ uri: data.item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
+                  { rowData.item.profile.imgPath ? (
+                    <Image source={{ uri: rowData.item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
                   ) : (
                     <Image source={require('../../assets/avatar2.png')} style={{ width: '100%', height: '100%' }} />
                   )}
                 </View>
                 <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
                   <View style={styles.itemContainer}>
-                    <HeadingText numberOfLines={1} style={data.item.groupOwner ? styles.groupName : styles.name}>{data.item.contact}</HeadingText>
-                    <BodyText style={styles.date}>{formatDate(data.item.date)}</BodyText>
+                    <HeadingText numberOfLines={1} style={rowData.item.groupOwner ? styles.groupName : styles.name}>{rowData.item.contact}</HeadingText>
+                    <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
                   </View>
                   <View style={styles.itemContainer}>
                     <BodyText
                       numberOfLines={2}
                       ellipsize="tail"
-                      style={data.item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>
-                      {renderLastMessageText(data.item)}
+                      style={rowData.item.unreadMessageCount > 0 ? styles.unreadMessage : styles.text}>
+                      {renderLastMessageText(rowData.item)}
                     </BodyText>
-                    {data.item.unreadMessageCount !== 0 && (
+                    {rowData.item.unreadMessageCount !== 0 && (
                       <View style={styles.unreadBadge}>
-                        <HeadingText style={styles.unreadBadgeText}>{data.item.unreadMessageCount > 99 ? '99+' : data.item.unreadMessageCount }</HeadingText>
+                        <HeadingText style={styles.unreadBadgeText}>{rowData.item.unreadMessageCount > 99 ? '99+' : rowData.item.unreadMessageCount }</HeadingText>
                       </View>
                     )}
                   </View>
                 </View>
               </View>
-              {onlineContacts.includes(data.item.contact) && (
+              {onlineContacts.includes(rowData.item.contact) && (
                 <Badge
                   badgeStyle={styles.badge}
                   containerStyle={styles.badgeContainer}
@@ -189,7 +189,7 @@ const ChatsListScreen = ({ navigation }) => {
               </View>
             </TouchableWithoutFeedback>
         )}}
-        renderHiddenItem={ (item, rowMap) => (
+        renderHiddenItem={ (rowData, rowMap) => (
             <View style={styles.rowBack}>
              <TouchableOpacity style={{ }} onPress={() => {}}>
                 <View style={{

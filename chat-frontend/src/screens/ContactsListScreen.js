@@ -94,10 +94,6 @@ const ContactsListScreen = ({ navigation }) => {
                 }}>
                 <View 
                   style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingHorizontal: 15}}
-                  shadowColor="grey"
-                  shadowOffset={{ width: '100%', height: 10 }}
-                  shadowOpacity="1"
-                  shadowRadius="40"
                 >
                   <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
                     {item.user.profile ?

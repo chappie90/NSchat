@@ -6,14 +6,17 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
+  TouchableWithoutFeedback,
   StyleSheet, 
   FlatList,
+  Animated,
   RefreshControl,
   ActivityIndicator 
 } from 'react-native';
-import { MaterialIcons, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons, FontAwesome5, Ionicons, AntDesign, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { ListItem, Badge } from 'react-native-elements';
-
+import { SwipeListView } from 'react-native-swipe-list-view';
+ 
 import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -31,7 +34,7 @@ const ContactsListScreen = ({ navigation }) => {
   const [newContactMode, setNewContactMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const socket = useRef(null);
-
+    
   useEffect(() => {
     getContacts({ username }).then(res => {
       setIsLoading(false);
@@ -57,6 +60,10 @@ const ContactsListScreen = ({ navigation }) => {
     setNewContactMode(false);
   };
 
+   const onSwipeValueChange = (swipeData) => {
+    console.log(swipeData);
+  }
+
   return (
     <View style={styles.container}>
       <AddContactScreen visible={newContactMode} closeModal={closeModal} />
@@ -73,7 +80,7 @@ const ContactsListScreen = ({ navigation }) => {
         </View>
       ) : 
         contacts.length > 0 ? (
-        <FlatList
+        <SwipeListView
           refreshControl={
             <RefreshControl
               onRefresh={() => getContacts({ username })}
@@ -82,38 +89,70 @@ const ContactsListScreen = ({ navigation }) => {
           }
           data={contacts}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
+          renderItem={ (rowData, rowMap) => {
             return (
-              <TouchableOpacity 
+              <TouchableWithoutFeedback 
                 style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
                 onPress={() => {
                   navigation.navigate('ChatDetail', {
-                    username: item.user.username,
-                    image: item.user.profile ? item.user.profile.imgPath : '' 
+                    username: rowData.item.user.username,
+                    image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '' 
                   })
                 }}>
                 <View 
                   style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingHorizontal: 15}}
                 >
                   <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
-                    {item.user.profile ?
+                    {rowData.item.user.profile ?
                       <Image 
                         style={{ width: 48, height: 48 }} 
                         placeholderStyle={styles.placeholder}
-                        source={{ uri: item.user.profile.imgPath }}
+                        source={{ uri: rowData.item.user.profile.imgPath }}
                         /> : 
                       <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar2.png')} />
                     }
                   </View>                  
                   <View style={styles.itemContainer}>
-                    <HeadingText style={styles.name}>{item.user.username}</HeadingText>
+                    <HeadingText style={styles.name}>{rowData.item.user.username}</HeadingText>
                   </View>
                   <MaterialIcons style={{ marginLeft: 'auto' }} name="chevron-right" size={24} />
                   <View style={styles.badge} />
                 </View>
-              </TouchableOpacity>
+              </TouchableWithoutFeedback>
             );
-          }} />
+          }}
+          renderHiddenItem={ (rowData, rowMap) => {
+            <View style={styles.rowBack}>
+             <TouchableOpacity style={{ }} onPress={() => {}}>
+                <View style={{
+                  backgroundColor: Colors.secondary,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  marginHorizontal: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center' }}>
+                    <AntDesign name="pushpin" size={24} color="#fff" />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ }} onPress={() => {}}>
+                <View style={{
+                  backgroundColor: Colors.tertiary,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  marginHorizontal: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center' }}>
+                    <Entypo name="trash" size={24} color="#fff" />
+                </View>
+              </TouchableOpacity>
+            </View>
+          }}
+          leftOpenValue={65}
+          rightOpenValue={-65}
+          onSwipeValueChange={onSwipeValueChange}
+           />
         ) : (
         <View style={styles.imageContainer}>
           <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_contact.png')} />
@@ -231,6 +270,13 @@ const styles = StyleSheet.create({
      position: 'absolute', 
     top: 36, 
     left: 52
+  },
+   rowBack: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 

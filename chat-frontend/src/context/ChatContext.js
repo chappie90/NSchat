@@ -13,7 +13,7 @@ const chatReducer = (state, action) => {
     case 'update_messages':
       return { ...state, chat: [action.payload].concat(state.chat) };
     case 'get_chats':
-      return { ...state, previousChats: action.payload, chatsIsLoading: false };
+      return { ...state, previousChats: action.payload };
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
@@ -180,7 +180,6 @@ export const { Context, Provider } = createDataContext(
   },
   {  
     previousChats: [], 
-    chat: [], 
-    chatsIsLoading: true 
+    chat: []
   }
 );

@@ -35,7 +35,7 @@ import AddGroupScreen from './AddGroupScreen';
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
   const { 
-    state: { previousChats, chatsIsLoading },
+    state: { previousChats },
     getChats, 
     markMessagesAsRead } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
@@ -44,14 +44,13 @@ const ChatsListScreen = ({ navigation }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: (e, gestureState) => {
-        console.log(position);
-        console.log(e.touchHistory.touchBank[1].currentPageX);
         position.setOffset({ x: position.x._value, y: position.y._value });
         position.setValue({x: 0, y: 0});
       },
@@ -68,7 +67,9 @@ const ChatsListScreen = ({ navigation }) => {
 
 
   useEffect(() => {
-    getChats({ username });
+    getChats({ username }).then(res => {
+      setIsLoading(false);
+    });
     socket.current = connectToSocket(username);   
     socket.current.on('online', users => {
       const onlineUsers = JSON.parse(users);
@@ -124,8 +125,10 @@ const ChatsListScreen = ({ navigation }) => {
       <SwipeListView
         refreshControl={
           <RefreshControl
-            onRefresh={() => getChats({ username })}
-            refreshing={chatsIsLoading}
+            onRefresh={() => {
+              getChats({ username })
+            }}
+            refreshing={isLoading}
             tintColor={Colors.primary} />
         }
         data={previousChats}
@@ -250,7 +253,7 @@ const ChatsListScreen = ({ navigation }) => {
         </TouchableOpacity>   
       </View>
 
-      {chatsIsLoading ?
+      {isLoading ?
         renderActivityIndicator() :
         previousChats.length > 0 ?
           renderChatsList() :

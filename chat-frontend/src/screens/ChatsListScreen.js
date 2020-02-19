@@ -12,7 +12,8 @@ import {
   StatusBar,
   Image,
   PanResponder,
-  Animated
+  Animated,
+  Dimensions
 } from 'react-native';
 import { MaterialIcons, Entypo, AntDesign } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
@@ -64,7 +65,7 @@ const ChatsListScreen = ({ navigation }) => {
         position.flattenOffset();
       },
     }), []);
-
+  const screenWidth = Math.round(Dimensions.get('window').width);
 
   useEffect(() => {
     getChats({ username }).then(res => {
@@ -109,6 +110,10 @@ const ChatsListScreen = ({ navigation }) => {
        </View>
     );
   };
+
+  const onSwipeValueChange = (swipeData) => {
+    console.log(swipeData);
+  }
 
   const renderLastMessageText = (item) => {
     if (isTyping && typingUser == item.contact) {
@@ -219,6 +224,8 @@ const ChatsListScreen = ({ navigation }) => {
         )}
         leftOpenValue={65}
         rightOpenValue={-65}
+        stopLeftSwipe={screenWidth - 100}
+        stopRightSwipe={-screenWidth + 100}
         />
     );
   };

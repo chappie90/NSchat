@@ -26,13 +26,16 @@ import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 
 const ContactsListScreen = ({ navigation }) => {
-  const { state: { contacts, contactsIsLoading, onlineContacts }, getContacts, getActiveStatus } = useContext(ContactsContext);
+  const { state: { contacts, onlineContacts }, getContacts, getActiveStatus } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const socket = useRef(null);
 
   useEffect(() => {
-    getContacts({ username });
+    getContacts({ username }).then(res => {
+      setIsLoading(false);
+    });
     socket.current = connectToSocket(username);
     socket.current.on('online', users => {
       const onlineUsers = JSON.parse(users);
@@ -64,7 +67,7 @@ const ContactsListScreen = ({ navigation }) => {
           <FontAwesome5 name="user-plus" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
-      {contactsIsLoading ? (
+      {isLoading ? (
         <View style={styles.spinnerContainer}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
@@ -74,7 +77,7 @@ const ContactsListScreen = ({ navigation }) => {
           refreshControl={
             <RefreshControl
               onRefresh={() => getContacts({ username })}
-              refreshing={contactsIsLoading}
+              refreshing={isLoading}
               tintColor={Colors.primary} />
           }
           data={contacts}

@@ -11,7 +11,7 @@ const contactsReducer = (state, action) => {
     case 'new_contact':
       return { ...state, contacts: [ ...state.contacts, action.payload ] };
     case 'get_contacts':
-      return { ...state, contacts: action.payload, contactsIsLoading: false }; // change to contacts: action.payload
+      return { ...state, contacts: action.payload }; // change to contacts: action.payload
     case 'get_active_status':
       return { ...state, onlineContacts: action.payload };
     default:
@@ -73,7 +73,6 @@ export const { Context, Provider } = createDataContext(
   { 
     searchResults: [], 
     contacts: [],
-    onlineContacts: [], 
-    contactsIsLoading: true
+    onlineContacts: []
   }
 );

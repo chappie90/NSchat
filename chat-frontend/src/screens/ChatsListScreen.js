@@ -47,6 +47,7 @@ const ChatsListScreen = ({ navigation }) => {
   const [newGroupMode, setNewGroupMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
+  const rowTranslateAnimatedValues = useRef({}).current;
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetResponderCapture: () => true,
@@ -66,7 +67,6 @@ const ChatsListScreen = ({ navigation }) => {
       },
     }), []);
   const screenWidth = Math.round(Dimensions.get('window').width);
-
   useEffect(() => {
     getChats({ username }).then(res => {
       setIsLoading(false);
@@ -99,6 +99,12 @@ const ChatsListScreen = ({ navigation }) => {
     });
   }, []);
 
+  useEffect(() => {
+    previousChats.forEach((item, index) => {
+      rowTranslateAnimatedValues[`${index}`] = new Animated.Value(0);
+    });
+  }, [previousChats]);
+
   const closeModal = () => {
     setNewGroupMode(false);
   };
@@ -112,10 +118,11 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   const onSwipeValueChange = (swipeData) => {
-    console.log(swipeData);
-  }
+    const { key, value } = swipeData;
+    rowTranslateAnimatedValues[key].setValue(Math.abs(value));
+  };
   const swipeGestureBegan = data => {
-    console.log(data);
+
   };  
 
   const renderLastMessageText = (item) => {
@@ -197,7 +204,7 @@ const ChatsListScreen = ({ navigation }) => {
               </View>
             </TouchableWithoutFeedback>
         )}}
-        renderHiddenItem={ (rowData, rowMap) => (
+        renderHiddenItem={ (data, rowMap) => (
             <View style={styles.rowBack}>
              <TouchableOpacity style={{ }} onPress={() => {}}>
                 <View style={{
@@ -212,16 +219,23 @@ const ChatsListScreen = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity style={{ }} onPress={() => {}}>
-                <View style={{
+                <Animated.View style={{
                   backgroundColor: Colors.tertiary,
                   width: 44,
                   height: 44,
                   borderRadius: 22,
                   marginHorizontal: 10,
                   alignItems: 'center',
-                  justifyContent: 'center' }}>
+                  justifyContent: 'center',
+                  transform: [
+                    { translateX: rowTranslateAnimatedValues['1'].interpolate({
+                        inputRange: [45, 90],
+                        outputRange: [0, -20],
+                        extrapolate: 'clamp'
+                    }) }
+                  ] }}>
                     <Entypo name="trash" size={24} color="#fff" />
-                </View>
+                </Animated.View>
               </TouchableOpacity>
             </View>
         )}
@@ -229,7 +243,7 @@ const ChatsListScreen = ({ navigation }) => {
         rightOpenValue={-65}
         stopLeftSwipe={screenWidth - 100}
         stopRightSwipe={-screenWidth + 100}
-        swipeGestureBegan={swipeGestureBegan}
+        onSwipeValueChange={onSwipeValueChange}
         tension={30}  
         />
     );

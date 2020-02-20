@@ -204,19 +204,27 @@ const ChatsListScreen = ({ navigation }) => {
               </View>
             </TouchableWithoutFeedback>
         )}}
-        renderHiddenItem={ (data, rowMap) => (
+        renderHiddenItem={ (data, rowMap) =>{
+         return (
             <View style={styles.rowBack}>
              <TouchableOpacity style={{ }} onPress={() => {}}>
-                <View style={{
+                <Animated.View style={{
                   backgroundColor: Colors.secondary,
                   width: 44,
                   height: 44,
                   borderRadius: 22,
                   marginHorizontal: 10,
                   alignItems: 'center',
-                  justifyContent: 'center' }}>
+                  justifyContent: 'center',
+                  transform: [
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                      inputRange: [50, 75, 100, 150, 200],
+                      outputRange: [0, 10, 25, 35, 45],
+                      extrapolate: 'clamp'
+                    })}
+                  ] }}>
                     <AntDesign name="pushpin" size={24} color="#fff" />
-                </View>
+                </Animated.View>
               </TouchableOpacity>
               <TouchableOpacity style={{ }} onPress={() => {}}>
                 <Animated.View style={{
@@ -228,9 +236,9 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: rowTranslateAnimatedValues['1'].interpolate({
-                        inputRange: [45, 90],
-                        outputRange: [0, -20],
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                        inputRange: [50, 75, 100, 150, 200],
+                        outputRange: [0, -10, -25, -35, -45],
                         extrapolate: 'clamp'
                     }) }
                   ] }}>
@@ -238,7 +246,7 @@ const ChatsListScreen = ({ navigation }) => {
                 </Animated.View>
               </TouchableOpacity>
             </View>
-        )}
+        )}}
         leftOpenValue={65}
         rightOpenValue={-65}
         stopLeftSwipe={screenWidth - 100}

@@ -52,6 +52,20 @@ const getChats = dispatch => async ({ username }) => {
   }
 };
 
+const deleteChat = dispatch => async (chatId) => {
+  try {
+    const response = await chatApi.patch('/chat/delete', { chatId });
+
+    if (!response.data) {
+      return;
+    }
+
+    dispatch({ type: 'delete_chat', payload: chatId });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const updateMessages = dispatch => ({ message }) => {
   dispatch({ type: 'update_messages', payload: message });
 };
@@ -171,6 +185,7 @@ export const { Context, Provider } = createDataContext(
   chatReducer,
   { 
     getChats, 
+    deleteChat,
     getMessages,
     updateMessages,
     markMessagesAsRead,

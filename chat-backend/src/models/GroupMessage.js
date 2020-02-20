@@ -8,8 +8,8 @@ const groupMessageSchema = new mongoose.Schema({
     text: { type: String, required: true },
     created: { type: Date, required: true }
   },
-  read: { type: Boolean, required: true, default: false },
-  deleted: { type: Boolean, required: true, default: false },
+  read: { type: Boolean, default: false },
+  deleted: { type: Boolean, default: false },
   reply: {
     originalMsgId: String,
     originalMsgText: String,

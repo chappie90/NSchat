@@ -151,7 +151,7 @@ const deleteMessage = dispatch => async ({ messageId }) => {
   }
 };
 
-const createGroup = dispatch => async ({ username, type = 'group', groupName, groupImage = '', groupMembers = '' }) => {
+const createGroup = dispatch => async ({ username, groupName, groupImage = '', groupMembers = '' }) => {
   
   try {
     let uriParts = groupImage.split('.');
@@ -169,7 +169,6 @@ const createGroup = dispatch => async ({ username, type = 'group', groupName, gr
       type: `image/${fileType}`
     });
     formData.append('username', username);
-    formData.append('type', type);
     formData.append('groupName', groupName);
     formData.append('groupMembers', groupMembersStr);
 

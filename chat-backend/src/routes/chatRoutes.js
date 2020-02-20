@@ -181,7 +181,6 @@ router.post(
   multer({ storage: storage }).single('group'),
   async (req, res) => {
     const username = req.body.username;
-    const type = req.body.type;
     const groupName = req.body.groupName;
     let groupMembers = req.body.groupMembers;
     groupMembers = JSON.parse(groupMembers);
@@ -190,7 +189,6 @@ router.post(
 
     try {
       const group = new Group({
-        type: group,
         name: groupName,
         owner: username,
         members: groupMembers,

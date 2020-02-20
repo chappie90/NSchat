@@ -100,9 +100,12 @@ const ChatsListScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    previousChats.forEach((item, index) => {
-      rowTranslateAnimatedValues[`${index}`] = new Animated.Value(0);
-    });
+    if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
+        rowTranslateAnimatedValues.constructor === Object) {
+      previousChats.forEach((item, index) => {
+        rowTranslateAnimatedValues[`${index}`] = new Animated.Value(0);
+      });
+    }
   }, [previousChats]);
 
   const closeModal = () => {

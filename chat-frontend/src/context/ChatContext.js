@@ -14,6 +14,9 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [action.payload].concat(state.chat) };
     case 'get_chats':
       return { ...state, previousChats: action.payload };
+    case 'delete_chat':
+      const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
+      return { ...state, previousChats: updatedChats };
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
@@ -52,9 +55,9 @@ const getChats = dispatch => async ({ username }) => {
   }
 };
 
-const deleteChat = dispatch => async (chatId, chatType) => {
+const deleteChat = dispatch => async (username, chatId, chatType) => {
   try {
-    const response = await chatApi.patch('/chat/delete', { chatId, chatType });
+    const response = await chatApi.patch('/chat/delete', { username, chatId, chatType });
 
     if (!response.data) {
       return;

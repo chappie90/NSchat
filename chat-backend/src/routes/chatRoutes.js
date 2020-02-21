@@ -81,13 +81,14 @@ router.post('/chats', checkAuth, async (req, res) => {
       chats.push({
         text: lastGroupMessage[0].message.text,
         date: lastGroupMessage[0].message.created,
+        type: g.group.type,
         contact: g.group.name,
         profile: {
           imgPath: g.group.avatar.imagePath,
           imgName: g.group.avatar.imageName
         },
         groupOwner: g.group.owner,
-        groupId: g.group._id,
+        chatId: g.group._id,
         unreadMessageCount: 0
       });
     }
@@ -173,7 +174,29 @@ router.patch('/message/delete', checkAuth, async (req, res) => {
   }
 });
 
-// router.patch()
+router.patch('/chat/delete', checkAuth, async (req, res) => {
+  const { username, chatId, chatType } = req.body;
+  let chat;
+  try {
+
+    if (chatType === 'group') {
+      chat = await User.update(
+        { username: username },
+        { $pull: { groups: { group: chatId } } },
+        { new: true }
+      );
+    }
+
+    console.log(chat);
+
+    let response = chat.nModified > 0 ? true : false;
+    
+    res.status(200).send({ response });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not delete chat' });
+  }
+});
 
 router.post(
   '/group/new', 

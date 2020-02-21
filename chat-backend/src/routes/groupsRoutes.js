@@ -30,9 +30,7 @@ const storage = multer.diskStorage({
 });
 
 router.get('/group', checkAuth, async (req, res) => {
-  const groupId = req.query.groupId;
-
-  console.log(groupId);
+  const groupId = req.query.chatId;
 
   try {
     const group = await Group.find({ _id: groupId });

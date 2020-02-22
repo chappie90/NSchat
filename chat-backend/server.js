@@ -1,4 +1,5 @@
 require('./src/models/User');
+require('./src/models/PrivateChat');
 require('./src/models/Message');
 require('./src/models/Group');
 require('./src/models/GroupMessage');

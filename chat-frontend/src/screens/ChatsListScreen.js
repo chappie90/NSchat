@@ -175,7 +175,6 @@ const ChatsListScreen = ({ navigation }) => {
           return (
             <TouchableWithoutFeedback
               onPress={() => {
-                console.log(rowData.item);
                 markMessagesAsRead({ username, recipient: rowData.item.contact });;
                 if (rowData.item.type === 'group') {
                   getCurrentGroupId(rowData.item.chatId);

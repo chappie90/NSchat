@@ -33,13 +33,15 @@ router.get('/group', checkAuth, async (req, res) => {
   const groupId = req.query.chatId;
 
   try {
-    const group = await Group.find({ _id: groupId });
+    if (groupId) {
+      const group = await Group.find({ _id: groupId });
 
     if (!group) {
       return res.status(422).send({ error: 'Could not fetch image' }); 
     }
 
-    res.status(200).send({ group: group[0] });
+      res.status(200).send({ group: group[0] });
+    }
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not fetch image' });

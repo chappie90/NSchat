@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 
 const User = mongoose.model('User');
-const Message = mongoose.model('Message');
+const PrivateMessage = mongoose.model('PrivateMessage');
 const Group = mongoose.model('Group');
 const GroupMessage = mongoose.model('GroupMessage');
 const checkAuth = require('../middlewares/checkAuth');
@@ -46,14 +46,14 @@ router.post('/chats', checkAuth, async (req, res) => {
     let unreadMessageCount;
 
     for (let c of contacts) {
-      const lastMessage = await Message.find(
+      const lastMessage = await PrivateMessage.find(
         { between: { $all: [username, c.user.username] } },
         { 'message.text': 1, 'message.createdAt': 1, _id: 0 }
       )
       .sort({ 'message.createdAt': -1 })
       .limit(1);
 
-      unreadMessageCount = await Message.find(
+      unreadMessageCount = await PrivateMessage.find(
         { 
           between: { $all: [username, c.user.username] },
           to: username,
@@ -126,7 +126,7 @@ router.post('/messages', checkAuth, async (req, res) => {
   const skip = 50 * (page - 1);
 
   try {
-    const messages = await Message.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1, replyTo: 1 })
+    const messages = await PrivateMessage.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1, replyTo: 1 })
                                   .skip(skip)
                                   .sort({ 'message.createdAt': -1 })
                                   .limit(50);
@@ -141,7 +141,7 @@ router.post('/messages', checkAuth, async (req, res) => {
 router.patch('/messages/clear', checkAuth, async (req, res) => {
   const { username, recipient } = req.body;
   try {
-    const messages = await Message.update(
+    const messages = await PrivateMessage.update(
       { between: { $all: [username, recipient] }, to: username, read: false },
       { $set: { read: true } },
       { multi: true }
@@ -159,7 +159,7 @@ router.patch('/messages/clear', checkAuth, async (req, res) => {
 router.patch('/message/delete', checkAuth, async (req, res) => {
   const { messageId } = req.body;
   try {
-    const message = await Message.update(
+    const message = await PrivateMessage.update(
       { 'message.id': messageId },
       { $set: { 'message.text': 'Message deleted', deleted: true } },
       { new: true }

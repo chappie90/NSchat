@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const Message = mongoose.model('Message');
+const PrivateMessage = mongoose.model('PrivateMessage');
 
 const users = {};
 let onlineContacts = [];
@@ -80,7 +80,7 @@ module.exports = function(io) {
   socket.on('delete_message', async (msg) => {
 
     try {
-      const message = await Message.update(
+      const message = await PrivateMessage.update(
         { 'message.id': msg._id },
         { $set: { 'message.text': 'Message deleted', deleted: true } },
         { new: true }
@@ -111,7 +111,7 @@ module.exports = function(io) {
     } = msgObj;
 
     try {
-      const message = new Message({
+      const message = new PrivateMessage({
         between: [from, to],
         from,
         to,

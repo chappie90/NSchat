@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const Message = mongoose.model('Message');
+const PrivateMessage = mongoose.model('PrivateMessage');
 
 const checkAuth = require('../middlewares/checkAuth');
 

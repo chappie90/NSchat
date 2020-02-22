@@ -13,11 +13,11 @@ const groupsReducer = (state, action) => {
 };
 
 const getCurrentGroupId = dispatch => chatId => {
-  dispatch({ type: 'get_current_group_id', payload: groupId });
+  dispatch({ type: 'get_current_group_id', payload: chatId });
 };
 
 const getGroup = dispatch => async (chatId) => {
-  const params =  { groupId };
+  const params =  { chatId };
 
   try {
     const response = await chatApi.get('/group', { params });

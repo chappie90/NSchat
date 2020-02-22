@@ -101,8 +101,10 @@ const ChatsListScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
-        rowTranslateAnimatedValues.constructor === Object) {
+    // console.log(previousChats);
+    // if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
+    //     rowTranslateAnimatedValues.constructor === Object) {
+    if (previousChats.length > 0) {
       previousChats.forEach((item, index) => {
         rowTranslateAnimatedValues[`${index}`] = new Animated.Value(0);
       });
@@ -236,13 +238,11 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: Object.entries(rowTranslateAnimatedValues).length === 0 && 
-                                  rowTranslateAnimatedValues.constructor === Object ? 
-                      rowTranslateAnimatedValues[`${data.index}`].interpolate({
-                        inputRange: [50, 75, 100, 150, 200],
-                        outputRange: [0, 10, 25, 35, 45],
-                        extrapolate: 'clamp'
-                    }) : 0 }
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                      inputRange: [50, 75, 100, 150, 200],
+                      outputRange: [0, 10, 25, 35, 45],
+                      extrapolate: 'clamp'
+                    })}
                   ] }}>
                     <AntDesign name="pushpin" size={24} color="#fff" />
                 </Animated.View>
@@ -257,13 +257,11 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: Object.entries(rowTranslateAnimatedValues).length === 0 && 
-                                  rowTranslateAnimatedValues.constructor === Object ?
-                      rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
                         inputRange: [50, 75, 100, 150, 200],
                         outputRange: [0, -10, -25, -35, -45],
                         extrapolate: 'clamp'
-                    }) : 0 }
+                    }) }
                   ] }}>
                     <Entypo name="trash" size={24} color="#fff" />
                 </Animated.View>

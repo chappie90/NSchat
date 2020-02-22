@@ -9,9 +9,10 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Alert,
+  Dimensions,
   Modal as ScreenModal 
 } from 'react-native';
-import { MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
+import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 
 import { Context as AuthContext } from '../context/AuthContext';
@@ -167,11 +168,12 @@ const GroupSettingsScreen = (props) => {
           </View>
           <TouchableWithoutFeedback onPress={avatarEditHandler}>
           <View>
-            <View style={styles.imagePreview}>
+            <View>
               {group.avatar ?
                 <Image 
                   placeholderStyle={styles.placeholder}
                   source={{ uri: group.avatar.imagePath }}
+                  resizeMode={'cover'}
                   style={styles.image} /> : 
                 <Image source={require('../../assets/avatar2.png')} style={styles.image} />
               }
@@ -181,6 +183,10 @@ const GroupSettingsScreen = (props) => {
             </View>
           </View>
         </TouchableWithoutFeedback>
+        <View style={styles.nameContainer}>
+          <HeadingText style={styles.name}>{group.name}</HeadingText>
+            <MaterialCommunityIcons name="square-edit-outline" size={28} color='#202020' />
+        </View>
         </View>
       </TouchableWithoutFeedback>
     </ScreenModal>
@@ -197,10 +203,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 10,
+    paddingHorizontal: 14,
     paddingBottom: 8,
     paddingTop: 24,
     backgroundColor: Colors.primary
+  },
+  name: {
+    fontSize: 18,
+    color: '#202020'
+  },
+  nameContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: '#F8F8F8',
+    borderBottomWidth: 1,
+    borderBottomColor: '#DCDCDC'
   },
   heading: {
     color: '#fff',
@@ -211,21 +231,12 @@ const styles = StyleSheet.create({
     right: 10,
     top: 24
   },
-  imagePreview: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    borderWidth: 4,
-    borderColor: 'white',
-    overflow: 'hidden',
-    marginTop: 20
-  },
   placeholder: {
     backgroundColor: 'white'
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: Dimensions.get('window').width,
+    height: 250
   },
   cameraIconContainer: {
     backgroundColor: 'lightgrey',

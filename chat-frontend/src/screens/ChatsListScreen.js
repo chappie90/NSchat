@@ -102,9 +102,10 @@ const ChatsListScreen = ({ navigation }) => {
 
   useEffect(() => {
     // console.log(previousChats);
-    // if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
-    //     rowTranslateAnimatedValues.constructor === Object) {
-    if (previousChats.length > 0) {
+    if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
+        rowTranslateAnimatedValues.constructor === Object) {
+    // if (previousChats.length > 0) {
+         console.log(rowTranslateAnimatedValues);
       previousChats.forEach((item, index) => {
         rowTranslateAnimatedValues[`${index}`] = new Animated.Value(0);
       });
@@ -162,6 +163,7 @@ const ChatsListScreen = ({ navigation }) => {
         refreshControl={
           <RefreshControl
             onRefresh={() => {
+              // for (let val in rowTranslateAnimatedValues) delete rowTranslateAnimatedValues[val];
               getChats({ username })
             }}
             refreshing={isLoading}
@@ -173,8 +175,9 @@ const ChatsListScreen = ({ navigation }) => {
           return (
             <TouchableWithoutFeedback
               onPress={() => {
-                markMessagesAsRead({ username, recipient: rowData.item.contact });
-                if (rowData.item.chatId) {
+                console.log(rowData.item);
+                markMessagesAsRead({ username, recipient: rowData.item.contact });;
+                if (rowData.item.type === 'group') {
                   getCurrentGroupId(rowData.item.chatId);
                 }
                 navigation.navigate('ChatDetail', {

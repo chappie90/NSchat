@@ -62,6 +62,7 @@ router.post('/chats', checkAuth, async (req, res) => {
       ).count();
 
       chats.push({ 
+        type: 'private',
         text: lastMessage[0].message.text, 
         date: lastMessage[0].message.createdAt, 
         contact: c.user.username, 

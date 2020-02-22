@@ -38,6 +38,7 @@ const ChatsListScreen = ({ navigation }) => {
   const { 
     state: { previousChats },
     getChats, 
+    deleteChat,
     markMessagesAsRead } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
    const { getCurrentGroupId } = useContext(GroupsContext);
@@ -128,6 +129,21 @@ const ChatsListScreen = ({ navigation }) => {
 
   };  
 
+  const closeRow = (rowMap, index) => {
+    if (rowMap[index]) {
+      rowMap[index].closeRow();
+    }
+  };
+
+  const deleteRow = (rowMap, username, chatId, type) => {
+    deleteChat(username, chatId, type);
+    // closeRow(rowMap, index);
+    // const newData = previousChats.filter(
+    //   item => item !== previousChats[index]
+    // );
+    
+  };
+
   const renderLastMessageText = (item) => {
     if (isTyping && typingUser == item.contact) {
       return 'is typing...';
@@ -156,8 +172,8 @@ const ChatsListScreen = ({ navigation }) => {
             <TouchableWithoutFeedback
               onPress={() => {
                 markMessagesAsRead({ username, recipient: rowData.item.contact });
-                if (rowData.item.groupId) {
-                  getCurrentGroupId(rowData.item.groupId);
+                if (rowData.item.chatId) {
+                  getCurrentGroupId(rowData.item.chatId);
                 }
                 navigation.navigate('ChatDetail', {
                   username: rowData.item.contact,
@@ -220,16 +236,18 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
-                      inputRange: [50, 75, 100, 150, 200],
-                      outputRange: [0, 10, 25, 35, 45],
-                      extrapolate: 'clamp'
-                    })}
+                    { translateX: Object.entries(rowTranslateAnimatedValues).length === 0 && 
+                                  rowTranslateAnimatedValues.constructor === Object ? 
+                      rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                        inputRange: [50, 75, 100, 150, 200],
+                        outputRange: [0, 10, 25, 35, 45],
+                        extrapolate: 'clamp'
+                    }) : 0 }
                   ] }}>
                     <AntDesign name="pushpin" size={24} color="#fff" />
                 </Animated.View>
               </TouchableOpacity>
-              <TouchableOpacity style={{ }} onPress={() => {}}>
+              <TouchableOpacity style={{ }} onPress={() => {deleteRow(rowMap, username, data.item.chatId, data.item.type)}}>
                 <Animated.View style={{
                   backgroundColor: Colors.tertiary,
                   width: 44,
@@ -239,11 +257,13 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                    { translateX: Object.entries(rowTranslateAnimatedValues).length === 0 && 
+                                  rowTranslateAnimatedValues.constructor === Object ?
+                      rowTranslateAnimatedValues[`${data.index}`].interpolate({
                         inputRange: [50, 75, 100, 150, 200],
                         outputRange: [0, -10, -25, -35, -45],
                         extrapolate: 'clamp'
-                    }) }
+                    }) : 0 }
                   ] }}>
                     <Entypo name="trash" size={24} color="#fff" />
                 </Animated.View>

@@ -214,7 +214,7 @@ router.post(
       const group = new Group({
         name: groupName,
         owner: username,
-        members: groupMembers,
+        participants: groupMembers,
         avatar: {
           imagePath: imgPath,
           imageName: req.file.filename

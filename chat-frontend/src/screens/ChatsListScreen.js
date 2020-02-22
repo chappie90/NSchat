@@ -181,7 +181,8 @@ const ChatsListScreen = ({ navigation }) => {
                 }
                 navigation.navigate('ChatDetail', {
                   username: rowData.item.contact,
-                  image: rowData.item.profile ? rowData.item.profile.imgPath : ''
+                  image: rowData.item.profile ? rowData.item.profile.imgPath : '',
+                  type: rowData.item.type
                 });
             }}>
             <View>

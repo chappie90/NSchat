@@ -521,7 +521,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
           style={{ paddingHorizontal: 10,  paddingTop: 5, marginLeft: 10 }} />
       </TouchableOpacity>
     ), 
-    headerRight: (
+    headerRight: params.type === 'group' && (
        <TouchableOpacity onPress={() => params.openModal()}>
         <MaterialIcons
           name="settings" 

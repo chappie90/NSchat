@@ -34,7 +34,8 @@ router.get('/group', checkAuth, async (req, res) => {
 
   try {
     if (groupId) {
-      const group = await Group.find({ _id: groupId });
+      const group = await Group.find({ _id: groupId })
+        .populate('participants.user');
 
     if (!group) {
       return res.status(422).send({ error: 'Could not fetch image' }); 

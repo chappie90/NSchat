@@ -22,6 +22,8 @@ const getGroup = dispatch => async (chatId) => {
   try {
     const response = await chatApi.get('/group', { params });
 
+    console.log(response.data);
+    
     dispatch({ type: 'get_group', payload: response.data.group })
   } catch (err) {
     console.log(err);

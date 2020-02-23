@@ -273,11 +273,7 @@ const AddGroupScreen = props => {
                       alignItems: "center"
                     }}
                   >
-                    <MaterialIcons
-                      color="#ffe6f2"
-                      name="camera-alt"
-                      size={26}
-                    />
+                    <MaterialIcons color="#ffe6f2" name="camera-alt" size={26} />
                   </View>
                 )}
               </TouchableOpacity>
@@ -362,8 +358,7 @@ const AddGroupScreen = props => {
                       setAddToGroupArr(prevState =>
                         addToGroupArr.filter(contact => contact !== item)
                       );
-                    }}
-                  >
+                    }}>
                     <ScaleViewAnim
                       key={item}
                       style={{
@@ -371,8 +366,7 @@ const AddGroupScreen = props => {
                         alignItems: "center",
                         marginRight: 15,
                         marginTop: 10
-                      }}
-                    >
+                      }}>
                       <View
                         style={{
                           position: "absolute",
@@ -381,13 +375,8 @@ const AddGroupScreen = props => {
                           zIndex: 1,
                           backgroundColor: "#fff",
                           borderRadius: 20
-                        }}
-                      >
-                        <MaterialIcons
-                          name="close"
-                          size={18}
-                          color="indianred"
-                        />
+                        }}>
+                        <MaterialIcons name="close" size={18} color="indianred" />
                       </View>
                       <Image
                         style={{ width: 48, height: 48, borderRadius: 24 }}

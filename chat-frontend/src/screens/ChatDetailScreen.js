@@ -1,5 +1,5 @@
 import RemoveSocketIoWarning from '../components/RemoveSocketIoWarning';
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useContext } from 'react';
 import {
   View, 
   Text, 
@@ -10,7 +10,10 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ActivityIndicator,
-  Image
+  Image,
+  PanResponder,
+  Animated,
+  Dimensions
 } from 'react-native';
 import { Overlay } from 'react-native-elements';
 import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time, Send } from 'react-native-gifted-chat';
@@ -43,10 +46,45 @@ const ChatDetailScreen = ({ navigation }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
+  const pan = useRef(new Animated.ValueXY()).current;
+  const offset = useRef(new Animated.Value(0)).current;
+  const bottomHeight = useRef(new Animated.Value(40)).current;
+  const topHeight = useRef(new Animated.Value(40)).current;
+  const deviceHeight = Dimensions.get('window').height;
+  // const [deviceHeight, setDeviceHeight] = useState(Dimensions.get('window').height);
+  const isDividerClicked = useRef(true);
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
+
+  const panResponder = React.useMemo(() => PanResponder.create({
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onMoveShouldSetResponderCapture: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderGrant: (e, gestureState) => {
+        offset.setValue(e.nativeEvent.pageY);
+        isDividerClicked.current = true;
+      },
+      onPanResponderStart: (e, gestureState) => {
+      
+      },
+      onPanResponderMove: (e, gestureState) => {
+        bottomHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
+        offset.setValue(e.nativeEvent.pageY);
+      },
+      onPanResponderRelease: (e, gestureState) => {
+        offset.setValue(e.nativeEvent.pageY);
+        isDividerClicked.current = false;
+        // console.log(gestureState);
+        // if (gestureState.dx < screenWidth / 2 - 50) {
+        //   position.setValue({ x: 0, y: gestureState.dy });
+        
+        // } else {
+        //   position.setValue({ x: (screenWidth - 100), y: gestureState.dy });
+        // }
+      },
+    }), []);
 
   const PUSH_REGISTRATION_ENDPOINT = `${chatApi}/token`;
   const MESSAGE_ENPOINT = `${chatApi}/message`;
@@ -428,50 +466,65 @@ const ChatDetailScreen = ({ navigation }) => {
         onDidFocus={didFocusHandler}
         />
         <GroupSettingsScreen visible={groupSettingsModal} closeModal={closeModalHandler} />
-        <WebView source={{ uri: 'https://www.youtube.com' }} />
-        <GiftedChat
-          renderUsernameOnMessage 
-          messages={incomingMsgs} 
-          onSend={sendMessage} 
-          user={{ _id: 1 }}
-          // listViewProps={{
-          //   scrollEventThrottle: 400,
-          //   onScroll: ({ nativeEvent }) => { 
-          //     if (isCloseToTop(nativeEvent)) {
-          //       console.log('test');
-          //     }
-          //   }
-          // }}
-          textInputStyle={styles.input}
-          placeholderTextColor="#202020"
-          renderBubble={renderBubble}
-          renderAvatar={renderAvatar}
-          loadEarlier={true} // enables load earlier messages button
-          onLoadEarlier={() => {
-            loadMoreMessages();
-          }}
-          renderLoading={renderLoading}
-          ref={ref => giftedChatRef = ref}
-          renderSend={renderSend}
-          renderChatFooter={renderChatFooter}
-          renderCustomView={false ? null : renderCustomView}
-          isCustomViewBottom={true}
-          renderMessage={renderMessage}
-          renderMessageText={renderMessageText}
-          // renderLoading={() => {}}
-          renderLoadEarlier={renderLoadEarlier}
-          keyboardShouldPersistTaps={'handled'}
-          onInputTextChanged={startTypingHandler}
-          //isLoadingEarlier={true}
-          bottomOffset={ Platform.OS === 'android' ? null : 46 }
-          scrollToBottom={true}
-          scrollToBottomComponent={() => {
-            return (
-              <View style={styles.scrollContainer}>
-                <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
-              </View>
-            );
-          }}/>
+         <View style={styles.content}>
+            {/* Top View */}
+            <Animated.View 
+                style={[{minHeight: 40, flex: 1}, {height: topHeight}]}>
+                <WebView source={{ uri: 'https://www.youtube.com' }} />
+            </Animated.View>
+            {/* Divider */}
+            <View style={[{height: 20}, isDividerClicked ? {backgroundColor: '#666'} : {backgroundColor: '#e2e2e2'}]} 
+                {...panResponder.panHandlers}
+            >
+            </View>
+            {/* Bottom View */}
+            <Animated.View 
+                style={[{minHeight: 40}, {height: bottomHeight}]}>
+                <GiftedChat
+              renderUsernameOnMessage 
+              messages={incomingMsgs} 
+              onSend={sendMessage} 
+              user={{ _id: 1 }}
+              // listViewProps={{
+              //   scrollEventThrottle: 400,
+              //   onScroll: ({ nativeEvent }) => { 
+              //     if (isCloseToTop(nativeEvent)) {
+              //       console.log('test');
+              //     }
+              //   }
+              // }}
+              textInputStyle={styles.input}
+              placeholderTextColor="#202020"
+              renderBubble={renderBubble}
+              renderAvatar={renderAvatar}
+              loadEarlier={true} // enables load earlier messages button
+              onLoadEarlier={() => {
+                loadMoreMessages();
+              }}
+              renderLoading={renderLoading}
+              ref={ref => giftedChatRef = ref}
+              renderSend={renderSend}
+              renderChatFooter={renderChatFooter}
+              renderCustomView={false ? null : renderCustomView}
+              isCustomViewBottom={true}
+              renderMessage={renderMessage}
+              renderMessageText={renderMessageText}
+              // renderLoading={() => {}}
+              renderLoadEarlier={renderLoadEarlier}
+              keyboardShouldPersistTaps={'handled'}
+              onInputTextChanged={startTypingHandler}
+              //isLoadingEarlier={true}
+              bottomOffset={ Platform.OS === 'android' ? null : 46 }
+              scrollToBottom={true}
+              scrollToBottomComponent={() => {
+                return (
+                  <View style={styles.scrollContainer}>
+                    <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
+                  </View>
+                );
+              }}/>
+            </Animated.View>
+        </View>
          <KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />
@@ -555,6 +608,10 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  content: {
+    flex: 1,
+    flexDirection: 'column'
   },
   scrollContainer: {
     width: 30,

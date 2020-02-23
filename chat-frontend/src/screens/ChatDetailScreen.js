@@ -19,6 +19,7 @@ import { NavigationEvents } from 'react-navigation';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
 
 import Colors from '../constants/colors';
 import BodyText from '../components/BodyText';
@@ -427,6 +428,7 @@ const ChatDetailScreen = ({ navigation }) => {
         onDidFocus={didFocusHandler}
         />
         <GroupSettingsScreen visible={groupSettingsModal} closeModal={closeModalHandler} />
+        <WebView source={{ uri: 'https://www.youtube.com' }} />
         <GiftedChat
           renderUsernameOnMessage 
           messages={incomingMsgs} 

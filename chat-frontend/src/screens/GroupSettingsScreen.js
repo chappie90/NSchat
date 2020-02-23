@@ -228,8 +228,11 @@ const GroupSettingsScreen = (props) => {
               </View>
             ))}      
         </View>
-         {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />}
-        </TouchableOpacity> 
+        <TouchableOpacity onPress={() => {}}>
+          <HeadingText style={{ color: Colors.tertiary, fontSize: 18, marginTop: 5, marginBottom: 20, textAlign: 'center' }}>Leave Group</HeadingText>
+        </TouchableOpacity>
+        </TouchableOpacity>
+        {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />} 
        </ScrollView>
         </View>
       </TouchableWithoutFeedback>

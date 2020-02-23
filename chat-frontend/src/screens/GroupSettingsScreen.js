@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Alert,
   Dimensions,
+  ScrollView,
   Modal as ScreenModal 
 } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign } from "@expo/vector-icons";
@@ -179,23 +180,25 @@ const GroupSettingsScreen = (props) => {
                 <MaterialIcons name="close" size={28} color="#fff" />
               </TouchableOpacity>
           </View>
-          <View>
-          <View>
-            {group.avatar ?
-              <Image 
-                placeholderStyle={styles.placeholder}
-                source={{ uri: group.avatar.imagePath }}
-                resizeMode={'cover'}
-                style={styles.image} /> : 
-              <Image source={require('../../assets/avatar2.png')} style={styles.image} />
-            }
-          </View>   
-          <View style={styles.cameraIconContainer}>
-            <TouchableOpacity onPress={avatarEditHandler}>
-              <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={30} />
-            </TouchableOpacity>
-          </View>
-        </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+          <TouchableOpacity activeOpacity={1}>
+            <View>
+              <View>
+                {group.avatar ?
+                  <Image 
+                    placeholderStyle={styles.placeholder}
+                    source={{ uri: group.avatar.imagePath }}
+                    resizeMode={'cover'}
+                    style={styles.image} /> : 
+                  <Image source={require('../../assets/avatar2.png')} style={styles.image} />
+                }
+              </View>   
+              <View style={styles.cameraIconContainer}>
+                <TouchableOpacity onPress={avatarEditHandler}>
+                  <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={30} />
+                </TouchableOpacity>
+              </View>
+            </View>
         <View style={styles.nameContainer}>
           <TextInput 
             value={name} 
@@ -215,7 +218,19 @@ const GroupSettingsScreen = (props) => {
           <BodyText>{group.owner}</BodyText>
         </View>
         <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingBottom: 15}}>
+            {group.participants && group.participants.map((item, index) => (
+              <View key={index} style={styles.participant}>
+                <Image
+                  style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
+                  source={require("../../assets/avatar2.png")} />
+                <BodyText>{item.user.username}</BodyText>
+              </View>
+            ))}      
+        </View>
          {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />}
+        </TouchableOpacity> 
+       </ScrollView>
         </View>
       </TouchableWithoutFeedback>
     </ScreenModal>
@@ -224,7 +239,7 @@ const GroupSettingsScreen = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1 
+    flex: 1, 
   },
   header: {
     flexDirection: 'row',

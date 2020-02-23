@@ -105,7 +105,6 @@ const ChatsListScreen = ({ navigation }) => {
     if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
         rowTranslateAnimatedValues.constructor === Object) {
     // if (previousChats.length > 0) {
-         console.log(rowTranslateAnimatedValues);
       previousChats.forEach((item, index) => {
         rowTranslateAnimatedValues[`${index}`] = new Animated.Value(0);
       });

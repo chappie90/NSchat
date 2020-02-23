@@ -53,6 +53,7 @@ ContactsListFlow.navigationOptions = {
   tabBarOptions: {
     inactiveTintColor: 'white',
     activeTintColor: Colors.primary,
+    keyboardHidesTabBar: false,
     style: {
       backgroundColor: '#202020'
     },

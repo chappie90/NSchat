@@ -24,7 +24,9 @@ module.exports = function(io) {
   try {
     const user = await User.findOne({ username }, { 'contacts.username': 1, _id: 0 });
     if (!user) {
-      return res.status(422).send({ error: 'Something went wrong with your request' });
+      return;
+      // ? exit socket ?
+      // return res.status(422).send({ error: 'Something went wrong with your request' });
     }
     const contacts = user.contacts.map(c => c.username);
     // console.log(username);

@@ -7,7 +7,12 @@ import { navigate } from '../components/navigationRef';
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'signin':
-      return { token: action.payload.token, username: action.payload.username, errorMessage: '' };
+      return { 
+        token: action.payload.token, 
+        userId: action.payload.userId,
+        username: action.payload.username, 
+        errorMessage: '' 
+      };
     case 'signout':
       return { token: null, username: null, errorMessage: '' };
       // return { state: undefined };
@@ -24,7 +29,11 @@ const signup = dispatch => async ({ username, password }) => {
   try {
     const response = await chatApi.post('/signup', { username, password });
 
-    const dataObj = { username: response.data.username, token: response.data.token };
+    const dataObj = { 
+      userId: response.data.userId,
+      username: response.data.username, 
+      token: response.data.token 
+    };
     await AsyncStorage.setItem('data', JSON.stringify(dataObj));
 
     dispatch({ type: 'signin', payload: response.data });
@@ -41,13 +50,12 @@ const signin = dispatch => async ({ username, password }) => {
   try {
     const response = await chatApi.post('/signin', { username, password });
 
-    const dataObj = { username: response.data.username, token: response.data.token };
+    const dataObj = { 
+      userId: response.data.userId,
+      username: response.data.username, 
+      token: response.data.token 
+    };
     await AsyncStorage.setItem('data', JSON.stringify(dataObj));
-
-    // console.log('context');
-    // console.log(dataObj);
-    // console.log(response.data.username);
-    // console.log('end-context');
 
     dispatch({ type: 'signin', payload: response.data });
 

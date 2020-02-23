@@ -4,7 +4,9 @@ const groupSchema = new mongoose.Schema({
   type: { type: String, default: 'group' },
   name: { type: String, required: true },
   owner: { type: String, required: true },
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  participants: [
+    { user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }
+  ],
   created: { type: Date, default: Date.now() },
   avatar: {
     imagePath: String,

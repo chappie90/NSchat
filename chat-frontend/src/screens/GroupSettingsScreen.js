@@ -3,6 +3,7 @@ import {
   View, 
   Text, 
   Image,
+  TextInput,
   StyleSheet, 
   KeyboardAvoidingView,
   Keyboard,
@@ -26,10 +27,17 @@ const GroupSettingsScreen = (props) => {
   const { state: { errorMessage }, signup, clearErrorMessage } = useContext(AuthContext);
   const { state: { currentGroupId, group }, getGroup } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
+  const [name, setName] = useState('');
+  const [editName, setEditName] = useState(false);
+  let nameInput;
 
   useEffect(() => {
     getGroup(currentGroupId);
   }, []);
+
+  useEffect(() => {
+    setName(group.name);
+  }, [group]);
 
   const avatarEditHandler = () => {
     setModalVisible(true);
@@ -37,6 +45,11 @@ const GroupSettingsScreen = (props) => {
 
   const modalCloseHandler = () => {
     setModalVisible(false);
+  };
+
+  const editNameHandler = () => {
+    setEditName(true);
+    nameInput.focus();
   };
 
   const getCameraPermissions = async () => {
@@ -166,27 +179,43 @@ const GroupSettingsScreen = (props) => {
                 <MaterialIcons name="close" size={28} color="#fff" />
               </TouchableOpacity>
           </View>
-          <TouchableWithoutFeedback onPress={avatarEditHandler}>
           <View>
-            <View>
-              {group.avatar ?
-                <Image 
-                  placeholderStyle={styles.placeholder}
-                  source={{ uri: group.avatar.imagePath }}
-                  resizeMode={'cover'}
-                  style={styles.image} /> : 
-                <Image source={require('../../assets/avatar2.png')} style={styles.image} />
-              }
-            </View>   
-            <View style={styles.cameraIconContainer}>
+          <View>
+            {group.avatar ?
+              <Image 
+                placeholderStyle={styles.placeholder}
+                source={{ uri: group.avatar.imagePath }}
+                resizeMode={'cover'}
+                style={styles.image} /> : 
+              <Image source={require('../../assets/avatar2.png')} style={styles.image} />
+            }
+          </View>   
+          <View style={styles.cameraIconContainer}>
+            <TouchableOpacity onPress={avatarEditHandler}>
               <MaterialIcons style={styles.cameraIcon} name="camera-alt" size={30} />
-            </View>
+            </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-        <View style={styles.nameContainer}>
-          <HeadingText style={styles.name}>{group.name}</HeadingText>
-            <MaterialCommunityIcons name="square-edit-outline" size={28} color='#202020' />
         </View>
+        <View style={styles.nameContainer}>
+          <TextInput 
+            value={name} 
+            editable={editName}
+            onChangeText={text => setName(text)}
+            ref={(input) => { nameInput = input; }}
+            style={styles.nameInput} />
+          <TouchableOpacity onPress={editNameHandler}>
+            <MaterialCommunityIcons name="square-edit-outline" size={28} color='#202020' />
+          </TouchableOpacity>
+        </View>
+        <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Admin</BodyText> 
+        <View style={styles.participant}>
+          <Image
+            style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
+            source={require("../../assets/avatar2.png")} />
+          <BodyText>{group.owner}</BodyText>
+        </View>
+        <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
+         {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />}
         </View>
       </TouchableWithoutFeedback>
     </ScreenModal>
@@ -195,8 +224,7 @@ const GroupSettingsScreen = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center'
+    flex: 1 
   },
   header: {
     flexDirection: 'row',
@@ -208,12 +236,13 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     backgroundColor: Colors.primary
   },
-  name: {
+  nameInput: {
     fontSize: 18,
-    color: '#202020'
+    color: '#202020',
+    height: '100%',
+    width: '85%',
   },
   nameContainer: {
-    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 8,
@@ -221,6 +250,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
     borderBottomWidth: 1,
     borderBottomColor: '#DCDCDC'
+  },
+  participant: {
+    alignItems: 'center',
+    width: 50,
+    marginLeft: 15
   },
   heading: {
     color: '#fff',

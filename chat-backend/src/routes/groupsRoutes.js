@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 
 const Group = mongoose.model('Group');
+const User = mongoose.model('User');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
@@ -46,6 +47,38 @@ router.get('/group', checkAuth, async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not fetch image' });
+  }
+});
+
+router.patch('/group/leave', checkAuth, async (req, res) => {
+  const groupId = req.body.chatId;
+  const userId = req.body.userId;
+
+  try {
+    const user = await User.update(
+      { _id: userId },
+      { $pull: {
+        groups: {
+          group: groupId
+        }
+      } },
+      { new: true }
+    );
+
+    const group = await Group.update(
+      { _id: groupId },
+      { $pull: {
+        participants: {
+          user: userId 
+        }
+      } },
+      { new: true }
+    );
+    
+    res.status(200).send({ message: 'You\'ve left the group' });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Did not leave group successfully' })
   }
 });
 

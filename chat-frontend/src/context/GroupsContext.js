@@ -1,6 +1,8 @@
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
 
+import { navigate } from '../components/navigationRef';
+
 const groupsReducer = (state, action) => {
   switch (action.type) {
     case 'get_current_group_id':
@@ -22,9 +24,20 @@ const getGroup = dispatch => async (chatId) => {
   try {
     const response = await chatApi.get('/group', { params });
 
-    console.log(response.data);
-    
-    dispatch({ type: 'get_group', payload: response.data.group })
+    dispatch({ type: 'get_group', payload: response.data.group });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+const leaveGroup = dispatch => async (chatId, userId) => {
+  try {
+    const response = await chatApi.patch('/group/leave', { chatId, userId });
+
+    if (response) {
+      navigate('ChatsList');
+    }
   } catch (err) {
     console.log(err);
     throw err;
@@ -35,7 +48,8 @@ export const { Context, Provider } = createDataContext(
   groupsReducer,
   { 
     getCurrentGroupId,
-    getGroup
+    getGroup,
+    leaveGroup
   },
   { 
     currentGroupId: '',

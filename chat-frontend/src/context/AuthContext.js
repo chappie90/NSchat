@@ -100,5 +100,5 @@ const signout = dispatch => async () => {
 export const { Context, Provider } = createDataContext(
   authReducer,
   { signup, signin, autoLogin, clearErrorMessage, signout },
-  { token: null, username: null, errorMessage: '' }
+  { token: null, userId: null, username: null, errorMessage: '' }
 );

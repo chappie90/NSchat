@@ -12,12 +12,14 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  ActivityIndicator,
   Modal as ScreenModal 
 } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 
 import { Context as AuthContext } from '../context/AuthContext';
+import { Context as ChatContext } from '../context/ChatContext';
 import { Context as GroupsContext } from '../context/GroupsContext';
 import AuthForm from '../components/AuthForm';
 import Colors from '../constants/colors';
@@ -25,15 +27,19 @@ import HeadingText from '../components/HeadingText';
 import BodyText from "../components/BodyText";
 
 const GroupSettingsScreen = (props) => {
-  const { state: { errorMessage }, signup, clearErrorMessage } = useContext(AuthContext);
-  const { state: { currentGroupId, group }, getGroup } = useContext(GroupsContext);
+  const { state: { username, userId } } = useContext(AuthContext);
+  const { state: { previousChats }, getChats } = useContext(ChatContext);
+  const { state: { currentGroupId, group }, getGroup, leaveGroup } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [editName, setEditName] = useState(false);
   let nameInput;
 
   useEffect(() => {
-    getGroup(currentGroupId);
+    getGroup(currentGroupId).then(res => {
+      setIsLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -172,6 +178,9 @@ const GroupSettingsScreen = (props) => {
       </Modal>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
+          {isLoading && <View style={styles.spinnerContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+          </View>}
           <View style={styles.header}>
             <HeadingText style={styles.heading}>Group Info</HeadingText>
               <TouchableOpacity style={styles.closeModalContainer} onPress={() => {
@@ -210,7 +219,7 @@ const GroupSettingsScreen = (props) => {
             <MaterialCommunityIcons name="square-edit-outline" size={28} color='#202020' />
           </TouchableOpacity>
         </View>
-        <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Admin</BodyText> 
+        <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Creator</BodyText> 
         <View style={styles.participant}>
           <Image
             style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
@@ -228,7 +237,14 @@ const GroupSettingsScreen = (props) => {
               </View>
             ))}      
         </View>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => {
+          setIsLoading(true);
+          leaveGroup(group._id, userId).then(res => {
+            getChats({username}).then(res => {
+              setIsLoading(false);
+            });
+          });
+        }}>
           <HeadingText style={{ color: Colors.tertiary, fontSize: 18, marginTop: 5, marginBottom: 20, textAlign: 'center' }}>Leave Group</HeadingText>
         </TouchableOpacity>
         </TouchableOpacity>
@@ -351,6 +367,12 @@ const styles = StyleSheet.create({
   cancelText: {
     color: "grey",
     fontSize: 18
+  },
+  spinnerContainer: {
+    position: 'absolute',
+    top: 290,
+    left: Dimensions.get('window').width / 2 - 10,
+    zIndex: 2
   }
 });
 

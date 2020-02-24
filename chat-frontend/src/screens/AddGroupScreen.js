@@ -161,10 +161,17 @@ const AddGroupScreen = props => {
   };
 
   return (
-    <ScreenModal
-      visible={props.visible}
-      transparent={true}
-      animationType="slide"
+    <Modal
+      isVisible={props.visible}
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
+      onSwipeComplete={() => props.closeModal()}
+      swipeThreshold={60}
+      swipeDirection="down"
+      backdropOpacity={0}
+      onBackdropPress={() => Keyboard.dismiss()}
+      propagateSwipe={true}
+      style={{ margin: 0}}
     >
       <Modal
         style={{ alignItems: "center", justifyContent: "center" }}
@@ -216,7 +223,6 @@ const AddGroupScreen = props => {
           </View>
         </View>
       </Modal>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
           <View style={styles.header}>
             <View style={styles.headerTop}>
@@ -530,8 +536,7 @@ const AddGroupScreen = props => {
             )}
           </View>
         </View>
-      </TouchableWithoutFeedback>
-    </ScreenModal>
+    </Modal>
   );
 };
 

@@ -21,8 +21,9 @@ import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
-import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons, FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
+import BottomSheet from 'reanimated-bottom-sheet';
 
 import Colors from '../constants/colors';
 import BodyText from '../components/BodyText';
@@ -46,10 +47,12 @@ const ChatDetailScreen = ({ navigation }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
+  const [isVisibleYoutube, setIsVisibleYoutube] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const offset = useRef(new Animated.Value(0)).current;
   const bottomHeight = useRef(new Animated.Value(40)).current;
   const topHeight = useRef(new Animated.Value(40)).current;
+  const topHeightNum = useRef(200).current;
   const deviceHeight = Dimensions.get('window').height;
   // const [deviceHeight, setDeviceHeight] = useState(Dimensions.get('window').height);
   const isDividerClicked = useRef(true);
@@ -70,7 +73,7 @@ const ChatDetailScreen = ({ navigation }) => {
       
       },
       onPanResponderMove: (e, gestureState) => {
-        bottomHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
+        topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
         offset.setValue(e.nativeEvent.pageY);
       },
       onPanResponderRelease: (e, gestureState) => {
@@ -90,7 +93,9 @@ const ChatDetailScreen = ({ navigation }) => {
   const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
-    navigation.setParams({ openModal: openModalHandler })
+    navigation.setParams({ openModal: openModalHandler });
+    navigation.setParams({ openYoutube: openYoutubeHandler });
+    navigation.setParams({ isVisibleYoutube: isVisibleYoutube });
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
@@ -151,6 +156,11 @@ const ChatDetailScreen = ({ navigation }) => {
     setIncomingMsgs(chat);
   }, [chat]);
 
+  useEffect(() => {
+    navigation.setParams({ isVisibleYoutube: isVisibleYoutube });
+    console.log(isVisibleYoutube);
+  }, [isVisibleYoutube]);
+
   const didFocusHandler = () => {
     socket.current.emit('join_chat', { username, recipient });
   };
@@ -161,6 +171,27 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const openModalHandler = () => {
     setGroupSettingsModal(true);
+  };
+
+  const openYoutubeHandler = () => {
+    console.log(isVisibleYoutube);
+    let isVisible = !isVisibleYoutube;
+    console.log(isVisible);
+    setIsVisibleYoutube(prevState => isVisible);
+  };
+
+  const renderContent = () => {
+    return (
+      <View style={styles.panel}>
+        <WebView style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} />
+      </View>
+    );
+  };
+
+  const renderHeader = () => {
+    return (
+      <View style={{ width: '100%', height: 50, backgroundColor: Colors.primary }} />
+    );
   };
 
   const closeModalHandler = () => {
@@ -465,22 +496,16 @@ const ChatDetailScreen = ({ navigation }) => {
         // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
+        <View style={{flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 2, width: '100%', height: '100%' }}>
+        <BottomSheet
+          initialSnap={1}
+          snapPoints = {[400, 50]}
+          renderContent = {renderContent}
+          renderHeader = {renderHeader}
+        />
+        </View>
         <GroupSettingsScreen visible={groupSettingsModal} closeModal={closeModalHandler} />
-         <View style={styles.content}>
-            {/* Top View */}
-            <Animated.View 
-                style={[{minHeight: 40, flex: 1}, {height: topHeight}]}>
-                <WebView source={{ uri: 'https://www.youtube.com' }} />
-            </Animated.View>
-            {/* Divider */}
-            <View style={[{height: 20}, isDividerClicked ? {backgroundColor: '#666'} : {backgroundColor: '#e2e2e2'}]} 
-                {...panResponder.panHandlers}
-            >
-            </View>
-            {/* Bottom View */}
-            <Animated.View 
-                style={[{minHeight: 40}, {height: bottomHeight}]}>
-                <GiftedChat
+              <GiftedChat
               renderUsernameOnMessage 
               messages={incomingMsgs} 
               onSend={sendMessage} 
@@ -523,8 +548,6 @@ const ChatDetailScreen = ({ navigation }) => {
                   </View>
                 );
               }}/>
-            </Animated.View>
-        </View>
          <KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />
@@ -576,14 +599,20 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
           style={{ paddingHorizontal: 10,  paddingTop: 5, marginLeft: 10 }} />
       </TouchableOpacity>
     ), 
-    headerRight: params.type === 'group' && (
-       <TouchableOpacity onPress={() => params.openModal()}>
-        <MaterialIcons
-          name="settings" 
-          size={28} 
-          color="#D0D0D0"
-          style={{ paddingHorizontal: 10,  paddingTop: 3 }} />
-      </TouchableOpacity>
+    headerRight: (
+      <View style={{flexDirection: 'row'}}>  
+        <TouchableOpacity onPress={() => params.openYoutube()}>
+          <FontAwesome name="youtube" size={32} style={{paddingTop: 1}} color={params.isVisibleYoutube ? Colors.tertiary : "#D0D0D0"} />
+        </TouchableOpacity>
+       {params.type === 'group' && (
+         <TouchableOpacity onPress={() => params.openModal()}>
+          <MaterialIcons
+            name="settings" 
+            size={28} 
+            color="#D0D0D0"
+            style={{ paddingHorizontal: 10,  paddingTop: 3 }} />
+        </TouchableOpacity>)}
+      </View>
     ),
     headerBackground: (
       <View style={{
@@ -611,7 +640,12 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    flexDirection: 'column'
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    minHeight: 40,
+    zIndex: 2
   },
   scrollContainer: {
     width: 30,
@@ -713,7 +747,53 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     right: -24, 
     bottom: -20
-  }
+  },
+    panelContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  panel: {
+    height: '100%'
+  },
+  header: {
+    width: '100%',
+    height: 50,
+  },
+  panelHeader: {
+    alignItems: 'center',
+  },
+  panelHandle: {
+    width: 40,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#00000040',
+    marginBottom: 10,
+  },
+  panelTitle: {
+    fontSize: 27,
+    height: 35,
+  },
+  panelSubtitle: {
+    fontSize: 14,
+    color: 'gray',
+    height: 30,
+    marginBottom: 10,
+  },
+  panelButton: {
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: '#292929',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  panelButtonTitle: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: 'white',
+  },
 });
 
 export default ChatDetailScreen;

@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  Modal as ScreenModal,
   ActivityIndicator
 } from "react-native";
 import { MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";

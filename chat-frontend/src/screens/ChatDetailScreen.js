@@ -47,7 +47,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
-  const [isVisibleYoutube, setIsVisibleYoutube] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const offset = useRef(new Animated.Value(0)).current;
   const bottomHeight = useRef(new Animated.Value(40)).current;
@@ -56,6 +55,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const deviceHeight = Dimensions.get('window').height;
   // const [deviceHeight, setDeviceHeight] = useState(Dimensions.get('window').height);
   const isDividerClicked = useRef(true);
+  const isVisibleYoutube = useRef(false);
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
@@ -93,9 +93,11 @@ const ChatDetailScreen = ({ navigation }) => {
   const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
-    navigation.setParams({ openModal: openModalHandler });
-    navigation.setParams({ openYoutube: openYoutubeHandler });
-    navigation.setParams({ isVisibleYoutube: isVisibleYoutube });
+    navigation.setParams({ 
+      openModal: openModalHandler,
+      openYoutube: openYoutubeHandler,
+      isVisibleYou: isVisibleYoutube.current 
+    });
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
     socket.current.on('message', message => {
@@ -156,11 +158,6 @@ const ChatDetailScreen = ({ navigation }) => {
     setIncomingMsgs(chat);
   }, [chat]);
 
-  useEffect(() => {
-    navigation.setParams({ isVisibleYoutube: isVisibleYoutube });
-    console.log(isVisibleYoutube);
-  }, [isVisibleYoutube]);
-
   const didFocusHandler = () => {
     socket.current.emit('join_chat', { username, recipient });
   };
@@ -173,11 +170,9 @@ const ChatDetailScreen = ({ navigation }) => {
     setGroupSettingsModal(true);
   };
 
-  const openYoutubeHandler = () => {
-    console.log(isVisibleYoutube);
-    let isVisible = !isVisibleYoutube;
-    console.log(isVisible);
-    setIsVisibleYoutube(prevState => isVisible);
+  const openYoutubeHandler = (params) => {
+      isVisibleYoutube.current = !params;
+      navigation.setParams({ isVisibleYou: !params });
   };
 
   const renderContent = () => {
@@ -496,14 +491,14 @@ const ChatDetailScreen = ({ navigation }) => {
         // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
-        <View style={{flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 2, width: '100%', height: '100%' }}>
-        <BottomSheet
-          initialSnap={1}
-          snapPoints = {[400, 50]}
-          renderContent = {renderContent}
-          renderHeader = {renderHeader}
-        />
-        </View>
+        {isVisibleYoutube.current && <View style={{flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 2, width: '100%', height: '100%' }}>
+          <BottomSheet
+            initialSnap={1}
+            snapPoints = {[460, 50]}
+            renderContent = {renderContent}
+            renderHeader = {renderHeader}
+          />
+        </View>}
         <GroupSettingsScreen visible={groupSettingsModal} closeModal={closeModalHandler} />
               <GiftedChat
               renderUsernameOnMessage 
@@ -601,8 +596,8 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
     ), 
     headerRight: (
       <View style={{flexDirection: 'row'}}>  
-        <TouchableOpacity onPress={() => params.openYoutube()}>
-          <FontAwesome name="youtube" size={32} style={{paddingTop: 1}} color={params.isVisibleYoutube ? Colors.tertiary : "#D0D0D0"} />
+        <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
+          <FontAwesome name="youtube" size={32} style={{paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />
         </TouchableOpacity>
        {params.type === 'group' && (
          <TouchableOpacity onPress={() => params.openModal()}>

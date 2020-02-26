@@ -19,7 +19,7 @@ import { MaterialIcons, Entypo, AntDesign } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import { SwipeListView } from 'react-native-swipe-list-view';;
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -49,6 +49,7 @@ const ChatsListScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const rowTranslateAnimatedValues = useRef({}).current;
+  const screenWidth = Math.round(Dimensions.get('window').width);
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetResponderCapture: () => true,
@@ -64,10 +65,16 @@ const ChatsListScreen = ({ navigation }) => {
         position.setValue({x: gestureState.dx, y: gestureState.dy});
       },
       onPanResponderRelease: (evt, gestureState) => {
+        // console.log(gestureState);
+        // if (gestureState.dx < screenWidth / 2 - 50) {
+        //   position.setValue({ x: 0, y: gestureState.dy });
+        
+        // } else {
+        //   position.setValue({ x: (screenWidth - 100), y: gestureState.dy });
+        // }
         position.flattenOffset();
       },
     }), []);
-  const screenWidth = Math.round(Dimensions.get('window').width);
   useEffect(() => {
     getChats({ username }).then(res => {
       setIsLoading(false);

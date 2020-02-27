@@ -49,8 +49,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
-  const pan = useRef(new Animated.ValueXY()).current;
-  const offset = useRef(new Animated.Value(0)).current;
+ 
   const bottomHeight = useRef(new Animated.Value(40)).current;
   const topHeight = useRef(new Animated.Value(40)).current;
   const topHeightNum = useRef(200).current;
@@ -63,19 +62,28 @@ const ChatDetailScreen = ({ navigation }) => {
   let stopTypingTimeout;
   let giftedChatRef;
 
+  const pan = useRef(new Animated.ValueXY());
+  const offset = useRef(new Animated.Value(0)).current;
+
+  const offset2 = useRef(new Animated.ValueXY()).current;
+
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: (e, gestureState) => {
-     
-        if (e.nativeEvent.pageY < Header.HEIGHT) {
-          offset.setValue(0);
-        }
-        if (e.nativeEvent.pageY > deviceHeight - 49) {
-          offset.setValue(deviceHeight - 49);
-        }
+      console.log(e.nativeEvent.pageY);
+      console.log(e.nativeEvent.locationY)
+
+        // if (e.nativeEvent.pageY < Header.HEIGHT) {
+        //   offset.setValue(0);
+        // }
+        // if (e.nativeEvent.pageY > deviceHeight - 49) {
+        //   offset.setValue(deviceHeight - 49);
+        // }
         // isDividerClicked.current = true;
+        offset2.setOffset({ x: 0, y: offset2.y._value });
+        offset2.setValue({x: 0, y: 0});
       },
       onPanResponderStart: (e, gestureState) => {
     
@@ -83,16 +91,17 @@ const ChatDetailScreen = ({ navigation }) => {
       onPanResponderMove: (e, gestureState) => {
         // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
         // offset.setValue(100);
-        offset.setValue(e.nativeEvent.pageY - Header.HEIGHT);
-        if (e.nativeEvent.pageY < Header.HEIGHT) {
-          offset.setValue(0);
-        }
-        if (e.nativeEvent.pageY > deviceHeight - Header.HEIGHT - 24) {
-          offset.setValue(deviceHeight - 153);
-        }
+        // offset.setValue(e.nativeEvent.pageY - Header.HEIGHT);
+        // if (e.nativeEvent.pageY < Header.HEIGHT) {
+        //   offset.setValue(0);
+        // }
+        // if (e.nativeEvent.pageY > deviceHeight - Header.HEIGHT - 24) {
+        //   offset.setValue(deviceHeight - 153);
+        // }
+          offset2.setValue({x: 0, y: gestureState.dy});
       },
       onPanResponderRelease: (e, gestureState) => {
-        offset.flattenOffset();
+        offset2.flattenOffset();
       },
     }), []);
 
@@ -502,9 +511,10 @@ const ChatDetailScreen = ({ navigation }) => {
         <Animated.View
           { ...panResponder.panHandlers }
           style={[
-            {transform: [
-              { translateY: offset }
-            ]},
+            // {transform:
+            //   { translateY: offset }
+            // ]},
+            {transform: offset2.getTranslateTransform()},
             styles.youtubeNav
           ]}>
         </Animated.View>

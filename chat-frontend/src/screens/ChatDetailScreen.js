@@ -65,16 +65,14 @@ const ChatDetailScreen = ({ navigation }) => {
   const pan = useRef(new Animated.ValueXY());
   const offset = useRef(new Animated.Value(0)).current;
 
-  const offset2 = useRef(new Animated.ValueXY()).current;
+  // const offset = useRef(new Animated.ValueXY()).current;
+  const height = useRef(new Animated.Value(40)).current;
 
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: (e, gestureState) => {
-      console.log(e.nativeEvent.pageY);
-      console.log(e.nativeEvent.locationY)
-
         // if (e.nativeEvent.pageY < Header.HEIGHT) {
         //   offset.setValue(0);
         // }
@@ -82,8 +80,11 @@ const ChatDetailScreen = ({ navigation }) => {
         //   offset.setValue(deviceHeight - 49);
         // }
         // isDividerClicked.current = true;
-        offset2.setOffset({ x: 0, y: offset2.y._value });
-        offset2.setValue({x: 0, y: 0});
+        // offset.setOffset({ x: 0, y: offset.y._value });
+        // offset.setValue({x: 0, y: 0});
+        // if (gestureState.moveY < 70) {
+        //     offset.setOffset({ x: 0, y: offset.y._value });
+        // }
       },
       onPanResponderStart: (e, gestureState) => {
     
@@ -91,17 +92,24 @@ const ChatDetailScreen = ({ navigation }) => {
       onPanResponderMove: (e, gestureState) => {
         // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
         // offset.setValue(100);
-        // offset.setValue(e.nativeEvent.pageY - Header.HEIGHT);
+        offset.setValue(e.nativeEvent.pageY - 69);
         // if (e.nativeEvent.pageY < Header.HEIGHT) {
         //   offset.setValue(0);
         // }
         // if (e.nativeEvent.pageY > deviceHeight - Header.HEIGHT - 24) {
         //   offset.setValue(deviceHeight - 153);
         // }
-          offset2.setValue({x: 0, y: gestureState.dy});
+          // offset.setValue({x: 0, y: gestureState.dy});
+          height.setValue(e.nativeEvent.pageY - 69);
+        //     if (gestureState.moveY < 70) {
+        //    offset.setValue({x: 0, y: 0});
+        // }
+          // if (gestureState.moveY > deviceHeight - 125) {
+          //    offset.setValue({x: 0, y: deviceHeight - 153});
+          // }
       },
       onPanResponderRelease: (e, gestureState) => {
-        offset2.flattenOffset();
+        offset.flattenOffset();
       },
     }), []);
 
@@ -508,16 +516,30 @@ const ChatDetailScreen = ({ navigation }) => {
         // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
-        <Animated.View
-          { ...panResponder.panHandlers }
-          style={[
-            // {transform:
-            //   { translateY: offset }
-            // ]},
-            {transform: offset2.getTranslateTransform()},
-            styles.youtubeNav
-          ]}>
-        </Animated.View>
+           <Animated.View
+            { ...panResponder.panHandlers }
+            style={[
+              // {transform:
+              //   { translateY: offset }
+              // ]},
+              {height: height},
+              styles.youtubeVideo
+            ]}>
+            <WebView
+             allowsInlineMediaPlayback={true} 
+             style={{ flex: 1 }} 
+             source={{ uri: 'https://www.youtube.com' }} />
+          </Animated.View>
+          <Animated.View
+            { ...panResponder.panHandlers }
+            style={[
+              // {transform: [
+              //   { translateY: offset }
+              // ]},
+              {top: offset},
+              styles.youtubeNav
+            ]}>
+          </Animated.View>
         {isVisibleYoutube.current && <View style={{flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 2, width: '100%', height: '100%' }}>
           <BottomSheet
             initialSnap={1}
@@ -827,7 +849,15 @@ const styles = StyleSheet.create({
   youtubeNav: {
     width: '100%',
     height: 40,
-    backgroundColor: 'lightgrey'
+    backgroundColor: 'lightgrey',
+    position: 'absolute',
+    left: 0
+  },
+  youtubeVideo: {
+    backgroundColor: Colors.primary,
+    width: '100%',
+    position: 'absolute',
+    left: 0
   }
 });
 

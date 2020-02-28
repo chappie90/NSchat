@@ -13,6 +13,7 @@ import ContactsListScreen from '../screens/ContactsListScreen';
 import AccountScreen from '../screens/AccountScreen';
 import ChatDetailScreen from '../screens/ChatDetailScreen';
 import ChatsNavigatorTab from '../components/ChatsNavigatorTab';
+import { TabBarComponent } from '../components/TabBarComponent';
 
 const ChatsFlow = createStackNavigator({
   ChatsList: ChatsListScreen,
@@ -78,11 +79,16 @@ AccountScreen.navigationOptions = {
   }
 };
 
-const BottomTabNavigator = createBottomTabNavigator({
-  ChatsFlow,
-  ContactsListFlow,
-  Account: AccountScreen
-});
+const BottomTabNavigator = createBottomTabNavigator(
+  {
+    ChatsFlow,
+    ContactsListFlow,
+    Account: AccountScreen,
+  },
+  {
+    tabBarComponent: TabBarComponent
+  }
+);
 
 const ChatNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,

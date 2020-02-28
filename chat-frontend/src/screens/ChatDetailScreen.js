@@ -21,7 +21,7 @@ import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
-import { MaterialIcons, FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons, FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import BottomSheet from 'reanimated-bottom-sheet';
 
@@ -48,23 +48,15 @@ const ChatDetailScreen = ({ navigation }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
- 
-  const bottomHeight = useRef(new Animated.Value(40)).current;
-  const topHeight = useRef(new Animated.Value(40)).current;
-  const topHeightNum = useRef(200).current;
   const deviceHeight = Dimensions.get('window').height;
   const bottomNavHeight = getTabBarHeight();
-  // const [deviceHeight, setDeviceHeight] = useState(Dimensions.get('window').height);
-  const isDividerClicked = useRef(true);
   const isVisibleYoutube = useRef(false);
+  const isBackgroundYoutube = useRef(false);
   const socket = useRef(null);
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
 
-  const pan = useRef(new Animated.ValueXY());
-
-  // const offset = useRef(new Animated.ValueXY()).current;
   const height = useRef(new Animated.Value(0)).current;
 
   const panResponder = React.useMemo(() => PanResponder.create({
@@ -72,43 +64,16 @@ const ChatDetailScreen = ({ navigation }) => {
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: (e, gestureState) => {
-        // if (e.nativeEvent.pageY < Header.HEIGHT) {
-        //   offset.setValue(0);
-        // }
-        // if (e.nativeEvent.pageY > deviceHeight - 49) {
-        //   offset.setValue(deviceHeight - 49);
-        // }
-        // isDividerClicked.current = true;
-        // offset.setOffset({ x: 0, y: offset.y._value });
-        // offset.setValue({x: 0, y: 0});
-        // if (gestureState.moveY < 70) {
-        //     offset.setOffset({ x: 0, y: offset.y._value });
-        // }
       },
-      onPanResponderStart: (e, gestureState) => {
-    
+      onPanResponderStart: (e, gestureState) => {   
       },
       onPanResponderMove: (e, gestureState) => {
         // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
         // offset.setValue(100);
-        // if (e.nativeEvent.pageY < Header.HEIGHT) {
-        //   offset.setValue(0);
-        // }
-        // if (e.nativeEvent.pageY > deviceHeight - Header.HEIGHT - 24) {
-        //   offset.setValue(deviceHeight - 153);
-        // }
-          // offset.setValue({x: 0, y: gestureState.dy});
-          height.setValue(e.nativeEvent.pageY - 50);
-        //     if (gestureState.moveY < 70) {
-        //    offset.setValue({x: 0, y: 0});
-        // }
-          // if (gestureState.moveY > deviceHeight - 125) {
-          //    offset.setValue({x: 0, y: deviceHeight - 153});
-          // }
+        height.setValue(e.nativeEvent.pageY - 50);
       },
       onPanResponderRelease: (e, gestureState) => {
         if (e.nativeEvent.pageY > (deviceHeight - 30 - bottomNavHeight) / 2) {
-          // height.setValue(deviceHeight - 70 - bottomNavHeight);
           Animated.spring(
             height,
             {
@@ -135,7 +100,9 @@ const ChatDetailScreen = ({ navigation }) => {
     navigation.setParams({ 
       openModal: openModalHandler,
       openYoutube: openYoutubeHandler,
-      isVisibleYou: isVisibleYoutube.current 
+      isVisibleYou: isVisibleYoutube.current,
+      setAsBackgroundYoutube: setYoutubeAsBackgroundHandler,
+      isBackgroundYou: isBackgroundYoutube.current 
     });
     registerForPushNotificationsAsync();
     socket.current = connectToSocket(username);
@@ -214,19 +181,10 @@ const ChatDetailScreen = ({ navigation }) => {
       navigation.setParams({ isVisibleYou: !params });
   };
 
-  const renderContent = () => {
-    return (
-      <View style={styles.panel}>
-        <WebView
-        allowsInlineMediaPlayback={true} style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} />
-      </View>
-    );
-  };
-
-  const renderHeader = () => {
-    return (
-      <View style={{ width: '100%', height: 50, backgroundColor: Colors.primary }} />
-    );
+  const setYoutubeAsBackgroundHandler = (val) => {
+    isBackgroundYoutube.current = !val;
+    navigation.setParams({ isBackgroundYou: !val });
+    console.log(isBackgroundYoutube);
   };
 
   const closeModalHandler = () => {
@@ -531,39 +489,29 @@ const ChatDetailScreen = ({ navigation }) => {
         // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
-        <Animated.View
-            style={[
-              {height: height, maxHeight: deviceHeight - 70 - bottomNavHeight},
-              styles.youtubeVideo
-            ]}>
-            <WebView
-             allowsInlineMediaPlayback={true} 
-             style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} />
-          <View
-            { ...panResponder.panHandlers }
-            style={[
-              styles.youtubeNav
-            ]}>
-          </View>
-          </Animated.View>
-        {isVisibleYoutube.current && <View style={{flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 2, width: '100%', height: '100%' }}>
-          <BottomSheet
-            initialSnap={1}
-            snapPoints = {[460, 50]}
-            renderContent = {renderContent}
-            renderHeader = {renderHeader}
-          />
-        </View>}
-        {isVisibleYoutube.current && <View style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 }}>
-         <WebView  
-          mediaPlaybackRequiresUserAction={true} 
+      {isVisibleYoutube.current && <Animated.View
+        style={[
+          {height: isBackgroundYoutube.current ? '100%' : height, maxHeight: deviceHeight - 70 - bottomNavHeight},
+          isVisibleYoutube.current && isBackgroundYoutube.current ? styles.youtubeBackground : styles.youtubePane
+        ]}>
+        <WebView
+          mediaPlaybackRequiresUserAction={true}
           allowsFullscreenVideo={true} 
-          automaticallyAdjustContentInsets={false}
-          style={{ flex: 1 }} 
-          source={{ uri: 'https://www.youtube.com/watch?v=mvfT_tgpWNM' }} />
+          allowsInlineMediaPlayback={true} 
+           automaticallyAdjustContentInsets={false}
+          style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} />
+        {!isBackgroundYoutube.current && <View
+          { ...panResponder.panHandlers }
+          style={[
+            styles.youtubeNav
+          ]}>
+          <TouchableOpacity onPress={() => setYoutubeAsBackgroundHandler(isBackgroundYoutube.current)}>
+            <MaterialCommunityIcons name="flip-to-back" size={30} color={isBackgroundYoutube.current ? Colors.tertiary : "#989898"}/>
+          </TouchableOpacity>
         </View>}
+      </Animated.View>}
         <GroupSettingsScreen visible={groupSettingsModal} closeModal={closeModalHandler} />
-             {isVisibleYoutube.current && <GiftedChat
+          <GiftedChat
               renderUsernameOnMessage 
               messages={incomingMsgs} 
               onSend={sendMessage} 
@@ -605,7 +553,7 @@ const ChatDetailScreen = ({ navigation }) => {
                     <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
                   </View>
                 );
-              }}/>}
+              }}/>
          <KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />
@@ -659,8 +607,11 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
     ), 
     headerRight: (
       <View style={{flexDirection: 'row'}}>  
+        {params.isBackgroundYou && <TouchableOpacity onPress={() => params.setAsBackgroundYoutube(params.isBackgroundYou)}>
+          <MaterialCommunityIcons name="flip-to-back" style={{ paddingLeft: 8, paddingTop: 3}} size={30} color={Colors.tertiary} />
+        </TouchableOpacity>}
         <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
-          <FontAwesome name="youtube" size={32} style={{paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />
+          <FontAwesome name="youtube" size={32} style={{ paddingLeft: 8, paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />
         </TouchableOpacity>
        {params.type === 'group' && (
          <TouchableOpacity onPress={() => params.openModal()}>
@@ -668,7 +619,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
             name="settings" 
             size={28} 
             color="#D0D0D0"
-            style={{ paddingHorizontal: 10,  paddingTop: 3 }} />
+            style={{ paddingHorizontal: 8, paddingTop: 3 }} />
         </TouchableOpacity>)}
       </View>
     ),
@@ -855,13 +806,24 @@ const styles = StyleSheet.create({
   youtubeNav: {
     width: '100%',
     height: 40,
-    backgroundColor: 'lightgrey'
+    backgroundColor: '#F5F5F5',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10
   },
-  youtubeVideo: {
+  youtubePane: {
     backgroundColor: Colors.primary,
     width: '100%',
     position: 'absolute',
-    left: 0
+    left: 0,
+    zIndex: 2
+  },
+  youtubeBackground: {
+    position: 'absolute', 
+    top: 0, 
+    left: 0, 
+    bottom: 0, 
+    right: 0 
   }
 });
 

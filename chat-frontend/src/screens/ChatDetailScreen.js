@@ -107,8 +107,22 @@ const ChatDetailScreen = ({ navigation }) => {
           // }
       },
       onPanResponderRelease: (e, gestureState) => {
-        if (e.nativeEvent.pageY > (deviceHeight - bottomNavHeight) / 2) {
-          height.setValue(deviceHeight - 70 - bottomNavHeight);
+        if (e.nativeEvent.pageY > (deviceHeight - 30 - bottomNavHeight) / 2) {
+          // height.setValue(deviceHeight - 70 - bottomNavHeight);
+          Animated.spring(
+            height,
+            {
+              toValue: deviceHeight - 70 - bottomNavHeight // Animate to final value of 1
+            },
+          ).start();
+        }
+        if (e.nativeEvent.pageY < (deviceHeight - 30 - bottomNavHeight) / 2) {
+          Animated.spring(
+            height,
+            {
+              toValue: 0
+            },
+          ).start();
         }
         height.flattenOffset();
       },

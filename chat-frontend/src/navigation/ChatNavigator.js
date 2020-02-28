@@ -15,10 +15,20 @@ import ChatDetailScreen from '../screens/ChatDetailScreen';
 import ChatsNavigatorTab from '../components/ChatsNavigatorTab';
 import { TabBarComponent } from '../components/TabBarComponent';
 
-const ChatsFlow = createStackNavigator({
-  ChatsList: ChatsListScreen,
-  ChatDetail: ChatDetailScreen
-});
+const ChatsFlow = createStackNavigator(
+  {
+    ChatsList: ChatsListScreen,
+    ChatDetail: ChatDetailScreen
+  },
+  {
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 50
+      },
+      // headerMode: 'screen'
+    }
+  }
+);
 
 ChatsFlow.navigationOptions = {
   title: 'Chats',
@@ -44,7 +54,12 @@ const ContactsListFlow = createStackNavigator(
     ChatDetail: ChatDetailScreen
   },
   {
-    headerMode: 'screen'
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 50
+      },
+      // headerMode: 'screen'
+    }
   }
 );
 

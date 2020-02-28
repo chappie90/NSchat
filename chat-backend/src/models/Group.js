@@ -11,7 +11,8 @@ const groupSchema = new mongoose.Schema({
   avatar: {
     imagePath: String,
     imageName: String 
-  }
+  },
+  pinned: { type: Boolean, default: false }
 });
 
 mongoose.model('Group', groupSchema);

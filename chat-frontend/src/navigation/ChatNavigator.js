@@ -58,6 +58,8 @@ const ContactsListFlow = createStackNavigator(
       headerStyle: {
         height: 50
       },
+      // headerTitleAlign: 'center',
+      // headerLayoutPreset: 'center'
       // headerMode: 'screen'
     }
   }

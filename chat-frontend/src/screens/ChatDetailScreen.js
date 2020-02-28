@@ -112,7 +112,7 @@ const ChatDetailScreen = ({ navigation }) => {
           Animated.spring(
             height,
             {
-              toValue: deviceHeight - 70 - bottomNavHeight // Animate to final value of 1
+              toValue: deviceHeight - 70 - bottomNavHeight
             },
           ).start();
         }
@@ -532,26 +532,19 @@ const ChatDetailScreen = ({ navigation }) => {
         onDidFocus={didFocusHandler}
         />
         <Animated.View
-            { ...panResponder.panHandlers }
             style={[
-              // {transform:
-              //   { translateY: offset }
-              // ]},
               {height: height, maxHeight: deviceHeight - 70 - bottomNavHeight},
               styles.youtubeVideo
             ]}>
             <WebView
              allowsInlineMediaPlayback={true} 
              style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} />
-          <Animated.View
+          <View
             { ...panResponder.panHandlers }
             style={[
-              // {transform: [
-              //   { translateY: offset }
-              // ]},
               styles.youtubeNav
             ]}>
-          </Animated.View>
+          </View>
           </Animated.View>
         {isVisibleYoutube.current && <View style={{flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 2, width: '100%', height: '100%' }}>
           <BottomSheet

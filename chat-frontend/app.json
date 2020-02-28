@@ -35,6 +35,9 @@
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE"
       ]
-    }
-  }
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
+  },
+  "displayName": "clicktalk",
+  "name": "clicktalk"
 }

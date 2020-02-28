@@ -20,6 +20,7 @@ import { AsyncStorage } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
 import { SwipeListView } from 'react-native-swipe-list-view';;
+import Modal from "react-native-modal";
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -41,11 +42,13 @@ const ChatsListScreen = ({ navigation }) => {
     deleteChat,
     markMessagesAsRead } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
-   const { getCurrentGroupId } = useContext(GroupsContext);
+  const { getCurrentGroupId } = useContext(GroupsContext);
+  const [modalVisible, setModalVisible] = useState(false);
   const socket = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
+  const [selectedChat, setSelectedChat] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const rowTranslateAnimatedValues = useRef({}).current;
@@ -130,9 +133,15 @@ const ChatsListScreen = ({ navigation }) => {
     );
   };
 
+  const modalCloseHandler = () => {
+    setModalVisible(false);
+  };
+
+
   const onSwipeValueChange = (swipeData) => {
     const { key, value } = swipeData;
     rowTranslateAnimatedValues[key].setValue(Math.abs(value));
+
   };
   const swipeGestureBegan = data => {
 
@@ -144,13 +153,22 @@ const ChatsListScreen = ({ navigation }) => {
     }
   };
 
-  const deleteRow = (rowMap, username, chatId, type) => {
-    deleteChat(username, chatId, type);
+  const deleteRow = (rowMap, selectedChat) => {
+     setSelectedChat(selectedChat);
+     setModalVisible(true);
     // closeRow(rowMap, index);
     // const newData = previousChats.filter(
     //   item => item !== previousChats[index]
     // );
-    
+  };
+
+  const deleteChatHandler = () => {
+    console.log(selectedChat);
+    setIsLoading(true);
+    deleteChat(username, selectedChat.chatId, selectedChat.type).then(res => {
+      setIsLoading(false);
+      setModalVisible(false);
+    });
   };
 
   const renderLastMessageText = (item) => {
@@ -256,7 +274,7 @@ const ChatsListScreen = ({ navigation }) => {
                     <AntDesign name="pushpin" size={24} color="#fff" />
                 </Animated.View>
               </TouchableOpacity>
-              <TouchableOpacity style={{ }} onPress={() => {deleteRow(rowMap, username, data.item.chatId, data.item.type)}}>
+              <TouchableOpacity style={{ }} onPress={() => {deleteRow(rowMap, data.item)}}>
                 <Animated.View style={{
                   backgroundColor: Colors.tertiary,
                   width: 44,
@@ -301,6 +319,36 @@ const ChatsListScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
     <StatusBar backgroundColor="blue" barStyle="light-content" />
+      <Modal
+        style={{ alignItems: "center", justifyContent: "center" }}
+        isVisible={modalVisible}
+        onBackdropPress={modalCloseHandler}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        animationInTiming={200}
+        backdropTransitionOutTiming={0}
+      >
+        <View style={styles.overlayContainer}>
+          <View style={{borderBottomColor: 'lightgrey', borderBottomWidth: 1, paddingBottom: 6 }}>
+            <BodyText 
+            style={styles.overlayText}>Are you sure you want to delete this chat?</BodyText>
+          </View>
+          <View style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end', 
+              alignItems: 'center', 
+              marginTop: 15}}>
+            <TouchableOpacity  onPress={modalCloseHandler}>
+              <BodyText style={styles.overlayText}>Cancel</BodyText>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={deleteChatHandler}>
+              <View style={styles.overlayItem}>
+                <BodyText style={styles.overlayDeleteText}>Delete</BodyText>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     <AddGroupScreen visible={newGroupMode} closeModal={closeModal} />
      <Animated.View
             {...panResponder.panHandlers}
@@ -469,6 +517,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  overlayContainer: {
+    backgroundColor: "#fff",
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    borderRadius: 4,
+    width: '90%',
+    maxWidth: 400
+  },
+  overlayText: {
+    fontSize: 16
+  },
+  overlayDeleteText: {
+    fontSize: 16,
+    color: '#fff'
+  },
+  overlayItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: Colors.tertiary,
+    borderRadius: 4,
+    marginLeft: 20
+  }
 });
 
 export default ChatsListScreen;

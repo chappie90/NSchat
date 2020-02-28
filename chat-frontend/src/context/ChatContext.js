@@ -17,6 +17,8 @@ const chatReducer = (state, action) => {
     case 'delete_chat':
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };
+    case 'pin_chat':
+      return state;
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
@@ -63,6 +65,8 @@ const deleteChat = dispatch => async (username, chatId, chatType) => {
       return;
     }
 
+    console.log(response.data);
+
     dispatch({ type: 'delete_chat', payload: chatId });
   } catch (err) {
     console.log(err);
@@ -75,6 +79,20 @@ const updateMessages = dispatch => ({ message }) => {
 
 const resetChatState = dispatch => () => {
   dispatch({ type: 'reset_chat_state' });
+};
+
+const pinChat = dispatch => async (username, chatId, chatType) => {
+  try {
+    const response = await chatApi.patch('/chat/pin', { username, chatId, chatType });
+
+    if (!reponse.data) {
+      return;
+    }
+
+    dispatch({ type: 'pin_chat', payload: chatId });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const getMessages = dispatch => async ({ username, recipient, page }) => {
@@ -194,7 +212,8 @@ export const { Context, Provider } = createDataContext(
     markMessagesAsRead,
     deleteMessage,
     createGroup,
-    resetChatState
+    resetChatState,
+    pinChat
   },
   {  
     previousChats: [], 

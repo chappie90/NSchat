@@ -24,7 +24,6 @@ import * as Permissions from 'expo-permissions';
 import { MaterialIcons, FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import BottomSheet from 'reanimated-bottom-sheet';
-import { Header } from 'react-navigation-stack';
 
 import Colors from '../constants/colors';
 import BodyText from '../components/BodyText';
@@ -35,6 +34,7 @@ import chatApi from '../api/chat';
 import { connectToSocket } from '../socket/chat';
 import FadeViewAnim from '../components/animations/FadeViewAnim';
 import GroupSettingsScreen from './GroupSettingsScreen';
+import { getTabBarHeight } from '../components/TabBarComponent';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username } } = useContext(AuthContext);
@@ -43,7 +43,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [getOffset, setGetOffset] = useState('');
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -54,6 +53,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const topHeight = useRef(new Animated.Value(40)).current;
   const topHeightNum = useRef(200).current;
   const deviceHeight = Dimensions.get('window').height;
+  const bottomNavHeight = getTabBarHeight();
   // const [deviceHeight, setDeviceHeight] = useState(Dimensions.get('window').height);
   const isDividerClicked = useRef(true);
   const isVisibleYoutube = useRef(false);
@@ -63,10 +63,9 @@ const ChatDetailScreen = ({ navigation }) => {
   let giftedChatRef;
 
   const pan = useRef(new Animated.ValueXY());
-  const offset = useRef(new Animated.Value(0)).current;
 
   // const offset = useRef(new Animated.ValueXY()).current;
-  const height = useRef(new Animated.Value(40)).current;
+  const height = useRef(new Animated.Value(0)).current;
 
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -92,7 +91,6 @@ const ChatDetailScreen = ({ navigation }) => {
       onPanResponderMove: (e, gestureState) => {
         // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
         // offset.setValue(100);
-        offset.setValue(e.nativeEvent.pageY - 69);
         // if (e.nativeEvent.pageY < Header.HEIGHT) {
         //   offset.setValue(0);
         // }
@@ -100,7 +98,7 @@ const ChatDetailScreen = ({ navigation }) => {
         //   offset.setValue(deviceHeight - 153);
         // }
           // offset.setValue({x: 0, y: gestureState.dy});
-          height.setValue(e.nativeEvent.pageY - 69);
+          height.setValue(e.nativeEvent.pageY - 50);
         //     if (gestureState.moveY < 70) {
         //    offset.setValue({x: 0, y: 0});
         // }
@@ -109,7 +107,10 @@ const ChatDetailScreen = ({ navigation }) => {
           // }
       },
       onPanResponderRelease: (e, gestureState) => {
-        offset.flattenOffset();
+        if (e.nativeEvent.pageY > (deviceHeight - bottomNavHeight) / 2) {
+          height.setValue(deviceHeight - 70 - bottomNavHeight);
+        }
+        height.flattenOffset();
       },
     }), []);
 
@@ -516,29 +517,27 @@ const ChatDetailScreen = ({ navigation }) => {
         // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
-           <Animated.View
+        <Animated.View
             { ...panResponder.panHandlers }
             style={[
               // {transform:
               //   { translateY: offset }
               // ]},
-              {height: height},
+              {height: height, maxHeight: deviceHeight - 70 - bottomNavHeight},
               styles.youtubeVideo
             ]}>
             <WebView
              allowsInlineMediaPlayback={true} 
-             style={{ flex: 1 }} 
-             source={{ uri: 'https://www.youtube.com' }} />
-          </Animated.View>
+             style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} />
           <Animated.View
             { ...panResponder.panHandlers }
             style={[
               // {transform: [
               //   { translateY: offset }
               // ]},
-              {top: offset},
               styles.youtubeNav
             ]}>
+          </Animated.View>
           </Animated.View>
         {isVisibleYoutube.current && <View style={{flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 2, width: '100%', height: '100%' }}>
           <BottomSheet
@@ -849,9 +848,7 @@ const styles = StyleSheet.create({
   youtubeNav: {
     width: '100%',
     height: 40,
-    backgroundColor: 'lightgrey',
-    position: 'absolute',
-    left: 0
+    backgroundColor: 'lightgrey'
   },
   youtubeVideo: {
     backgroundColor: Colors.primary,

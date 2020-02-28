@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
     imgPath: String,
     imgName: String
   },
+  privateChats: [
+    {
+      chat: { type: mongoose.Schema.Types.ObjectId, ref: 'PrivateChat' }
+    }
+  ],
   groups: [
     {
       group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' }

@@ -40,6 +40,7 @@ const ChatsListScreen = ({ navigation }) => {
     state: { previousChats },
     getChats, 
     deleteChat,
+    pinChat,
     markMessagesAsRead } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
@@ -163,12 +164,16 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   const deleteChatHandler = () => {
-    console.log(selectedChat);
     setIsLoading(true);
     deleteChat(username, selectedChat.chatId, selectedChat.type).then(res => {
       setIsLoading(false);
       setModalVisible(false);
     });
+  };
+
+  const pinChatHandler = (rowMap, selectedChat) => {
+     console.log(selectedChat);
+     pinChat(username, selectedChat.chatId, selectedChat.type);
   };
 
   const renderLastMessageText = (item) => {
@@ -226,7 +231,10 @@ const ChatsListScreen = ({ navigation }) => {
                 <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
                   <View style={styles.itemContainer}>
                     <HeadingText numberOfLines={1} style={rowData.item.groupOwner ? styles.groupName : styles.name}>{rowData.item.contact}</HeadingText>
-                    <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>  
+                      <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
+                      <AntDesign style={{marginLeft: 8}} name="pushpin" size={20} color="lightgrey" />
+                    </View>
                   </View>
                   <View style={styles.itemContainer}>
                     <BodyText
@@ -255,7 +263,7 @@ const ChatsListScreen = ({ navigation }) => {
         renderHiddenItem={ (data, rowMap) =>{
          return (
             <View style={styles.rowBack}>
-             <TouchableOpacity style={{ }} onPress={() => {}}>
+             <TouchableOpacity style={{ }} onPress={() => pinChatHandler(rowMap, data.item)}>
                 <Animated.View style={{
                   backgroundColor: Colors.secondary,
                   width: 44,

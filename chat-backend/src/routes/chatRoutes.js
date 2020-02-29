@@ -209,19 +209,17 @@ router.patch('/message/delete', checkAuth, async (req, res) => {
 });
 
 router.patch('/chat/delete', checkAuth, async (req, res) => {
-  const { username, chatId, chatType } = req.body;
+  const { username, chatId, type } = req.body;
   let chat;
   try {
 
-    if (chatType === 'group') {
+    if (type === 'group') {
       chat = await User.update(
         { username: username },
         { $pull: { groups: { group: chatId } } },
         { new: true }
       );
     }
-
-    console.log(chat);
 
     let response = chat.nModified > 0 ? true : false;
     
@@ -233,19 +231,19 @@ router.patch('/chat/delete', checkAuth, async (req, res) => {
 });
 
 router.patch('/chat/pin', checkAuth, async (req, res) => {
-  const { username, chatId, chatType } = req.body;
+  const { username, chatId, type } = req.body;
   let pinnedChat;
 
   console.log(username);
   console.log(chatId);
-  console.log(chatType);
+  console.log(type);
 
   try {
-    if (chatType === 'group') {
+    if (type === 'group') {
       // pinnedChat = await Group.update(
       //   { _id:  }
       // );
-    } else if (chatType === 'private') {
+    } else if (type === 'private') {
       pinnedChat = await User.update(
         { username: username, 'privateChats.privateChat': chatId },
         { $set: {
@@ -255,8 +253,6 @@ router.patch('/chat/pin', checkAuth, async (req, res) => {
     }
 
     let response = pinnedChat.nModified > 0 ? true : false;
-
-    console.log(response);
 
     res.status(200).send(response);
   } catch (err) {

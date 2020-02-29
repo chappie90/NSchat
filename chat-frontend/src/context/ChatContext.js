@@ -81,9 +81,9 @@ const resetChatState = dispatch => () => {
   dispatch({ type: 'reset_chat_state' });
 };
 
-const pinChat = dispatch => async (username, chatId, chatType) => {
+const pinChat = dispatch => async (username, chatId, type) => {
   try {
-    const response = await chatApi.patch('/chat/pin', { username, chatId, chatType });
+    const response = await chatApi.patch('/chat/pin', { username, chatId, type });
 
     if (!reponse.data) {
       return;

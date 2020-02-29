@@ -18,7 +18,9 @@ const chatReducer = (state, action) => {
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };
     case 'pin_chat':
-      return state;
+      const pinnedChat = state.previousChats.find(p => p.chatId === action.payload);
+      const newChats = [pinnedChat, ...state.previousChats.filter(item => item.chatId !== action.payload)];
+      return { ...state, previousChats: newChats };
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
@@ -85,7 +87,7 @@ const pinChat = dispatch => async (username, chatId, type) => {
   try {
     const response = await chatApi.patch('/chat/pin', { username, chatId, type });
 
-    if (!reponse.data) {
+    if (!response.data) {
       return;
     }
 

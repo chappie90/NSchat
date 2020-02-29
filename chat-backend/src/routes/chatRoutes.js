@@ -234,10 +234,6 @@ router.patch('/chat/pin', checkAuth, async (req, res) => {
   const { username, chatId, type } = req.body;
   let pinnedChat;
 
-  console.log(username);
-  console.log(chatId);
-  console.log(type);
-
   try {
     if (type === 'group') {
       // pinnedChat = await Group.update(
@@ -252,7 +248,9 @@ router.patch('/chat/pin', checkAuth, async (req, res) => {
       );
     }
 
-    let response = pinnedChat.nModified > 0 ? true : false;
+    console.log(pinnedChat);
+
+    let response = pinnedChat.n > 0 ? true : false;
 
     res.status(200).send(response);
   } catch (err) {

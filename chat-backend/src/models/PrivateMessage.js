@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const privateMessageSchema = new mongoose.Schema({
+  privateChat: { type: mongoose.Schema.Types.ObjectId, ref: 'PrivateChat' },
   between: [String],
   from: String,
   to: String,

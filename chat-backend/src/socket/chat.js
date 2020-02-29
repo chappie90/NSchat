@@ -182,19 +182,31 @@ module.exports = function(io) {
         username: to, 
         'contacts.user': tempUserId[0]._id
       });
+
+      let privateChat;
+
+      const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
+
+      if (checkPrivateChat.length === 0) {
+        privateChat = new PrivateChat({
+          participants: [from, to]   
+        });
+        await privateChat.save();
+
+        const updateFromUserChats = await User.updateOne(
+          { username: from }, 
+          { $addToSet: {
+            privateChats: {
+              privateChat: privateChat._id
+            } }
+          },
+          { new: true}
+        );
+      } else {
+        privateChat = checkPrivateChat[0]._id;
+      }
       
-      if (contactRecipient.length == 0) {
-        const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
-
-        let newPrivateChat;
-        if (checkPrivateChat.length === 0) {
-          newPrivateChat = new PrivateChat({
-            participants: [from, to]   
-          });
-          await newPrivateChat.save();
-        }
-
-        console.log(newPrivateChat);
+      if (contactRecipient.length === 0) {
 
         const newContact = await User.findOneAndUpdate(
           { username: to },
@@ -202,21 +214,21 @@ module.exports = function(io) {
               contacts: {
                 user: tempUserId[0]._id,
                 previousChat: true
-              }
-            },
-            $addToSet: {
+              },
               privateChats: {
-                privateChat: newPrivateChat._id
+                privateChat: privateChat._id
               }
-            }
-          },
+          }},
           { new: true }
         );
       }
 
       const myChat = await User.updateOne(
         { username: from, 'contacts.user': tempUserId2[0]._id }, 
-        { $set: { 'contacts.$.previousChat': true } },
+        { $set: {
+            'contacts.$.previousChat': true 
+          },
+        },
         { new: true }
       );
 

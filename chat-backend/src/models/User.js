@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
   },
   privateChats: [
     {
-      chat: { type: mongoose.Schema.Types.ObjectId, ref: 'PrivateChat' },
+      privateChat: { type: mongoose.Schema.Types.ObjectId, ref: 'PrivateChat' },
       pinned: { type: Boolean, default: false }
     }
   ],

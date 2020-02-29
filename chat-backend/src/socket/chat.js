@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
+const PrivateChat = mongoose.model('PrivateChat');
 
 const users = {};
 let onlineContacts = [];
@@ -195,6 +196,17 @@ module.exports = function(io) {
           { new: true }
         );
       }
+
+      const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
+
+      if (checkPrivateChat.length === 0) {
+        const newPrivateChat = new PrivateChat({
+          participants: [from, to]   
+        });
+        await newPrivateChat.save();
+      }
+
+      console.log(checkPrivateChat);
 
       const myChat = await User.updateOne(
         { username: from, 'contacts.user': tempUserId2[0]._id }, 

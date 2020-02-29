@@ -80,7 +80,8 @@ router.post('/chats', checkAuth, async (req, res) => {
           imgPath: contactProfile[0].profile.imagePath,
           imgName: contactProfile[0].profile.imageName
         },
-        chatId: p.privateChat._id,
+        chatId: p.privateChat._id, 
+        pinned: p.pinned,
         unreadMessageCount
       });
     }

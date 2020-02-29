@@ -172,7 +172,6 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   const pinChatHandler = (rowMap, selectedChat) => {
-     console.log(selectedChat);
      pinChat(username, selectedChat.chatId, selectedChat.type);
   };
 
@@ -233,7 +232,7 @@ const ChatsListScreen = ({ navigation }) => {
                     <HeadingText numberOfLines={1} style={rowData.item.groupOwner ? styles.groupName : styles.name}>{rowData.item.contact}</HeadingText>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>  
                       <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
-                      <AntDesign style={{marginLeft: 8}} name="pushpin" size={20} color="lightgrey" />
+                      {rowData.item.pinned && <AntDesign style={{marginLeft: 8}} name="pushpin" size={20} color="lightgrey" />}
                     </View>
                   </View>
                   <View style={styles.itemContainer}>

@@ -6,6 +6,7 @@ const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
 const Group = mongoose.model('Group');
 const GroupMessage = mongoose.model('GroupMessage');
+const PrivateChat = mongoose.model('PrivateChat');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
@@ -38,37 +39,69 @@ router.post('/chats', checkAuth, async (req, res) => {
 
   try {
     const user = await User.find({ username })
-      .populate('contacts.user')
-      .populate('groups.group'); 
-    const contacts = user[0].contacts.filter(c => c.previousChat == true);
+      // .populate('contacts.user')
+      .populate('groups.group')
+      .populate('privateChats.privateChat'); 
+    // const contacts = user[0].contacts.filter(c => c.previousChat == true);
+
+    const privateChats = user[0].privateChats;
 
     const chats = [];
     let unreadMessageCount;
 
-    for (let c of contacts) {
-      const lastMessage = await PrivateMessage.find(
-        { between: { $all: [username, c.user.username] } },
-        { 'message.text': 1, 'message.createdAt': 1, _id: 0 }
+    for (let p of privateChats) {
+       // console.log(p.privateChat._id);
+      const lastprivateChatMessage = await PrivateMessage.find(
+        { privateChat: p.privateChat._id }
       )
       .sort({ 'message.createdAt': -1 })
       .limit(1);
 
+      let contact = p.privateChat.participants.filter(c => c != username);
+
+      const contactProfile = await User.find({
+        username: contact[0]
+      });
+
       unreadMessageCount = await PrivateMessage.find(
         { 
-          between: { $all: [username, c.user.username] },
+          between: { $all: [username, contactProfile[0].username] },
           to: username,
           read: false 
         }
       ).count();
-
-      chats.push({ 
-        type: 'private',
-        text: lastMessage[0].message.text, 
-        date: lastMessage[0].message.createdAt, 
-        contact: c.user.username, 
-        profile: c.user.profile,
-        unreadMessageCount });
+ 
+      chats.push({
+        text: lastprivateChatMessage[0].message.text,
+        date: lastprivateChatMessage[0].message.createdAt,
+        type: p.privateChat.type,
+        contact: contactProfile[0].username,
+        profile: {
+          imgPath: contactProfile[0].profile.imagePath,
+          imgName: contactProfile[0].profile.imageName
+        },
+        chatId: p.privateChat._id,
+        unreadMessageCount
+      });
     }
+
+    // for (let c of contacts) {
+    //   const lastMessage = await PrivateMessage.find(
+    //     { between: { $all: [username, c.user.username] } },
+    //     { 'message.text': 1, 'message.createdAt': 1, _id: 0 }
+    //   )
+    //   .sort({ 'message.createdAt': -1 })
+    //   .limit(1);
+
+    //   chats.push({ 
+    //     type: 'private',
+    //     text: lastMessage[0].message.text, 
+    //     date: lastMessage[0].message.createdAt, 
+    //     contact: c.user.username, 
+    //     profile: c.user.profile,
+    //     chatId: 
+    //     unreadMessageCount });
+    // }
 
     const groups = user[0].groups;
 
@@ -196,6 +229,39 @@ router.patch('/chat/delete', checkAuth, async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not delete chat' });
+  }
+});
+
+router.patch('/chat/pin', checkAuth, async (req, res) => {
+  const { username, chatId, chatType } = req.body;
+  let pinnedChat;
+
+  console.log(username);
+  console.log(chatId);
+  console.log(chatType);
+
+  try {
+    if (chatType === 'group') {
+      // pinnedChat = await Group.update(
+      //   { _id:  }
+      // );
+    } else if (chatType === 'private') {
+      pinnedChat = await User.update(
+        { username: username, 'privateChats.privateChat': chatId },
+        { $set: {
+          'privateChats.$.pinned': true
+        } }
+      );
+    }
+
+    let response = pinnedChat.nModified > 0 ? true : false;
+
+    console.log(response);
+
+    res.status(200).send(response);
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not pin chat' });
   }
 });
 

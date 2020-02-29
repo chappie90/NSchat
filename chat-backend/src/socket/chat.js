@@ -114,7 +114,73 @@ module.exports = function(io) {
     } = msgObj;
 
     try {
-      const message = new PrivateMessage({
+
+    // messageHandler.handleMessage(socket, users); 
+
+    // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
+
+    const tempUserId = await User.find({ username: from });
+
+    const tempUserId2 = await User.find({ username: to });
+
+      const contactRecipient = await User.find({
+        username: to, 
+        'contacts.user': tempUserId[0]._id
+      });
+
+      let privateChatId;
+
+      const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
+
+      if (checkPrivateChat.length === 0) {
+        const newPrivateChat = new PrivateChat({
+          participants: [from, to]   
+        });
+        await newPrivateChat.save();
+
+        privateChatId =  newPrivateChat._id;
+
+        const updateFromUserChats = await User.updateOne(
+          { username: from }, 
+          { $addToSet: {
+            privateChats: {
+              privateChat: newPrivateChat._id
+            } }
+          },
+          { new: true}
+        );
+      } else {
+        privateChatId = checkPrivateChat[0]._id;
+      }
+      
+      if (contactRecipient.length === 0) {
+
+        const newContact = await User.findOneAndUpdate(
+          { username: to },
+          { $addToSet: {
+              contacts: {
+                user: tempUserId[0]._id,
+                previousChat: true
+              },
+              privateChats: {
+                privateChat: privateChatId
+              }
+          }},
+          { new: true }
+        );
+      }
+
+      const myChat = await User.updateOne(
+        { username: from, 'contacts.user': tempUserId2[0]._id }, 
+        { $set: {
+            'contacts.$.previousChat': true 
+          },
+        },
+        { new: true }
+      );
+
+       const message = new PrivateMessage({
+        privateChat: privateChatId,
         between: [from, to],
         from,
         to,
@@ -169,68 +235,6 @@ module.exports = function(io) {
 
       io.to(recipientSocketId).emit('message', returnMsgRecipient);
       io.to(socketId).emit('message', returnMsgUser);
-
-    // messageHandler.handleMessage(socket, users); 
-
-    // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
-
-    const tempUserId = await User.find({ username: from });
-
-    const tempUserId2 = await User.find({ username: to });
-
-      const contactRecipient = await User.find({
-        username: to, 
-        'contacts.user': tempUserId[0]._id
-      });
-
-      let privateChat;
-
-      const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
-
-      if (checkPrivateChat.length === 0) {
-        privateChat = new PrivateChat({
-          participants: [from, to]   
-        });
-        await privateChat.save();
-
-        const updateFromUserChats = await User.updateOne(
-          { username: from }, 
-          { $addToSet: {
-            privateChats: {
-              privateChat: privateChat._id
-            } }
-          },
-          { new: true}
-        );
-      } else {
-        privateChat = checkPrivateChat[0]._id;
-      }
-      
-      if (contactRecipient.length === 0) {
-
-        const newContact = await User.findOneAndUpdate(
-          { username: to },
-          { $addToSet: {
-              contacts: {
-                user: tempUserId[0]._id,
-                previousChat: true
-              },
-              privateChats: {
-                privateChat: privateChat._id
-              }
-          }},
-          { new: true }
-        );
-      }
-
-      const myChat = await User.updateOne(
-        { username: from, 'contacts.user': tempUserId2[0]._id }, 
-        { $set: {
-            'contacts.$.previousChat': true 
-          },
-        },
-        { new: true }
-      );
 
     } catch(err) {
       console.log(err);

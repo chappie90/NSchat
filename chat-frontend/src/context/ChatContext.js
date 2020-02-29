@@ -18,7 +18,8 @@ const chatReducer = (state, action) => {
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };
     case 'pin_chat':
-      const pinnedChat = state.previousChats.find(p => p.chatId === action.payload);
+      let pinnedChat = state.previousChats.find(p => p.chatId === action.payload);
+      pinnedChat.pinned = true;
       const newChats = [pinnedChat, ...state.previousChats.filter(item => item.chatId !== action.payload)];
       return { ...state, previousChats: newChats };
     case 'mark_messages_read':

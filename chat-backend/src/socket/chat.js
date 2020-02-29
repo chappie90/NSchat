@@ -184,6 +184,18 @@ module.exports = function(io) {
       });
       
       if (contactRecipient.length == 0) {
+        const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
+
+        let newPrivateChat;
+        if (checkPrivateChat.length === 0) {
+          newPrivateChat = new PrivateChat({
+            participants: [from, to]   
+          });
+          await newPrivateChat.save();
+        }
+
+        console.log(newPrivateChat);
+
         const newContact = await User.findOneAndUpdate(
           { username: to },
           { $addToSet: {
@@ -191,22 +203,16 @@ module.exports = function(io) {
                 user: tempUserId[0]._id,
                 previousChat: true
               }
+            },
+            $addToSet: {
+              privateChats: {
+                privateChat: newPrivateChat._id
+              }
             }
           },
           { new: true }
         );
       }
-
-      const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
-
-      if (checkPrivateChat.length === 0) {
-        const newPrivateChat = new PrivateChat({
-          participants: [from, to]   
-        });
-        await newPrivateChat.save();
-      }
-
-      console.log(checkPrivateChat);
 
       const myChat = await User.updateOne(
         { username: from, 'contacts.user': tempUserId2[0]._id }, 

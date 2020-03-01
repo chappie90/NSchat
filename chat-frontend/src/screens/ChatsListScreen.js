@@ -15,7 +15,7 @@ import {
   Animated,
   Dimensions
 } from 'react-native';
-import { MaterialIcons, Entypo, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
 import { AsyncStorage } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
@@ -40,12 +40,13 @@ const ChatsListScreen = ({ navigation }) => {
     state: { previousChats },
     getChats, 
     deleteChat,
-    pinChat,
+    togglePinChat,
     markMessagesAsRead } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const socket = useRef(null);
+  const openRowRefs = [];
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
@@ -134,29 +135,31 @@ const ChatsListScreen = ({ navigation }) => {
     );
   };
 
+  const closeAllOpenRows = () => {
+    openRowRefs.forEach(ref => {
+      ref.closeRow && ref.closeRow();
+    });
+  };
+
   const modalCloseHandler = () => {
     setModalVisible(false);
   };
 
-
   const onSwipeValueChange = (swipeData) => {
     const { key, value } = swipeData;
     rowTranslateAnimatedValues[key].setValue(Math.abs(value));
-
   };
-  const swipeGestureBegan = data => {
 
-  };  
-
-  const closeRow = (rowMap, index) => {
+  const closeRow = (index, rowMapx) => {
     if (rowMap[index]) {
       rowMap[index].closeRow();
     }
   };
 
-  const deleteRow = (rowMap, selectedChat) => {
-     setSelectedChat(selectedChat);
-     setModalVisible(true);
+  const deleteRow = (rowKey, rowMap, selectedChat) => {
+    openRowRefs.push(rowMap[rowKey]);
+    setSelectedChat(selectedChat);
+    setModalVisible(true);
     // closeRow(rowMap, index);
     // const newData = previousChats.filter(
     //   item => item !== previousChats[index]
@@ -168,11 +171,16 @@ const ChatsListScreen = ({ navigation }) => {
     deleteChat(username, selectedChat.chatId, selectedChat.type).then(res => {
       setIsLoading(false);
       setModalVisible(false);
+      closeAllOpenRows();
     });
   };
 
-  const pinChatHandler = (rowMap, selectedChat) => {
-     pinChat(username, selectedChat.chatId, selectedChat.type);
+  const pinChatHandler = (rowKey, rowMap, selectedChat) => {
+    openRowRefs.push(rowMap[rowKey]);
+    togglePinChat(username, selectedChat.chatId, selectedChat.type)
+      .then(res => {
+        closeAllOpenRows();
+      });
   };
 
   const renderLastMessageText = (item) => {
@@ -262,7 +270,7 @@ const ChatsListScreen = ({ navigation }) => {
         renderHiddenItem={ (data, rowMap) =>{
          return (
             <View style={styles.rowBack}>
-             <TouchableOpacity style={{ }} onPress={() => pinChatHandler(rowMap, data.item)}>
+             <TouchableOpacity style={{ }} onPress={() => pinChatHandler(data.index, rowMap, data.item)}>
                 <Animated.View style={{
                   backgroundColor: Colors.secondary,
                   width: 44,
@@ -278,10 +286,10 @@ const ChatsListScreen = ({ navigation }) => {
                       extrapolate: 'clamp'
                     })}
                   ] }}>
-                    <AntDesign name="pushpin" size={24} color="#fff" />
+                    <MaterialCommunityIcons name="pin" size={28} color="#fff" />
                 </Animated.View>
               </TouchableOpacity>
-              <TouchableOpacity style={{ }} onPress={() => {deleteRow(rowMap, data.item)}}>
+              <TouchableOpacity style={{ }} onPress={() => {deleteRow(data.index, rowMap, data.item)}}>
                 <Animated.View style={{
                   backgroundColor: Colors.tertiary,
                   width: 44,
@@ -504,7 +512,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.tertiary,
     borderRadius: 10,
     paddingHorizontal: 5.5,
-
   },
   unreadBadgeText: {
     color: '#fff'

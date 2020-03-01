@@ -60,9 +60,9 @@ const getChats = dispatch => async ({ username }) => {
   }
 };
 
-const deleteChat = dispatch => async (username, chatId, chatType) => {
+const deleteChat = dispatch => async (username, chatId, type) => {
   try {
-    const response = await chatApi.patch('/chat/delete', { username, chatId, chatType });
+    const response = await chatApi.patch('/chat/delete', { username, chatId, type });
 
     if (!response.data) {
       return;
@@ -84,7 +84,7 @@ const resetChatState = dispatch => () => {
   dispatch({ type: 'reset_chat_state' });
 };
 
-const pinChat = dispatch => async (username, chatId, type) => {
+const togglePinChat = dispatch => async (username, chatId, type) => {
   try {
     const response = await chatApi.patch('/chat/pin', { username, chatId, type });
 
@@ -216,7 +216,7 @@ export const { Context, Provider } = createDataContext(
     deleteMessage,
     createGroup,
     resetChatState,
-    pinChat
+    togglePinChat
   },
   {  
     previousChats: [], 

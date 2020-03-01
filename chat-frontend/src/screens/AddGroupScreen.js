@@ -309,7 +309,7 @@ const AddGroupScreen = props => {
               paddingHorizontal: 15
             }}
           >
-            <ScrollView horizontal={true}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
               {addToGroupArr.map(item => {
                 const contact = contacts.find(
                   contact => contact && contact.user.username === item

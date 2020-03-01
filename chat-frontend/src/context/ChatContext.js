@@ -18,9 +18,15 @@ const chatReducer = (state, action) => {
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };
     case 'pin_chat':
+      let newChats;
       let pinnedChat = state.previousChats.find(p => p.chatId === action.payload.chatId);
       pinnedChat.pinned = !action.payload.currentValue;
-      const newChats = [pinnedChat, ...state.previousChats.filter(item => item.chatId !== action.payload.chatId)];
+      if (pinnedChat.pinned) {
+        newChats = [pinnedChat, ...state.previousChats.filter(item => item.chatId !== action.payload.chatId)];
+      } else {  
+        newChats = state.previousChats.sort((a, b) => new Date(b.date) - new Date(a.date));
+        newChats.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
+      }
       return { ...state, previousChats: newChats };
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {

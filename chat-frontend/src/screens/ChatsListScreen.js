@@ -272,7 +272,7 @@ const ChatsListScreen = ({ navigation }) => {
             <View style={styles.rowBack}>
              <TouchableOpacity style={{ }} onPress={() => pinChatHandler(data.index, rowMap, data.item)}>
                 <Animated.View style={{
-                  backgroundColor: Colors.secondary,
+                  backgroundColor: data.item.pinned ? 'grey' : Colors.secondary,
                   width: 44,
                   height: 44,
                   borderRadius: 22,
@@ -286,7 +286,9 @@ const ChatsListScreen = ({ navigation }) => {
                       extrapolate: 'clamp'
                     })}
                   ] }}>
-                    <MaterialCommunityIcons name="pin" size={30} color="#fff" />
+                   {data.item.pinned ? 
+                      <MaterialCommunityIcons name="pin-off" size={30} color="#fff" /> :
+                      <MaterialCommunityIcons name="pin" size={30} color="#fff" />}
                 </Animated.View>
               </TouchableOpacity>
               <TouchableOpacity style={{ }} onPress={() => {deleteRow(data.index, rowMap, data.item)}}>

@@ -177,7 +177,7 @@ const ChatsListScreen = ({ navigation }) => {
 
   const pinChatHandler = (rowKey, rowMap, selectedChat) => {
     openRowRefs.push(rowMap[rowKey]);
-    togglePinChat(username, selectedChat.chatId, selectedChat.type)
+    togglePinChat(username, selectedChat.chatId, selectedChat.type, selectedChat.pinned)
       .then(res => {
         closeAllOpenRows();
       });
@@ -286,7 +286,7 @@ const ChatsListScreen = ({ navigation }) => {
                       extrapolate: 'clamp'
                     })}
                   ] }}>
-                    <MaterialCommunityIcons name="pin" size={28} color="#fff" />
+                    <MaterialCommunityIcons name="pin" size={30} color="#fff" />
                 </Animated.View>
               </TouchableOpacity>
               <TouchableOpacity style={{ }} onPress={() => {deleteRow(data.index, rowMap, data.item)}}>

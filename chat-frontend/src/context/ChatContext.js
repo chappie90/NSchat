@@ -18,9 +18,9 @@ const chatReducer = (state, action) => {
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };
     case 'pin_chat':
-      let pinnedChat = state.previousChats.find(p => p.chatId === action.payload);
-      pinnedChat.pinned = true;
-      const newChats = [pinnedChat, ...state.previousChats.filter(item => item.chatId !== action.payload)];
+      let pinnedChat = state.previousChats.find(p => p.chatId === action.payload.chatId);
+      pinnedChat.pinned = !action.payload.currentValue;
+      const newChats = [pinnedChat, ...state.previousChats.filter(item => item.chatId !== action.payload.chatId)];
       return { ...state, previousChats: newChats };
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {
@@ -84,15 +84,15 @@ const resetChatState = dispatch => () => {
   dispatch({ type: 'reset_chat_state' });
 };
 
-const togglePinChat = dispatch => async (username, chatId, type) => {
+const togglePinChat = dispatch => async (username, chatId, type, currentValue) => {
   try {
-    const response = await chatApi.patch('/chat/pin', { username, chatId, type });
+    const response = await chatApi.patch('/chat/pin', { username, chatId, type, currentValue });
 
     if (!response.data) {
       return;
     }
 
-    dispatch({ type: 'pin_chat', payload: chatId });
+    dispatch({ type: 'pin_chat', payload: { chatId, currentValue }});
   } catch (err) {
     console.log(err);
   }

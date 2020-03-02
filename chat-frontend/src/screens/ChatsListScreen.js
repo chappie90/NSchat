@@ -13,6 +13,7 @@ import {
   Image,
   PanResponder,
   Animated,
+  Easing,
   Dimensions
 } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
@@ -31,6 +32,7 @@ import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import { connectToSocket } from '../socket/chat';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
+import ScaleViewTriggerAnim from '../components/animations/ScaleViewTriggerAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 import AddGroupScreen from './AddGroupScreen';
 
@@ -48,12 +50,14 @@ const ChatsListScreen = ({ navigation }) => {
   const socket = useRef(null);
   const openRowRefs = [];
   const [isTyping, setIsTyping] = useState(false);
+  const [pinAnimate, setPinAnimate] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const rowTranslateAnimatedValues = useRef({}).current;
+  const rowTranslateOriginalAnimatedValues = useRef({}).current;
   const screenWidth = Math.round(Dimensions.get('window').width);
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -147,7 +151,18 @@ const ChatsListScreen = ({ navigation }) => {
 
   const onSwipeValueChange = (swipeData) => {
     const { key, value } = swipeData;
-    rowTranslateAnimatedValues[key].setValue(Math.abs(value));
+    if (Math.abs(value) > 200) {
+      Animated.timing(
+        rowTranslateAnimatedValues[key],
+        {
+          toValue: Math.abs(value),
+          duration: 150,
+          easing: Easing.inOut(Easing.ease)
+        },
+      ).start();
+    } else {
+      rowTranslateAnimatedValues[key].setValue(Math.abs(value));
+    }
   };
 
   const closeRow = (index, rowMapx) => {
@@ -179,6 +194,7 @@ const ChatsListScreen = ({ navigation }) => {
     openRowRefs.push(rowMap[rowKey]);
     togglePinChat(username, selectedChat.chatId, selectedChat.type, selectedChat.pinned)
       .then(res => {
+        setPinAnimate(true);
         closeAllOpenRows();
       });
   };
@@ -240,7 +256,11 @@ const ChatsListScreen = ({ navigation }) => {
                     <HeadingText numberOfLines={1} style={rowData.item.groupOwner ? styles.groupName : styles.name}>{rowData.item.contact}</HeadingText>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>  
                       <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
-                      {rowData.item.pinned && <AntDesign style={{marginLeft: 8}} name="pushpin" size={20} color="lightgrey" />}
+                      {rowData.item.pinned && (
+                        <ScaleViewTriggerAnim triggerPinAnim={pinAnimate}>
+                          <AntDesign style={{marginLeft: 8}} name="pushpin" size={20} color="lightgrey" />
+                        </ScaleViewTriggerAnim>
+                      )}
                     </View>
                   </View>
                   <View style={styles.itemContainer}>
@@ -276,13 +296,13 @@ const ChatsListScreen = ({ navigation }) => {
                   width: 44,
                   height: 44,
                   borderRadius: 22,
-                  marginHorizontal: 10,
+                  marginHorizontal: 6,
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
                     { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
-                      inputRange: [50, 75, 100, 150, 200],
-                      outputRange: [0, 10, 25, 35, 45],
+                      inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
+                      outputRange: [0, 15, 24, 27, 29, screenWidth / 2 + 70],
                       extrapolate: 'clamp'
                     })}
                   ] }}>
@@ -297,13 +317,12 @@ const ChatsListScreen = ({ navigation }) => {
                   width: 44,
                   height: 44,
                   borderRadius: 22,
-                  marginHorizontal: 10,
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
                     { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
-                        inputRange: [50, 75, 100, 150, 200],
-                        outputRange: [0, -10, -25, -35, -45],
+                        inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
+                        outputRange: [0, -15, -24, -27, -29, -screenWidth / 2 - 60],
                         extrapolate: 'clamp'
                     }) }
                   ] }}>

@@ -57,7 +57,8 @@ const ChatsListScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const rowTranslateAnimatedValues = useRef({}).current;
-  const rowTranslateOriginalAnimatedValues = useRef({}).current;
+  const rowOpenValue = useRef(0);
+  const isRowOpen = useRef(false);
   const screenWidth = Math.round(Dimensions.get('window').width);
   const panResponder = React.useMemo(() => PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -122,7 +123,7 @@ const ChatsListScreen = ({ navigation }) => {
         rowTranslateAnimatedValues.constructor === Object) {
     // if (previousChats.length > 0) {
       previousChats.forEach((item, index) => {
-        rowTranslateAnimatedValues[`${index}`] = new Animated.Value(0);
+        rowTranslateAnimatedValues[`${index}`] = { left: new Animated.Value(0), right: new Animated.Value(0) };
       });
     }
   }, [previousChats]);
@@ -149,20 +150,51 @@ const ChatsListScreen = ({ navigation }) => {
     setModalVisible(false);
   };
 
+  const onRowOpen = (rowKey, rowMap, toValue) => {
+    const listItem = previousChats[rowKey];
+    if (rowOpenValue.current < -200 && isRowOpen) {
+       deleteRow(rowKey, rowMap, listItem);
+    }
+    if (rowOpenValue.current > 200 && isRowOpen) {
+      pinChatHandler(rowKey, rowMap, listItem);
+    }
+  };
+
   const onSwipeValueChange = (swipeData) => {
-    const { key, value } = swipeData;
-    if (Math.abs(value) > 200) {
+    const { key, value, isOpen } = swipeData;
+
+    rowOpenValue.current = value;
+    isRowOpen.current = false;
+
+    if (value > 200) {
       Animated.timing(
-        rowTranslateAnimatedValues[key],
+        rowTranslateAnimatedValues[key].left,
         {
-          toValue: Math.abs(value),
-          duration: 150,
+          toValue: value,
+          duration: 50,
           easing: Easing.inOut(Easing.ease)
         },
       ).start();
-    } else {
-      rowTranslateAnimatedValues[key].setValue(Math.abs(value));
-    }
+      isRowOpen.current = true;
+    } else if (value > 0) {
+      rowTranslateAnimatedValues[key].left.setValue(value);
+    } else if (value < -200) {
+       Animated.timing(
+        rowTranslateAnimatedValues[key].right,
+        {
+          toValue: Math.abs(value),
+          duration: 50,
+          easing: Easing.inOut(Easing.ease)
+        },
+      ).start();
+       isRowOpen.current = true;
+    } else if (value < 0) {
+      rowTranslateAnimatedValues[key].right.setValue(Math.abs(value));
+    } 
+
+    // if (Math.abs(value) > 200 && isOpen) {
+    //   onRowOpen();
+    // }
   };
 
   const closeRow = (index, rowMapx) => {
@@ -287,7 +319,7 @@ const ChatsListScreen = ({ navigation }) => {
               </View>
             </TouchableWithoutFeedback>
         )}}
-        renderHiddenItem={ (data, rowMap) =>{
+        renderHiddenItem={ (data, rowMap) => {
          return (
             <View style={styles.rowBack}>
              <TouchableOpacity style={{ }} onPress={() => pinChatHandler(data.index, rowMap, data.item)}>
@@ -300,7 +332,7 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`].left.interpolate({
                       inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
                       outputRange: [0, 15, 24, 27, 29, screenWidth / 2 + 70],
                       extrapolate: 'clamp'
@@ -320,7 +352,7 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: rowTranslateAnimatedValues[`${data.index}`].interpolate({
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`].right.interpolate({
                         inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
                         outputRange: [0, -15, -24, -27, -29, -screenWidth / 2 - 60],
                         extrapolate: 'clamp'
@@ -336,6 +368,7 @@ const ChatsListScreen = ({ navigation }) => {
         stopLeftSwipe={screenWidth - 100}
         stopRightSwipe={-screenWidth + 100}
         onSwipeValueChange={onSwipeValueChange}
+        onRowOpen={onRowOpen}
         tension={30}  
         />
     );

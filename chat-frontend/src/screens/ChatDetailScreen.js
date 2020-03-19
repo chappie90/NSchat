@@ -606,12 +606,12 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
       </TouchableOpacity>
     ), 
     headerRight: (
-      <View style={{flexDirection: 'row'}}>  
+      <View style={{flexDirection: 'row', paddingRight: 10}}>  
         {params.isBackgroundYou && <TouchableOpacity onPress={() => params.setAsBackgroundYoutube(params.isBackgroundYou)}>
           <MaterialCommunityIcons name="flip-to-back" style={{ paddingLeft: 8, paddingTop: 3}} size={30} color={Colors.tertiary} />
         </TouchableOpacity>}
         <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
-          <FontAwesome name="youtube" size={32} style={{ paddingLeft: 8, paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />
+          <FontAwesome name="youtube" size={32} style={{ paddingRight: 6, paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />
         </TouchableOpacity>
        {params.type === 'group' && (
          <TouchableOpacity onPress={() => params.openModal()}>
@@ -619,7 +619,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
             name="settings" 
             size={28} 
             color="#D0D0D0"
-            style={{ paddingHorizontal: 8, paddingTop: 3 }} />
+            style={{ paddingLeft: 2, paddingTop: 3 }} />
         </TouchableOpacity>)}
       </View>
     ),

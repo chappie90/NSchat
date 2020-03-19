@@ -100,7 +100,15 @@ const ContactsListScreen = ({ navigation }) => {
                   })
                 }}>
                 <View 
-                  style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingHorizontal: 15}}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center', 
+                    paddingVertical: 2, 
+                    paddingHorizontal: 15,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#F0F0F0',
+                    marginHorizontal: 20
+                  }}
                 >
                   <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
                     {rowData.item.user.profile ?
@@ -115,7 +123,7 @@ const ContactsListScreen = ({ navigation }) => {
                   <View style={styles.itemContainer}>
                     <HeadingText style={styles.name}>{rowData.item.user.username}</HeadingText>
                   </View>
-                  <MaterialIcons style={{ marginLeft: 'auto' }} name="chevron-right" size={24} />
+                 
                   <View style={styles.badge} />
                 </View>
               </TouchableWithoutFeedback>
@@ -178,7 +186,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   name: {
-    fontSize: 16
+    fontSize: 16,
+    color: Colors.primary
   },
   textButton: {
     fontSize: 22,
@@ -226,7 +235,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'lightgrey'
   },
   itemContainer: {
-     marginLeft: 15
+     marginLeft: 20
   },  
   image: {
     width: 35,

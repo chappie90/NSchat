@@ -246,9 +246,12 @@ router.patch('/chat/pin', checkAuth, async (req, res) => {
 
   try {
     if (type === 'group') {
-      // pinnedChat = await Group.update(
-      //   { _id:  }
-      // );
+      pinnedChat = await User.update(
+        { username: username, 'groups.group': chatId },
+        { $set: {
+          'groups.$.pinned': !currentValue
+        } }
+      );
     } else if (type === 'private') {
       pinnedChat = await User.update(
         { username: username, 'privateChats.privateChat': chatId },

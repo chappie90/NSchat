@@ -261,8 +261,8 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const sendMessage = async (message) => {
-    console.log(message);
     const msgObj = {
+      type: chatType,
       from: username,
       to: recipient,
       message,

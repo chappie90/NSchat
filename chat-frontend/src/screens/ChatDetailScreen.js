@@ -608,7 +608,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
     headerRight: (
       <View style={{flexDirection: 'row', paddingRight: 10}}>  
         {params.isBackgroundYou && <TouchableOpacity onPress={() => params.setAsBackgroundYoutube(params.isBackgroundYou)}>
-          <MaterialCommunityIcons name="flip-to-back" style={{ paddingLeft: 8, paddingTop: 3}} size={30} color={Colors.tertiary} />
+          <MaterialCommunityIcons name="flip-to-back" style={{ paddingHorizontal: 8, paddingTop: 3}} size={30} color={Colors.tertiary} />
         </TouchableOpacity>}
         <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
           <FontAwesome name="youtube" size={32} style={{ paddingRight: 6, paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />

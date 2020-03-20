@@ -133,6 +133,7 @@ module.exports = function(io) {
       const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
 
       if (checkPrivateChat.length === 0) {
+
         const newPrivateChat = new PrivateChat({
           participants: [from, to]   
         });
@@ -151,6 +152,16 @@ module.exports = function(io) {
         );
       } else {
         privateChatId = checkPrivateChat[0]._id;
+
+        const updateFromUserChats = await User.updateOne(
+          { username: from }, 
+          { $addToSet: {
+            privateChats: {
+              privateChat: checkPrivateChat[0]._id
+            } }
+          },
+          { new: true}
+        );
       }
       
       if (contactRecipient.length === 0) {

@@ -107,6 +107,7 @@ module.exports = function(io) {
 
   socket.on('message', async msgObj => {
     const {
+      type,
       from, 
       to, 
       message: [{ text, createdAt, _id }],
@@ -119,9 +120,9 @@ module.exports = function(io) {
 
     // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
 
-    const tempUserId = await User.find({ username: from });
-
-    const tempUserId2 = await User.find({ username: to });
+    if (type === 'private') {
+      const tempUserId = await User.find({ username: from });
+      const tempUserId2 = await User.find({ username: to });
 
       const contactRecipient = await User.find({
         username: to, 
@@ -163,7 +164,7 @@ module.exports = function(io) {
           { new: true}
         );
       }
-      
+
       if (contactRecipient.length === 0) {
 
         const newContact = await User.findOneAndUpdate(
@@ -190,7 +191,7 @@ module.exports = function(io) {
         { new: true }
       );
 
-       const message = new PrivateMessage({
+      const message = new PrivateMessage({
         privateChat: privateChatId,
         between: [from, to],
         from,
@@ -246,6 +247,9 @@ module.exports = function(io) {
 
       io.to(recipientSocketId).emit('message', returnMsgRecipient);
       io.to(socketId).emit('message', returnMsgUser);
+
+    }
+      
 
     } catch(err) {
       console.log(err);

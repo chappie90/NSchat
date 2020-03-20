@@ -124,6 +124,7 @@ router.post('/chats', checkAuth, async (req, res) => {
         },
         groupOwner: g.group.owner,
         chatId: g.group._id,
+        pinned: g.pinned,
         unreadMessageCount: 0
       });
     }

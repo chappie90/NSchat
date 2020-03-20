@@ -96,7 +96,8 @@ const ContactsListScreen = ({ navigation }) => {
                 onPress={() => {
                   navigation.navigate('ChatDetail', {
                     username: rowData.item.user.username,
-                    image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '' 
+                    image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
+                    type: 'private'
                   })
                 }}>
                 <View 

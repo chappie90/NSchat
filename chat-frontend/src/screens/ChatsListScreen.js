@@ -266,7 +266,8 @@ const ChatsListScreen = ({ navigation }) => {
                 navigation.navigate('ChatDetail', {
                   username: rowData.item.contact,
                   image: rowData.item.profile ? rowData.item.profile.imgPath : '',
-                  type: rowData.item.type
+                  type: rowData.item.type,
+                  chatId: rowData.item.chatId
                 });
             }}>
             <View>

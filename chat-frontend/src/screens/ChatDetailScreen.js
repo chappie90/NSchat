@@ -49,6 +49,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
   const [chatType, setChatType] = useState('');
+  const [chatId, setChatId] = useState('');
   const deviceHeight = Dimensions.get('window').height;
   const bottomNavHeight = getTabBarHeight();
   const isVisibleYoutube = useRef(false);
@@ -99,6 +100,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     setChatType(navigation.getParam('type'));
+    setChatId(navigation.getParam('chatId'));
     navigation.setParams({ 
       openModal: openModalHandler,
       openYoutube: openYoutubeHandler,
@@ -263,6 +265,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const sendMessage = async (message) => {
     const msgObj = {
       type: chatType,
+      chatId: chatId,
       from: username,
       to: recipient,
       message,

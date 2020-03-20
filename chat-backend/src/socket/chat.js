@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
 const PrivateChat = mongoose.model('PrivateChat');
+const GroupMessage = mongoose.model('GroupMessage');
 
 const users = {};
 let onlineContacts = [];
@@ -108,6 +109,7 @@ module.exports = function(io) {
   socket.on('message', async msgObj => {
     const {
       type,
+      chatId,
       from, 
       to, 
       message: [{ text, createdAt, _id }],
@@ -119,6 +121,26 @@ module.exports = function(io) {
     // messageHandler.handleMessage(socket, users); 
 
     // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
+
+    if (type === 'group') {
+
+      const groupMessage = new GroupMessage({
+        group: chatId,
+        from: from,
+        message: {
+          giftedChatId: _id,
+          text,
+          created: createdAt
+        },
+        replyTo: {
+          originalMsgId: messageId,
+          originalMsgText: messageText,
+          originalMsgAuthor: messageAuthor
+        }
+      });
+
+      await groupMessage.save();
+    }
 
     if (type === 'private') {
       const tempUserId = await User.find({ username: from });
@@ -191,7 +213,7 @@ module.exports = function(io) {
         { new: true }
       );
 
-      const message = new PrivateMessage({
+      const privateMessage = new PrivateMessage({
         privateChat: privateChatId,
         between: [from, to],
         from,
@@ -208,7 +230,7 @@ module.exports = function(io) {
         }
       });
       
-      await message.save();
+      await privateMessage.save();
 
       let recipientSocketId;
       if (users[to]) {
@@ -217,7 +239,7 @@ module.exports = function(io) {
      
       const returnMsgRecipient = 
         {
-          _id: message.message.id,
+          _id: privateMessage.message.id,
           text,
           createdAt,
           user: {
@@ -232,7 +254,7 @@ module.exports = function(io) {
 
       const returnMsgUser = 
        {
-          _id: message.message.id,
+          _id: privateMessage.message.id,
           text,
           createdAt,
           user: {
@@ -249,7 +271,6 @@ module.exports = function(io) {
       io.to(socketId).emit('message', returnMsgUser);
 
     }
-      
 
     } catch(err) {
       console.log(err);

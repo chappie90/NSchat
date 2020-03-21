@@ -31,7 +31,7 @@ import BodyText from "../components/BodyText";
 const GroupSettingsScreen = (props) => {
   const { state: { username, userId } } = useContext(AuthContext);
   const { state: { previousChats }, getChats } = useContext(ChatContext);
-  const { state: { currentGroupId, group }, getGroup, leaveGroup } = useContext(GroupsContext);
+  const { state: { currentGroupId, group }, getGroup, leaveGroup, updateGroupImage } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -100,7 +100,7 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     setModalVisible(false);
-    setImagePreview(cameraImage.uri);
+    updateGroupImage(username, group._id, group.name, cameraImage.uri);
   };
 
   const choosePhotoHandler = async () => {
@@ -115,7 +115,7 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     setModalVisible(false);
-    setImagePreview(libraryImage.uri);
+    updateGroupImage(username, group._id, group.name, libraryImage.uri);
   };
 
   const deletePhotoHandler = () => {

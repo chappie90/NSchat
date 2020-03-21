@@ -44,7 +44,8 @@ const leaveGroup = dispatch => async (chatId, userId) => {
   }
 };
 
-const updateGroupImage = dispatch => async ({ username, chatId, groupImage }) => {
+const updateGroupImage = dispatch => async (username, chatId, groupName, groupImage) => {
+
   try {
     let uriParts = groupImage.split('.');
     let fileType = uriParts[uriParts.length - 1];

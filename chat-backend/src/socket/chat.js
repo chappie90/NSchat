@@ -140,6 +140,45 @@ module.exports = function(io) {
       });
 
       await groupMessage.save();
+
+      // let recipientSocketId;
+      // if (users[to]) {
+      //   recipientSocketId = users[to].id;
+      // }
+     
+      // const returnMsgRecipient = 
+      //   {
+      //     _id: privateMessage.message.id,
+      //     text,
+      //     createdAt,
+      //     user: {
+      //       _id: 2,
+      //       name: from
+      //     },
+      //     read: false,
+      //     deleted: false,
+      //     reply: messageText,
+      //     replyAuthor: messageAuthor
+      //   };
+
+      const returnGroupMsgUser = 
+       {
+          _id: groupMessage.message.id,
+          text,
+          createdAt,
+          user: {
+            _id: 1,
+            name: from
+          },
+          read: false,
+          deleted: false,
+          reply: messageText,
+          replyAuthor: messageAuthor
+        };
+
+      // io.to(recipientSocketId).emit('message', returnMsgRecipient);
+      io.to(socketId).emit('message', returnGroupMsgUser);
+
     }
 
     if (type === 'private') {

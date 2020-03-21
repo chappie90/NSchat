@@ -172,9 +172,10 @@ router.post('/messages', checkAuth, async (req, res) => {
     }
 
     if (chatType === 'group') {
-      console.log(chatId);
-      // messages = await GroupMessage.find({});
-      // console.log(messages);
+      messages = await GroupMessage.find({ group: chatId })
+                                   .skip(skip)
+                                   .sort({ 'message.created': -1 })
+                                   .limit(50);
     }
     
     res.status(200).send({ messages });

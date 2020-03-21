@@ -112,37 +112,76 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
 
     const chatArr = [];
 
-    const chat = response.data.messages.map(message => {
-      if (message.from === username) {
-        chatArr.push({
-          _id: message.message.id,
-          text: message.message.text,
-          createdAt: message.message.createdAt,
-          user: {
-            _id: 1,
-            name: username
-          },
-          read: message.read,
-          deleted: message.deleted,
-          reply: message.replyTo ? message.replyTo.messageText : null,
-          replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
-        });
-      } else {
-        chatArr.push({
-          _id: message.message.id,
-          text: message.message.text,
-          createdAt: message.message.createdAt,
-          user: {
-            _id: 2,
-            name: recipient
-          },
-          read: message.read,
-          deleted: message.deleted,
-          reply: message.replyTo ? message.replyTo.messageText : null,
-          replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
-        });
-      }
-    });
+    if (chatType === 'private') {
+      response.data.messages.map(message => {
+        if (message.from === username) {
+          chatArr.push({
+            _id: message.message.id,
+            text: message.message.text,
+            createdAt: message.message.createdAt,
+            user: {
+              _id: 1,
+              name: username
+            },
+            read: message.read,
+            deleted: message.deleted,
+            reply: message.replyTo ? message.replyTo.messageText : null,
+            replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
+          });
+        } else {
+          chatArr.push({
+            _id: message.message.id,
+            text: message.message.text,
+            createdAt: message.message.createdAt,
+            user: {
+              _id: 2,
+              name: recipient
+            },
+            read: message.read,
+            deleted: message.deleted,
+            reply: message.replyTo ? message.replyTo.messageText : null,
+            replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
+          });
+        }
+      });
+    }
+
+    if (chatType === 'group') {
+      response.data.messages.map(message => {
+        console.log(message);
+        if (message.from === username) {
+          chatArr.push({
+            _id: message.message.giftedChatId ? message.message.giftedChatId : message._id,
+            text: message.message.text,
+            createdAt: message.message.created,
+            user: {
+              _id: 1,
+              name: username
+            },
+            read: message.read,
+            deleted: message.deleted,
+            reply: message.reply ? message.reply.originalMsgText : null,
+            replyAuthor: message.reply ? message.reply.originalMsgAuthor : null
+          });
+        } else {
+          chatArr.push({
+            _id: message.message.giftedChatId ? message.message.giftedChatId : message._id,
+            text: message.message.text,
+            createdAt: message.message.created,
+            user: {
+              _id: 2,
+              name: message.from
+            },
+            read: message.read,
+            deleted: message.deleted,
+            reply: message.reply ? message.reply.originalMsgText : null,
+            replyAuthor: message.reply ? message.reply.originalMsgAuthor : null
+          });
+        }
+      });
+    }
+
+    console.log(chatArr);
 
     dispatch({ type: 'get_messages', payload: chatArr });
 

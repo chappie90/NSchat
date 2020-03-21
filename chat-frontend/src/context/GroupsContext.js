@@ -44,12 +44,37 @@ const leaveGroup = dispatch => async (chatId, userId) => {
   }
 };
 
+const updateGroupImage = dispatch => async ({ username, chatId, groupImage }) => {
+  try {
+    let uriParts = groupImage.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+
+    let formData = new FormData();
+
+    formData.append('groupImage', {
+      uri: groupImage,
+      name: `${username}_${groupName}`,
+      type: `image/${fileType}`
+    });
+    formData.append('username', username);
+    formData.append('chatId', chatId);
+
+    const response = await chatApi.post('/group/update/image', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    
+    dispatch({ type: 'get_group', payload: response.data.group });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   groupsReducer,
   { 
     getCurrentGroupId,
     getGroup,
-    leaveGroup
+    leaveGroup,
+    updateGroupImage,
   },
   { 
     currentGroupId: '',

@@ -157,7 +157,7 @@ router.post('/chats', checkAuth, async (req, res) => {
  //  },
 
 router.post('/messages', checkAuth, async (req, res) => {
-  const { chatType, username, recipient, page } = req.body;
+  const { chatType, chatId, username, recipient, page } = req.body;
 
   const skip = 50 * (page - 1);
   let messages;
@@ -169,6 +169,12 @@ router.post('/messages', checkAuth, async (req, res) => {
                                      .skip(skip)
                                      .sort({ 'message.createdAt': -1 })
                                      .limit(50);
+    }
+
+    if (chatType === 'group') {
+      console.log(chatId);
+      // messages = await GroupMessage.find({});
+      // console.log(messages);
     }
     
     res.status(200).send({ messages });

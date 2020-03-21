@@ -104,11 +104,11 @@ const togglePinChat = dispatch => async (username, chatId, type, currentValue) =
   }
 };
 
-const getMessages = dispatch => async ({ chatType, username, recipient, page }) => {
+const getMessages = dispatch => async ({ chatType, chatId, username, recipient, page }) => {
 
   try {
 
-    const response = await chatApi.post('/messages', { chatType, username, recipient, page });
+    const response = await chatApi.post('/messages', { chatType, chatId, username, recipient, page });
 
     const chatArr = [];
 

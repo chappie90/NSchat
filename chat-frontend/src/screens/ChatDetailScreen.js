@@ -158,7 +158,8 @@ const ChatDetailScreen = ({ navigation }) => {
     if (recipient && currentPage) {
       page = currentPage;
       let chatType =  chatType || navigation.getParam('type');
-      getMessages({ chatType, username, recipient, page })
+      let chatId = chatId || navigation.getParam('chatId');
+      getMessages({ chatType, chatId, username, recipient, page })
       .then((chat) => {
         setIncomingMsgs(chat);
       });

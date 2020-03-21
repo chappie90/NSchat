@@ -176,15 +176,19 @@ module.exports = function(io) {
       } else {
         privateChatId = checkPrivateChat[0]._id;
 
-        const updateFromUserChats = await User.updateOne(
-          { username: from }, 
-          { $addToSet: {
-            privateChats: {
-              privateChat: checkPrivateChat[0]._id
-            } }
-          },
-          { new: true}
-        );
+        const isPrivateChat = await User.find({ username: username, 'privateChats.privateChat': chatId });
+
+        if (isPrivateChat.length === 0) {
+          const updateFromUserChats = await User.updateOne(
+            { username: from }, 
+            { $addToSet: {
+              privateChats: {
+                privateChat: checkPrivateChat[0]._id
+              } }
+            },
+            { new: true}
+          );
+        }
       }
 
       if (contactRecipient.length === 0) {

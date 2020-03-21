@@ -8,7 +8,7 @@ const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
 
-const MIME_TYPE_GROUP_AVATAR = {
+const MIME_TYPE_GROUPIMAGE = {
   'image/png': 'png',
   'image/jpeg': 'jpg',
   'image/jpg': 'jpg'
@@ -16,16 +16,17 @@ const MIME_TYPE_GROUP_AVATAR = {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const isValid = MIME_TYPE_GROUP_AVATAR[file.mimetype];
+    const isValid = MIME_TYPE_GROUPIMAGE[file.mimetype];
     let error = new Error('Invalid mime type');
     if (isValid) {
       error = null;
     }
-    cb(error, './public/uploads/');
+    cb(error, './public/uploads');
   },
   filename: (req, file, cb) => {
-    const name = file.originalname;
-    const ext = MIME_TYPE_GROUP_AVATAR[file.mimetype];
+    const nameArr = file.originalname.split(' ');
+    const name = nameArr.join('-');
+    const ext = MIME_TYPE_GROUPIMAGE[file.mimetype];
     cb(null, name + '_' + Date.now() + '.' + ext);
   }
 });
@@ -80,6 +81,39 @@ router.patch('/group/leave', checkAuth, async (req, res) => {
     console.log(err);
     res.status(422).send({ error: 'Did not leave group successfully' })
   }
+});
+
+router.post(
+  '/group/update/image', 
+  checkAuth, 
+  multer({ storage: storage }).single('groupImage'),
+  async (req, res) => {
+    const username = req.body.username;
+    const groupId = req.body.chatId;
+
+    const url = req.protocol + '://' + req.get('host');
+    const imgPath = url + '/public/uploads/' + req.file.filename;
+
+    try {
+
+      const group = await Group.findOneAndUpdate(
+        { _id: groupId },
+        { avatar: {
+          imagePath: imgPath,
+          imageName: req.file.filename
+        } },
+        { new: true }
+      );
+
+      if (!group) {
+        return res.status(422).send({ error: 'Could not update image' });
+      }  
+      
+      res.status(200).send({ group });
+    } catch (err) {
+      console.log(err);
+      res.status(422).send({ error: 'Could not update image' });
+    }
 });
 
 module.exports = router;

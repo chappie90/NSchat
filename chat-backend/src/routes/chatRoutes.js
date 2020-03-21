@@ -157,16 +157,20 @@ router.post('/chats', checkAuth, async (req, res) => {
  //  },
 
 router.post('/messages', checkAuth, async (req, res) => {
-  const { username, recipient, page } = req.body;
+  const { chatType, username, recipient, page } = req.body;
 
   const skip = 50 * (page - 1);
+  let messages;
 
   try {
-    const messages = await PrivateMessage.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1, replyTo: 1 })
-                                  .skip(skip)
-                                  .sort({ 'message.createdAt': -1 })
-                                  .limit(50);
 
+    if (chatType === 'private') {
+      messages = await PrivateMessage.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1, replyTo: 1 })
+                                     .skip(skip)
+                                     .sort({ 'message.createdAt': -1 })
+                                     .limit(50);
+    }
+    
     res.status(200).send({ messages });
   } catch (err) {
     console.log(err);

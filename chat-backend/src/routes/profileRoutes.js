@@ -61,6 +61,30 @@ router.post(
     }
 });
 
+router.patch('/image/delete', checkAuth, async (req, res) => {
+  const username = req.body.user;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { username: username },
+      { profile: {
+        imgPath: null,
+        imgName: null
+      } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(422).send({ error: 'Could not delete image' });
+    }
+
+    res.status(200).send({ message: 'Image deleted' });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not delete image' });
+  }
+});
+
 router.get('/image', checkAuth, async (req, res) => {
   const username = req.query.user;
 

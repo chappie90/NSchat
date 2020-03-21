@@ -3,6 +3,7 @@ const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
 const PrivateChat = mongoose.model('PrivateChat');
 const GroupMessage = mongoose.model('GroupMessage');
+const Group = mongoose.model('Group');
 
 const users = {};
 let onlineContacts = [];
@@ -141,25 +142,31 @@ module.exports = function(io) {
 
       await groupMessage.save();
 
-      // let recipientSocketId;
-      // if (users[to]) {
-      //   recipientSocketId = users[to].id;
-      // }
+      const group = await Group.find({ _id: chatId }).populate('participants.user');
+
+      const groupParticipants = group[0].participants;
+      const activeGroupParticipants = [];
+
+      for (let p of groupParticipants) {
+        if (p.user.username !== from && users[p.user.username]) {
+          activeGroupParticipants.push(users[p.user.username].id);
+        }
+      }
      
-      // const returnMsgRecipient = 
-      //   {
-      //     _id: privateMessage.message.id,
-      //     text,
-      //     createdAt,
-      //     user: {
-      //       _id: 2,
-      //       name: from
-      //     },
-      //     read: false,
-      //     deleted: false,
-      //     reply: messageText,
-      //     replyAuthor: messageAuthor
-      //   };
+      const returnGroupMsgRecipient = 
+        {
+          _id: groupMessage.message.id,
+          text,
+          createdAt,
+          user: {
+            _id: 2,
+            name: from
+          },
+          read: false,
+          deleted: false,
+          reply: messageText,
+          replyAuthor: messageAuthor
+        };
 
       const returnGroupMsgUser = 
        {
@@ -176,7 +183,9 @@ module.exports = function(io) {
           replyAuthor: messageAuthor
         };
 
-      // io.to(recipientSocketId).emit('message', returnMsgRecipient);
+      for (let p of activeGroupParticipants) {
+         io.to(p).emit('message', returnGroupMsgRecipient);
+      }
       io.to(socketId).emit('message', returnGroupMsgUser);
 
     }

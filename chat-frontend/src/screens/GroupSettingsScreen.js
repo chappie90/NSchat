@@ -31,7 +31,16 @@ import BodyText from "../components/BodyText";
 const GroupSettingsScreen = (props) => {
   const { state: { username, userId } } = useContext(AuthContext);
   const { state: { previousChats }, getChats } = useContext(ChatContext);
-  const { state: { currentGroupId, group }, getGroup, leaveGroup, updateGroupImage } = useContext(GroupsContext);
+  const {
+    state: { 
+      currentGroupId,
+      group 
+    }, 
+    getGroup, 
+    leaveGroup, 
+    updateGroupImage,
+    deleteGroupImage 
+  } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -120,10 +129,9 @@ const GroupSettingsScreen = (props) => {
 
   const deletePhotoHandler = () => {
     if (group.avatar) {
-      deleteImage(username);
+      deleteGroupImage(group._id);
     }
     setModalVisible(false);
-    setImagePreview("");
   };
 
   return (

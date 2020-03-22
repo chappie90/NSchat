@@ -60,8 +60,22 @@ const updateGroupImage = dispatch => async (username, chatId, groupName, groupIm
     formData.append('username', username);
     formData.append('chatId', chatId);
 
-    const response = await chatApi.post('/group/update/image', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    const response = await chatApi.post('/group/image/update', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     
+    dispatch({ type: 'get_group', payload: response.data.group });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+const deleteGroupImage = dispatch => async (chatId) => {
+  try {
+    const response = await chatApi.patch('/group/image/delete', { chatId});
+
+    if (!response.data.group) {
+      return;
+    }
     dispatch({ type: 'get_group', payload: response.data.group });
   } catch (err) {
     console.log(err);
@@ -76,6 +90,7 @@ export const { Context, Provider } = createDataContext(
     getGroup,
     leaveGroup,
     updateGroupImage,
+    deleteGroupImage
   },
   { 
     currentGroupId: '',

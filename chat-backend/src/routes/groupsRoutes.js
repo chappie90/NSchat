@@ -84,7 +84,7 @@ router.patch('/group/leave', checkAuth, async (req, res) => {
 });
 
 router.post(
-  '/group/update/image', 
+  '/group/image/update', 
   checkAuth, 
   multer({ storage: storage }).single('groupImage'),
   async (req, res) => {
@@ -114,6 +114,27 @@ router.post(
       console.log(err);
       res.status(422).send({ error: 'Could not update image' });
     }
+});
+
+router.patch('/group/image/delete', checkAuth, async (req, res) => {
+  const groupId = req.body.chatId;
+
+  try {
+    const group = await Group.findOneAndUpdate(
+      { _id: groupId },
+      { avatar: {} },
+      { new: true }
+    );
+
+    if (!group) {
+      return res.status(422).send({ error: 'Could not delete image' });
+    }
+
+    res.status(200).send({ group });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not delete image' });
+  }
 });
 
 module.exports = router;

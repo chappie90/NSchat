@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -12,6 +12,7 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  Animated,
   ActivityIndicator,
   Modal as ScreenModal 
 } from 'react-native';
@@ -45,6 +46,10 @@ const GroupSettingsScreen = (props) => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [editName, setEditName] = useState(false);
+  const scrollY = useRef(new Animated.Value(250));
+  const opacity = useRef(new Animated.Value(1));
+  const  _scrollPos = new Animated.Value(0);
+  // const [scY, setScY] = useState(new Animated.Value(250));
   let nameInput;
 
   useEffect(() => {
@@ -134,6 +139,21 @@ const GroupSettingsScreen = (props) => {
     setModalVisible(false);
   };
 
+  const onScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: _scrollPos } } }],
+    { useNativeDriver: true }
+  );
+
+  const animateOpacity = _scrollPos.interpolate({
+    inputRange: [0, 75, 250],
+    outputRange: [1, 1, 0]
+  });
+
+  const animateScale =  _scrollPos.interpolate({
+    inputRange: [-100, 0, 250],
+    outputRange: [1, 1, 1.6]
+  });
+
   return (
     <ScreenModal visible={props.visible} animationType="slide">
       <Modal
@@ -199,17 +219,23 @@ const GroupSettingsScreen = (props) => {
                 <MaterialIcons name="close" size={28} color="#fff" />
               </TouchableOpacity>
           </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
+         <Animated.ScrollView
+          showsVerticalScrollIndicator={false}
+          onScroll={onScroll}>
           <TouchableOpacity activeOpacity={1}>
             <View>
               <View>
                 {group.avatar ?
-                  <Image 
+                  <Animated.Image 
                     placeholderStyle={styles.placeholder}
                     source={{ uri: group.avatar.imagePath }}
                     resizeMode={'cover'}
-                    style={styles.image} /> : 
-                  <Image source={require('../../assets/avatar2.png')} style={styles.image} />
+                    style={[{ opacity: animateOpacity, transform: [{ scale: animateScale }] }, styles.image]}>
+                  </Animated.Image> : 
+                  <Animated.Image
+                    source={require('../../assets/avatar2.png')}
+                    style={[{ opacity: animateOpacity, transform: [{ scale: animateScale }] }, styles.image]}>
+                  </Animated.Image>
                 }
               </View>   
               <View style={styles.cameraIconContainer}>
@@ -229,14 +255,15 @@ const GroupSettingsScreen = (props) => {
             <MaterialCommunityIcons name="square-edit-outline" size={28} color='#202020' />
           </TouchableOpacity>
         </View>
-        <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Creator</BodyText> 
-        <View style={styles.participant}>
-          <Image
-            style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
-            source={require("../../assets/avatar2.png")} />
-          <BodyText>{group.owner}</BodyText>
-        </View>
-        <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
+        <View style={{backgroundColor: '#fff'}}>
+          <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Creator</BodyText> 
+          <View style={styles.participant}>
+            <Image
+              style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
+              source={require("../../assets/avatar2.png")} />
+            <BodyText>{group.owner}</BodyText>
+          </View>
+          <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
           <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingBottom: 15}}>
             {group.participants && group.participants.map((item, index) => (
               <View key={index} style={styles.participant}>
@@ -246,6 +273,7 @@ const GroupSettingsScreen = (props) => {
                 <BodyText>{item.user.username}</BodyText>
               </View>
             ))}      
+          </View>
         </View>
         <TouchableOpacity onPress={() => {
           setIsLoading(true);
@@ -255,11 +283,11 @@ const GroupSettingsScreen = (props) => {
             });
           });
         }}>
-          <HeadingText style={{ color: Colors.tertiary, fontSize: 18, marginTop: 5, marginBottom: 20, textAlign: 'center' }}>Leave Group</HeadingText>
+          <HeadingText style={{ color: Colors.tertiary, fontSize: 17, marginTop: 15, marginBottom: 20, textAlign: 'center' }}>Leave Group</HeadingText>
         </TouchableOpacity>
         </TouchableOpacity>
         {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />} 
-       </ScrollView>
+       </Animated.ScrollView>
         </View>
       </TouchableWithoutFeedback>
     </ScreenModal>

@@ -62,15 +62,12 @@ router.post(
 });
 
 router.patch('/image/delete', checkAuth, async (req, res) => {
-  const username = req.body.user;
+  const username = req.body.username;
 
   try {
     const user = await User.findOneAndUpdate(
       { username: username },
-      { profile: {
-        imgPath: null,
-        imgName: null
-      } },
+      { profile: {} },
       { new: true }
     );
 
@@ -78,7 +75,7 @@ router.patch('/image/delete', checkAuth, async (req, res) => {
       return res.status(422).send({ error: 'Could not delete image' });
     }
 
-    res.status(200).send({ message: 'Image deleted' });
+    res.status(200).send({ user });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not delete image' });

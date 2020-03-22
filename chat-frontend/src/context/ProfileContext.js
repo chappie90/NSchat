@@ -76,8 +76,14 @@ const getImage = dispatch => async (user) => {
 
 const deleteImage = dispatch => async (user) => {
   try {
+    const response = await chatApi.patch('/image/delete', { username: user });
+
+    if (!response.data.user) {
+      return;
+    }
+
     await deleteProfileImage(user);
-    dispatch({ type: 'update_image', payload: null })
+    dispatch({ type: 'update_image', payload: null });
   } catch (err) {
     console.log(err);
     // throw err;

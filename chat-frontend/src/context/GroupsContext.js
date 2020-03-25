@@ -94,6 +94,25 @@ const deleteGroupImage = dispatch => async (chatId) => {
   }
 };
 
+const addGroupMember = dispatch => async (username, chatId, newMember) => {
+  console.log(username);
+  console.log(chatId);
+  console.log(newMember);
+
+  try {
+    const response = await chatApi.patch('/group/participants/add', { username, chatId, newMember });
+
+    if (!response.data.group) {
+      return;
+    }
+
+    dispatch({ type: 'get_group', payload: response.data.group });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   groupsReducer,
   { 
@@ -102,7 +121,8 @@ export const { Context, Provider } = createDataContext(
     leaveGroup,
     updateGroupImage,
     deleteGroupImage,
-    updateGroupName
+    updateGroupName,
+    addGroupMember
   },
   { 
     currentGroupId: '',

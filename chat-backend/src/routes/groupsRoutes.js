@@ -103,7 +103,7 @@ router.post(
           imageName: req.file.filename
         } },
         { new: true }
-      );
+      ).populate('participants.user');
 
       if (!group) {
         return res.status(422).send({ error: 'Could not update image' });
@@ -124,7 +124,7 @@ router.patch('/group/image/delete', checkAuth, async (req, res) => {
       { _id: groupId },
       { avatar: {} },
       { new: true }
-    );
+    ).populate('participants.user');
 
     if (!group) {
       return res.status(422).send({ error: 'Could not delete image' });
@@ -146,7 +146,7 @@ router.patch('/group/name/update',checkAuth, async (req, res) => {
       { _id: groupId },
       { name: groupName },
       { new: true }
-    );
+    ).populate('participants.user');
 
     if (!group) {
       return res.status(422).send({ error: 'Could not update group name' });

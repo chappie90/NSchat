@@ -40,7 +40,8 @@ const GroupSettingsScreen = (props) => {
     getGroup, 
     leaveGroup, 
     updateGroupImage,
-    deleteGroupImage 
+    deleteGroupImage ,
+    updateGroupName
   } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('');
@@ -74,12 +75,11 @@ const GroupSettingsScreen = (props) => {
   };
 
   const editNameHandler = () => {
-    console.log('edit');
     setEditName(true);
   };
 
   const saveNameHandler = () => {
-    console.log('save');
+    updateGroupName(group._id, name);
     setEditName(false);
   };
 

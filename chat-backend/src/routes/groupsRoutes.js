@@ -137,4 +137,26 @@ router.patch('/group/image/delete', checkAuth, async (req, res) => {
   }
 });
 
+router.patch('/group/name/update',checkAuth, async (req, res) => {
+  const groupId = req.body.chatId;
+  const groupName = req.body.groupName;
+
+  try {
+    const group = await Group.findOneAndUpdate(
+      { _id: groupId },
+      { name: groupName },
+      { new: true }
+    );
+
+    if (!group) {
+      return res.status(422).send({ error: 'Could not update group name' });
+    }
+
+    res.status(200).send({ group });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not update group name' });
+  } 
+});
+
 module.exports = router;

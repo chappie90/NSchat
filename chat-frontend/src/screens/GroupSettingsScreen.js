@@ -46,10 +46,7 @@ const GroupSettingsScreen = (props) => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [editName, setEditName] = useState(false);
-  const scrollY = useRef(new Animated.Value(250));
-  const opacity = useRef(new Animated.Value(1));
   const  _scrollPos = new Animated.Value(0);
-  // const [scY, setScY] = useState(new Animated.Value(250));
   let nameInput;
 
   useEffect(() => {
@@ -62,6 +59,12 @@ const GroupSettingsScreen = (props) => {
     setName(group.name);
   }, [group]);
 
+  useEffect(() => {
+    if (editName) {
+      nameInput.focus();
+    }
+  }, [editName]);
+
   const avatarEditHandler = () => {
     setModalVisible(true);
   };
@@ -72,7 +75,6 @@ const GroupSettingsScreen = (props) => {
 
   const editNameHandler = () => {
     setEditName(true);
-    nameInput.focus();
   };
 
   const getCameraPermissions = async () => {
@@ -145,7 +147,7 @@ const GroupSettingsScreen = (props) => {
   );
 
   const animateOpacity = _scrollPos.interpolate({
-    inputRange: [0, 75, 250],
+    inputRange: [0, 150, 250],
     outputRange: [1, 1, 0]
   });
 

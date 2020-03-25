@@ -74,7 +74,13 @@ const GroupSettingsScreen = (props) => {
   };
 
   const editNameHandler = () => {
+    console.log('edit');
     setEditName(true);
+  };
+
+  const saveNameHandler = () => {
+    console.log('save');
+    setEditName(false);
   };
 
   const getCameraPermissions = async () => {
@@ -253,8 +259,12 @@ const GroupSettingsScreen = (props) => {
             onChangeText={text => setName(text)}
             ref={(input) => { nameInput = input; }}
             style={styles.nameInput} />
-          <TouchableOpacity onPress={editNameHandler}>
-            <MaterialCommunityIcons name="square-edit-outline" size={28} color='#202020' />
+          <TouchableOpacity style={{ paddingHorizontal: 8, paddingVertical: 6 }} onPress={editName ? saveNameHandler : editNameHandler}>
+            {editName ? (
+              <MaterialCommunityIcons name="content-save" size={30} color={Colors.tertiary} />      
+            ) : (
+              <MaterialCommunityIcons name="square-edit-outline" size={30} color='#202020' />
+            )}
           </TouchableOpacity>
         </View>
         <View style={{backgroundColor: '#fff'}}>
@@ -319,8 +329,8 @@ const styles = StyleSheet.create({
   nameContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingLeft: 14,
+    paddingRight: 12,
     backgroundColor: '#F8F8F8',
     borderBottomWidth: 1,
     borderBottomColor: '#DCDCDC'

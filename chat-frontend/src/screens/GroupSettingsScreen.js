@@ -28,6 +28,7 @@ import AuthForm from '../components/AuthForm';
 import Colors from '../constants/colors';
 import HeadingText from '../components/HeadingText';
 import BodyText from "../components/BodyText";
+import AddGroupMemberScreen from './AddGroupMemberScreen';
 
 const GroupSettingsScreen = (props) => {
   const { state: { username, userId } } = useContext(AuthContext);
@@ -40,10 +41,12 @@ const GroupSettingsScreen = (props) => {
     getGroup, 
     leaveGroup, 
     updateGroupImage,
-    deleteGroupImage ,
-    updateGroupName
+    deleteGroupImage,
+    updateGroupName,
+    addGroupMember
   } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
+  const [addGroupMemberMode, setAddGroupMemberMode] = useState(false);
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [editName, setEditName] = useState(false);
@@ -82,6 +85,11 @@ const GroupSettingsScreen = (props) => {
     updateGroupName(group._id, name);
     setEditName(false);
   };
+
+  const closeAddMemberModal = () => {
+    setAddGroupMemberMode(false);
+  };
+
 
   const getCameraPermissions = async () => {
     const response = await Permissions.askAsync(
@@ -164,6 +172,7 @@ const GroupSettingsScreen = (props) => {
 
   return (
     <ScreenModal visible={props.visible} animationType="slide">
+      <AddGroupMemberScreen visible={addGroupMemberMode} closeModal={closeAddMemberModal} />
       <Modal
         style={{ alignItems: "center", justifyContent: "center" }}
         isVisible={modalVisible}
@@ -275,7 +284,18 @@ const GroupSettingsScreen = (props) => {
               source={require("../../assets/avatar2.png")} />
             <BodyText>{group.owner}</BodyText>
           </View>
-          <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
+            <BodyText style={{ fontSize: 16, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
+            <View style={styles.addMemberIcon}>
+              <TouchableOpacity onPress={() => {setAddGroupMemberMode(true)}}>
+                <Ionicons
+                  color="#202020"
+                  name="ios-add"
+                  size={30}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingBottom: 15}}>
             {group.participants && group.participants.map((item, index) => (
               <View key={index} style={styles.participant}>
@@ -329,8 +349,8 @@ const styles = StyleSheet.create({
   nameContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingLeft: 14,
-    paddingRight: 12,
+    paddingLeft: 15,
+    paddingRight: 9,
     backgroundColor: '#F8F8F8',
     borderBottomWidth: 1,
     borderBottomColor: '#DCDCDC'
@@ -365,6 +385,14 @@ const styles = StyleSheet.create({
     top: '72%',
     right: 11,
     padding: 5
+  },
+  addMemberIcon: {
+    backgroundColor: 'lightgrey',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    width: 30,
+    height: 30
   },
   overlayContainer: {
     width: 230,

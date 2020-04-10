@@ -284,17 +284,13 @@ const GroupSettingsScreen = (props) => {
               source={require("../../assets/avatar2.png")} />
             <BodyText>{group.owner}</BodyText>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
-            <BodyText style={{ fontSize: 16, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
-            <View style={styles.addMemberIcon}>
+          <View style={{ flexDirection: 'row', marginTop: 8, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
+            <BodyText style={{ fontSize: 16, marginRight: 15, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
               <TouchableOpacity onPress={() => {setAddGroupMemberMode(true)}}>
-                <Ionicons
-                  color="#202020"
-                  name="ios-add"
-                  size={30}
-                />
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <HeadingText style={{ fontSize: 16, marginLeft: 5, color: Colors.primary }}>Add</HeadingText>
+                </View>
               </TouchableOpacity>
-            </View>
           </View>
           <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingBottom: 15}}>
             {group.participants && group.participants.map((item, index) => (
@@ -385,14 +381,6 @@ const styles = StyleSheet.create({
     top: '72%',
     right: 11,
     padding: 5
-  },
-  addMemberIcon: {
-    backgroundColor: 'lightgrey',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 25,
-    width: 30,
-    height: 30
   },
   overlayContainer: {
     width: 230,

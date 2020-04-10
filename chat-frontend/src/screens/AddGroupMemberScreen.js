@@ -20,6 +20,7 @@ import { Context as AuthContext } from "../context/AuthContext";
 import { Context as ContactsContext } from "../context/ContactsContext";
 import { Context as ProfileContext } from "../context/ProfileContext";
 import { Context as ChatContext } from "../context/ChatContext";
+import { Context as GroupsContext } from '../context/GroupsContext';
 import ScaleImageAnim from "../components/animations/ScaleImageAnim";
 import TranslateFadeViewAnim from "../components/animations/TranslateFadeViewAnim";
 import TranslateViewAnim from "../components/animations/TranslateViewAnim";
@@ -31,6 +32,14 @@ const AddGroupScreen = props => {
   const { state: { contacts }, getContacts } = useContext(ContactsContext);
   const { state: { username } } = useContext(AuthContext);
   const { createGroup, getChats } = useContext(ChatContext);
+  const {
+    state: { 
+      currentGroupId,
+      group 
+    }, 
+    getGroup, 
+    addGroupMember
+  } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [checked, setChecked] = useState(false);
   const [search, setSearch] = useState("");
@@ -57,8 +66,8 @@ const AddGroupScreen = props => {
     setGroupContacts(contacts);
   }, [contacts]);
 
-  const createGroupHandler = (username, groupName, groupImage, groupMembers) => {
-    createGroup({ username, groupName, groupImage, groupMembers });
+  const addMemberHandler = (username, chatId, newMember) => {
+    addGroupMember(username, chatId, newMember);
     setAddToGroupArr([]);
     setGroupContacts(contacts);
     setDisableCreateBtn(true);
@@ -109,7 +118,7 @@ const AddGroupScreen = props => {
               </TouchableOpacity>    
               <HeadingText style={styles.heading}>Add Participants</HeadingText>
               <TouchableOpacity disabled={disableCreateBtn} onPress={() => {
-                createGroupHandler(username, groupName, imagePreview, addToGroupArr);
+                addMemberHandler(username, group._id, addToGroupArr)
               }}>
                 <Ionicons
                   color={disableCreateBtn ? "#C0C0C0" : "#fff"}

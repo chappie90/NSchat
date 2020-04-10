@@ -47,6 +47,9 @@ const AddGroupScreen = props => {
   useEffect(() => {
     if (addToGroupArr.length === 0) {
       setExpandHeader(false);
+      setDisableCreateBtn(true);
+    } else {
+      setDisableCreateBtn(false);
     }
   }, [addToGroupArr]);
 
@@ -125,7 +128,7 @@ const AddGroupScreen = props => {
                   borderRadius: 4,
                   marginHorizontal: 5,
                   paddingHorizontal: 8,
-                  backgroundColor: "#F0F0F0",
+                  backgroundColor: "#fff",
                   flexDirection: "row",
                   justifyContent: "flex-start",
                   alignItems: "center"

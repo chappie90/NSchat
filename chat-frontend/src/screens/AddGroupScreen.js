@@ -66,14 +66,15 @@ const AddGroupScreen = props => {
   }, [contacts]);
 
   const createGroupHandler = (username, groupName, groupImage, groupMembers) => {
-    createGroup({ username, groupName, groupImage, groupMembers });
-    setAddToGroupArr([]);
-    setGroupContacts(contacts);
-    setDisableCreateBtn(true);
-    setSearch("");
-    setGroupName("");
-    setImagePreview('');
-    props.closeModal();
+    createGroup({ username, groupName, groupImage, groupMembers }).then(res => {
+      setAddToGroupArr([]);
+      setGroupContacts(contacts);
+      setDisableCreateBtn(true);
+      setSearch("");
+      setGroupName("");
+      setImagePreview('');
+      props.closeModal();
+    });  
   };
 
   const updateGroupHandler = contactName => {
@@ -314,7 +315,7 @@ const AddGroupScreen = props => {
                 const contact = contacts.find(
                   contact => contact && contact.user.username === item
                 );
-                return contact.user.profile ? (
+                return contact && contact.user.profile ? (
                   <TouchableOpacity
                     key={item}
                     onPress={() => {

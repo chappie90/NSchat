@@ -175,7 +175,7 @@ router.patch('/group/participants/add', checkAuth, async (req, res) => {
         participants: memberIds
       } },
       { new: true }
-    );
+    ).populate('participants.user');
 
     if (!group) {
       return res.status(422).send({ error: 'Could not add group members' });

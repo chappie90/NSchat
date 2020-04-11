@@ -94,13 +94,10 @@ const deleteGroupImage = dispatch => async (chatId) => {
   }
 };
 
-const addGroupMember = dispatch => async (username, chatId, newMember) => {
-  console.log(username);
-  console.log(chatId);
-  console.log(newMember);
-
+const addGroupMember = dispatch => async (username, chatId, newMembers) => {
+  console.log(newMembers);
   try {
-    const response = await chatApi.patch('/group/participants/add', { username, chatId, newMember });
+    const response = await chatApi.patch('/group/participants/add', { username, chatId, newMembers });
 
     if (!response.data.group) {
       return;

@@ -137,7 +137,7 @@ router.patch('/group/image/delete', checkAuth, async (req, res) => {
   }
 });
 
-router.patch('/group/name/update',checkAuth, async (req, res) => {
+router.patch('/group/name/update', checkAuth, async (req, res) => {
   const groupId = req.body.chatId;
   const groupName = req.body.groupName;
 
@@ -157,6 +157,35 @@ router.patch('/group/name/update',checkAuth, async (req, res) => {
     console.log(err);
     res.status(422).send({ error: 'Could not update group name' });
   } 
+});
+
+router.patch('/group/participants/add', checkAuth, async (req, res) => {
+  const groupId = req.body.chatId;
+  const newMembers = req.body.newMembers;
+  let memberIds = [];
+
+  for (const member of newMembers) {
+    memberIds.push({ user: member.contactId });
+  }
+
+  try {
+    const group = await Group.findOneAndUpdate(
+      { _id: groupId },
+      { $addToSet: {
+        participants: memberIds
+      } },
+      { new: true }
+    );
+
+    if (!group) {
+      return res.status(422).send({ error: 'Could not add group members' });
+    }
+
+    res.status(200).send({ group });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not add group members' });
+  }
 });
 
 module.exports = router;

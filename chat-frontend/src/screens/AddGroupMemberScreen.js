@@ -75,13 +75,13 @@ const AddGroupScreen = props => {
     props.closeModal();
   };
 
-  const updateGroupHandler = contactName => {
-    if (addToGroupArr.includes(contactName)) {
+  const updateGroupHandler = (contactName, contactId) => {
+    if (addToGroupArr.filter(contact => contact.contactName === contactName).length > 0) {
       setAddToGroupArr(prevState =>
-        addToGroupArr.filter(contact => contact !== contactName)
+        addToGroupArr.filter(contact => contact.contactName !== contactName)
       );
     } else {
-      setAddToGroupArr(prevState => addToGroupArr.concat(contactName));
+      setAddToGroupArr(prevState => addToGroupArr.concat({contactName, contactId}));
     }
   };
 
@@ -178,14 +178,14 @@ const AddGroupScreen = props => {
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
               {addToGroupArr.map(item => {
                 const contact = contacts.find(
-                  contact => contact && contact.user.username === item
+                  contact => contact && contact.user.username === item.contactName
                 );
                 return contact.user.profile ? (
                   <TouchableOpacity
-                    key={item}
+                    key={item.contactId}
                     onPress={() => {
                       setAddToGroupArr(prevState =>
-                        addToGroupArr.filter(contact => contact !== item)
+                        addToGroupArr.filter(contact => contact.contactName !== item.contactName)
                       );
                     }}
                   >
@@ -217,21 +217,21 @@ const AddGroupScreen = props => {
                         style={{ width: 48, height: 48, borderRadius: 24 }}
                         source={{ uri: contact.user.profile.imgPath }}
                       />
-                      <Text style={{ marginTop: 4, color: "#fff" }} key={item}>
-                        {item}
+                      <Text style={{ marginTop: 4, color: "#fff" }} key={item.contactId}>
+                        {item.contactName}
                       </Text>
                     </ScaleViewAnim>
                   </TouchableOpacity>
                 ) : (
                   <TouchableOpacity
-                    key={item}
+                    key={item.contactId}
                     onPress={() => {
                       setAddToGroupArr(prevState =>
-                        addToGroupArr.filter(contact => contact !== item)
+                        addToGroupArr.filter(contact => contact.contactName !== item.contactName)
                       );
                     }}>
                     <ScaleViewAnim
-                      key={item}
+                      key={item.contactId}
                       style={{
                         justifyContent: "center",
                         alignItems: "center",
@@ -253,8 +253,8 @@ const AddGroupScreen = props => {
                         style={{ width: 48, height: 48, borderRadius: 24 }}
                         source={require("../../assets/avatar2.png")}
                       />
-                      <Text style={{ marginTop: 4, color: "#fff" }} key={item}>
-                        {item}
+                      <Text style={{ marginTop: 4, color: "#fff" }} key={item.contactId}>
+                        {item.contactName}
                       </Text>
                     </ScaleViewAnim>
                   </TouchableOpacity>
@@ -274,7 +274,7 @@ const AddGroupScreen = props => {
                       style={{ borderRadius: 5, overflow: "hidden" }}
                       onPress={() => {
                         setExpandHeader(true);
-                        updateGroupHandler(item.user.username);
+                        updateGroupHandler(item.user.username, item.user._id);
                         setGroupContacts(contacts);
                         setSearch("");
                       }}
@@ -313,7 +313,7 @@ const AddGroupScreen = props => {
                             {item.user.username}
                           </HeadingText>
                         </View>
-                        {addToGroupArr.includes(item.user.username) ? (
+                        {addToGroupArr.filter(contact => contact.contactName === item.user.username).length > 0 ? (
                           <ScaleViewAnim
                             style={{
                               width: 26,

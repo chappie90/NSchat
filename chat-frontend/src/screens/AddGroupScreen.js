@@ -48,6 +48,7 @@ const AddGroupScreen = props => {
   const [expandHeader, setExpandHeader] = useState(false);
   const [groupContacts, setGroupContacts] = useState([]);
   const [disableCreateBtn, setDisableCreateBtn] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState("");
   const socket = useRef(null);
 
@@ -66,6 +67,7 @@ const AddGroupScreen = props => {
   }, [contacts]);
 
   const createGroupHandler = (username, groupName, groupImage, groupMembers) => {
+    setIsLoading(true);
     createGroup({ username, groupName, groupImage, groupMembers }).then(res => {
       setAddToGroupArr([]);
       setGroupContacts(contacts);
@@ -74,6 +76,7 @@ const AddGroupScreen = props => {
       setGroupName("");
       setImagePreview('');
       props.closeModal();
+      setIsLoading(false);
     });  
   };
 
@@ -436,6 +439,10 @@ const AddGroupScreen = props => {
                 />
               </View>
             </TouchableOpacity>
+           {isLoading && (<View style={styles.spinnerContainer}>
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+            )}
             {contacts.length > 0 ? (
               <FlatList
                 data={groupContacts}
@@ -662,6 +669,15 @@ const styles = StyleSheet.create({
   cancelText: {
     color: "grey",
     fontSize: 18
+  },
+  spinnerContainer: {
+    position: 'absolute',
+    top: 10,
+    left: '50%',
+    transform: [
+      { translateX: -10 }
+    ],
+    zIndex: 2
   }
 });
 

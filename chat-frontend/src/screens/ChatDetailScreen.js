@@ -600,14 +600,16 @@ const ChatDetailScreen = ({ navigation }) => {
                       <BodyText style={styles.overlayText}>Reply to message</BodyText>
                     </View>
                   </TouchableOpacity>
+                  {selectedMessage && selectedMessage.user._id === 1 && (
                     <TouchableOpacity style={styles.overlayItemWrapper} onPress={deleteMessageHandler}>
-                    <View style={styles.overlayItem}>
-                      <View style={styles.deleteIconWrapper}>
-                        <AntDesign color="white" name="delete" size={24} />
-                      </View>
-                      <BodyText style={styles.overlayDelete}>Delete message</BodyText>
-                    </View>  
-                  </TouchableOpacity>
+                      <View style={styles.overlayItem}>
+                        <View style={styles.deleteIconWrapper}>
+                          <AntDesign color="white" name="delete" size={24} />
+                        </View>
+                        <BodyText style={styles.overlayDelete}>Delete message</BodyText>
+                      </View>  
+                    </TouchableOpacity>
+                  )}
                   <View style={styles.cancel}>
                     <TouchableOpacity onPress={() => setOverlayMode(false)}>
                       <BodyText style={styles.cancelText}>Cancel</BodyText>

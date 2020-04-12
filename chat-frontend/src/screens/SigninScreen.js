@@ -17,7 +17,7 @@ import AuthForm from '../components/AuthForm';
 import Colors from '../constants/colors';
 
 const SigninScreen = (props) => {
-  const { state: { errorMessage }, signin, clearErrorMessage } = useContext(AuthContext);
+  const { state: { errorMessageSignin }, signin, clearErrorMessage } = useContext(AuthContext);
 
   return (
     <Modal visible={props.visible} animationType="slide">
@@ -25,6 +25,7 @@ const SigninScreen = (props) => {
         <View style={styles.container}>
           <View style={styles.closeModalContainer}>
             <TouchableOpacity onPress={() => {
+              clearErrorMessage();
               props.closeModal();
             }}>
               <MaterialIcons name="close" size={35} color={Colors.tertiary} />
@@ -38,8 +39,8 @@ const SigninScreen = (props) => {
             onSubmit={signin}
             toggleModal={props.toggleModal}
             />
-          {errorMessage ?
-            Alert.alert('Signin unsuccessful!', errorMessage, [{ text: 'Try again', onPress: () => clearErrorMessage }]) :
+          {errorMessageSignin ?
+            Alert.alert('Signin unsuccessful!', errorMessageSignin, [{ text: 'Try again', onPress: () => clearErrorMessage }]) :
             null
           }
           {Platform.OS === 'ios' && <KeyboardAvoidingView behavior="padding" />}

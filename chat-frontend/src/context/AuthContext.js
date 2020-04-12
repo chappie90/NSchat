@@ -11,15 +11,18 @@ const authReducer = (state, action) => {
         token: action.payload.token, 
         userId: action.payload.userId,
         username: action.payload.username, 
-        errorMessage: '' 
+        errorMessageSignin: '',
+        errorMessageSignup: ''  
       };
     case 'signout':
       return { token: null, username: null, errorMessage: '' };
       // return { state: undefined };
-    case 'add_error':
-      return { ...state, errorMessage: action.payload };
+    case 'add_error_signin':
+      return { ...state, errorMessageSignin: action.payload };
+    case 'add_error_signup':
+      return { ...state, errorMessageSignup: action.payload };
     case 'clear_error':
-      return { ...state, errorMessage: '' };
+      return { ...state, errorMessageSignup: '', errorMessageSignin: '' };
     default: 
       return state;
   }
@@ -41,7 +44,7 @@ const signup = dispatch => async ({ username, password }) => {
     navigate('MainFlow');
   } catch (error) {
     if (error.response) {
-      dispatch({ type: 'add_error', payload: error.response.data.message });
+      dispatch({ type: 'add_error_signup', payload: error.response.data.message });
     }
   }
 };
@@ -62,7 +65,7 @@ const signin = dispatch => async ({ username, password }) => {
     navigate('MainFlow');
   } catch (error) {
     if (error.response) {
-      dispatch({ type: 'add_error', payload: error.response.data.message });
+      dispatch({ type: 'add_error_signin', payload: error.response.data.message });
     }
   }
 };
@@ -100,5 +103,5 @@ const signout = dispatch => async () => {
 export const { Context, Provider } = createDataContext(
   authReducer,
   { signup, signin, autoLogin, clearErrorMessage, signout },
-  { token: null, userId: null, username: null, errorMessage: '' }
+  { token: null, userId: null, username: null, errorMessageSignin: '', errorMessageSignup: '' }
 );

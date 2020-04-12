@@ -119,13 +119,13 @@ const ChatsListScreen = ({ navigation }) => {
 
   useEffect(() => {
     // console.log(previousChats);
-    if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
-        rowTranslateAnimatedValues.constructor === Object) {
+    // if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
+    //     rowTranslateAnimatedValues.constructor === Object) {
     // if (previousChats.length > 0) {
       previousChats.forEach((item, index) => {
         rowTranslateAnimatedValues[`${index}`] = { left: new Animated.Value(0), right: new Animated.Value(0) };
       });
-    }
+    // }
   }, [previousChats]);
 
   const closeModal = () => {
@@ -333,11 +333,11 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: rowTranslateAnimatedValues[`${data.index}`].left.interpolate({
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`] ? (rowTranslateAnimatedValues[`${data.index}`].left.interpolate({
                       inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
                       outputRange: [0, 15, 24, 27, 29, screenWidth / 2 + 70],
                       extrapolate: 'clamp'
-                    })}
+                    })) : null}
                   ] }}>
                    {data.item.pinned ? 
                       <MaterialCommunityIcons name="pin-off" size={30} color="#fff" /> :
@@ -353,11 +353,11 @@ const ChatsListScreen = ({ navigation }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
-                    { translateX: rowTranslateAnimatedValues[`${data.index}`].right.interpolate({
+                    { translateX: rowTranslateAnimatedValues[`${data.index}`] ? (rowTranslateAnimatedValues[`${data.index}`].right.interpolate({
                         inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
                         outputRange: [0, -15, -24, -27, -29, -screenWidth / 2 - 60],
                         extrapolate: 'clamp'
-                    }) }
+                    })) : null }
                   ] }}>
                     <Entypo name="trash" size={24} color="#fff" />
                 </Animated.View>

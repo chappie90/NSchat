@@ -337,7 +337,8 @@ const ChatsListScreen = ({ navigation }) => {
                       inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
                       outputRange: [0, 15, 24, 27, 29, screenWidth / 2 + 70],
                       extrapolate: 'clamp'
-                    })) : null}
+                    })) : (new Animated.Value(0)) 
+                    }
                   ] }}>
                    {data.item.pinned ? 
                       <MaterialCommunityIcons name="pin-off" size={30} color="#fff" /> :
@@ -357,7 +358,8 @@ const ChatsListScreen = ({ navigation }) => {
                         inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
                         outputRange: [0, -15, -24, -27, -29, -screenWidth / 2 - 60],
                         extrapolate: 'clamp'
-                    })) : null }
+                    })) : (new Animated.Value(0)) 
+                    }
                   ] }}>
                     <Entypo name="trash" size={24} color="#fff" />
                 </Animated.View>

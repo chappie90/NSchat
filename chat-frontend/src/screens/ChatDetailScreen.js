@@ -562,10 +562,10 @@ const ChatDetailScreen = ({ navigation }) => {
                   </View>
                 );
               }}/>
-         <KeyboardAvoidingView 
+         {/*<KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />
-         {/* {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
+        {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
          <Overlay
               isVisible={overlayMode}
               width="auto"

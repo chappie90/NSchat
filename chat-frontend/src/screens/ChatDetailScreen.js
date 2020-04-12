@@ -402,34 +402,61 @@ const ChatDetailScreen = ({ navigation }) => {
   }
 
   const RenderMessageReplyBubble = props => {
-    return (
-      <View style={props.containerStyle}> 
-        <View style={{ paddingBottom: 2, marginRight: 32, marginLeft: 60 }}>
-          <View style={{ borderRadius: 15, backgroundColor: Colors.secondary }}>
-            <View style={{
-              flexDirection: 'row', 
-              backgroundColor: '#76bf88', 
-              padding: 5, 
-              alignItems: 'center', 
-              borderLeftWidth: 6, 
-              borderLeftColor: '#D8D8D8', 
-              //'#D8D8D8'
-              // '#eda1a1'
-              // '#e6b5b5
-              // #18240b
-              borderRadius: 8, 
-              marginTop: 8, marginHorizontal: 8 }}>
-                <View style={{flexDirection: 'column'}}>
-                  <Text style={{color: 'black', paddingHorizontal: 10, marginBottom: 4 }}>Reply to <Text style={{ fontFamily: 'open-sans-semi-bold' }}>{props.currentMessage.replyAuthor}</Text></Text>
-                  <Text style={{color: 'white', paddingHorizontal: 10 }}>{props.currentMessage.reply}</Text>
-                </View>
+    if (props.currentMessage.user._id === 1)  {
+      return (
+        <View style={props.containerStyle}> 
+          <View style={{ paddingBottom: 2, marginRight: 32, marginLeft: 74 }}>
+            <View style={{ borderRadius: 15, backgroundColor: Colors.secondary }}>
+              <View style={{
+                flexDirection: 'row', 
+                backgroundColor: '#76bf88', 
+                padding: 5, 
+                alignItems: 'center', 
+                borderLeftWidth: 6, 
+                borderLeftColor: '#D8D8D8', 
+                //'#D8D8D8'
+                // '#eda1a1'
+                // '#e6b5b5
+                // #18240b
+                borderRadius: 8, 
+                marginTop: 8, marginHorizontal: 8 }}>
+                  <View style={{flexDirection: 'column'}}>
+                    <Text style={{color: 'black', paddingHorizontal: 10, marginBottom: 4 }}>Reply to <Text style={{ fontFamily: 'open-sans-semi-bold' }}>{props.currentMessage.replyAuthor}</Text></Text>
+                    <Text style={{color: 'white', paddingHorizontal: 10 }}>{props.currentMessage.reply}</Text>
+                  </View>
               </View>
               <MessageText {...props} />
               <Time {...props} />
             </View>
           </View>
         </View>
-    );
+      );
+    } else if (props.currentMessage.user._id === 2) {
+      return (
+        <View style={props.containerStyle}> 
+          <View style={{ paddingBottom: 2, marginRight: 60, marginLeft: 30 }}>
+            <View style={{ borderRadius: 15, backgroundColor: '#E8E8E8' }}>
+              <View style={{
+                flexDirection: 'row', 
+                backgroundColor: '#c2c2c2', 
+                padding: 5, 
+                alignItems: 'center', 
+                borderLeftWidth: 6, 
+                borderLeftColor: Colors.tertiary, 
+                borderRadius: 8, 
+                marginTop: 8, marginHorizontal: 8 }}>
+                  <View style={{flexDirection: 'column'}}>
+                    <Text style={{color: Colors.tertiary, paddingHorizontal: 10, marginBottom: 4 }}>Reply to <Text style={{ fontFamily: 'open-sans-semi-bold' }}>{props.currentMessage.replyAuthor}</Text></Text>
+                    <Text style={{color: 'black', paddingHorizontal: 10 }}>{props.currentMessage.reply}</Text>
+                  </View>
+              </View>
+              <MessageText {...props} />
+              <Time {...props} />
+            </View>
+          </View>
+        </View>
+      );
+    }  
   };
 
   const renderMessageText = props => {

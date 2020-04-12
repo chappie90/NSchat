@@ -288,7 +288,7 @@ const GroupSettingsScreen = (props) => {
             <BodyText style={{ fontSize: 16, marginRight: 15, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
               <TouchableOpacity onPress={() => {setAddGroupMemberMode(true)}}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <HeadingText style={{ fontSize: 16, marginLeft: 5, color: Colors.primary }}>Add</HeadingText>
+                  <HeadingText style={{ fontSize: 16, color: Colors.primary }}>Add</HeadingText>
                 </View>
               </TouchableOpacity>
           </View>

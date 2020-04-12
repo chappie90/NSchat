@@ -427,7 +427,8 @@ const ChatDetailScreen = ({ navigation }) => {
         props.currentMessage.read &&
         !props.currentMessage.deleted) {
       return (
-        <View  { ...props}>
+        // <View  { ...props}>
+        <View>
           <Ionicons
             style={styles.leftCheckmark}
             name="ios-checkmark"
@@ -442,7 +443,8 @@ const ChatDetailScreen = ({ navigation }) => {
                props.currentMessage.hasOwnProperty('read') && 
                !props.currentMessage.deleted) {
         return (
-          <View  { ...props}>
+          <View>
+          {/*<View  { ...props}>*/}
             <Ionicons
               style={styles.leftCheckmark}
               name="ios-checkmark"
@@ -455,7 +457,8 @@ const ChatDetailScreen = ({ navigation }) => {
         );
     } else if (props.currentMessage.user._id === 1 && !props.currentMessage.deleted) {
         return (
-          <View  { ...props}>
+          <View>
+          {/*<View  { ...props}>*/}
             <Ionicons
               style={styles.leftCheckmark}
               name="ios-checkmark"
@@ -565,7 +568,7 @@ const ChatDetailScreen = ({ navigation }) => {
          {/*<KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />
-        {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
+         {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
          <Overlay
               isVisible={overlayMode}
               width="auto"

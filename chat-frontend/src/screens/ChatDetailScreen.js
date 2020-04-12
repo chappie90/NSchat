@@ -99,6 +99,8 @@ const ChatDetailScreen = ({ navigation }) => {
   const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
+    let mounted = true;
+
     setChatType(navigation.getParam('type'));
     setChatId(navigation.getParam('chatId'));
     navigation.setParams({ 
@@ -119,7 +121,9 @@ const ChatDetailScreen = ({ navigation }) => {
         }));
         return;
       }
-      setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+      if (mounted) {
+        setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+      }
     });
     socket.current.on('is_typing', () => {
       navigation.setParams({ isTyping: 'is typing...' });
@@ -143,6 +147,10 @@ const ChatDetailScreen = ({ navigation }) => {
         });
       } 
     });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // useEffect(() => {
@@ -153,20 +161,29 @@ const ChatDetailScreen = ({ navigation }) => {
   // }, [badgeNumber]);
 
   useEffect(() => {
+    let mounted = true;
+
     setCurrentPage(1);
     setRecipient(navigation.getParam('username'));
+
     if (recipient && currentPage) {
       page = currentPage;
       let chatType =  chatType || navigation.getParam('type');
       let chatId = chatId || navigation.getParam('chatId');
       getMessages({ chatType, chatId, username, recipient, page })
       .then((chat) => {
-        setIncomingMsgs(chat);
+        if (mounted) {
+          setIncomingMsgs(chat); 
+        }         
       });
     }
+
+    return () => {
+      mounted = false;
+    };
   }, [recipient]);
 
-  useEffect(() => {;
+  useEffect(() => {
     setIncomingMsgs(chat);
   }, [chat]);
 

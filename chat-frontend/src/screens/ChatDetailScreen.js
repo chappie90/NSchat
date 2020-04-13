@@ -401,7 +401,7 @@ const ChatDetailScreen = ({ navigation }) => {
     );
   }
 
-  const RenderMessageReplyBubble = props => {
+  const RenderMessageReplyBubble = (props) => {
     if (props.currentMessage.user._id === 1)  {
       return (
         <View style={props.containerStyle}> 
@@ -434,7 +434,20 @@ const ChatDetailScreen = ({ navigation }) => {
     } else if (props.currentMessage.user._id === 2) {
       return (
         <View style={props.containerStyle}> 
-          <View style={{ paddingBottom: 2, marginRight: 60, marginLeft: 30 }}>
+          <View style={{
+            backgroundColor: Colors.primary, 
+            width: 36, 
+            height: 36, 
+            borderRadius: 18,
+            justifyContent: 'center',
+            alignItems: 'center',
+            left: 8,
+            position: 'absolute',
+            bottom: 0
+          }}>
+            <Text style={{ color: '#fff', fontSize: 16 }}>{props.currentMessage.user._id}</Text>
+          </View>
+          <View style={{ paddingBottom: 2, marginRight: 60, marginLeft: 52 }}>
             <View style={{ borderRadius: 15, backgroundColor: '#E8E8E8' }}>
               <View style={{
                 flexDirection: 'row', 

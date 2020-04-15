@@ -12,6 +12,7 @@ import { Provider as GroupsProvider } from './src/context/GroupsContext';
 import { setNavigator } from './src/components/navigationRef';
 import { init } from './src/database/db';
 import { connectToSocket } from './src/socket/chat';
+import { Context as AuthContext } from './src/context/AuthContext';
 
 init().then(() => {
   console.log('Successfully initialized database');
@@ -26,18 +27,17 @@ const fetchFonts = () => {
   });
 };
 
-export default () => {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const socket = useRef(null);
-  // const [appState, setAppState] = useState(AppState.currentState);
+const SocketHandler = () => {
+  const { state: { socketState }, updateSocketState } = useContext(AuthContext);
+   const socket = useRef(null);
 
   const checkAuth = async () => {
     let data = await AsyncStorage.getItem('data');
     data = JSON.parse(data);
 
     if (data && data.username) {
-      console.log('auth active')
       socket.current = connectToSocket(data.username);
+      updateSocketState(socket.current);
     }    
   };
 
@@ -48,12 +48,10 @@ export default () => {
 
     if (nextAppState === 'inactive') {
       if (socket.current) {
-        console.log('auth inactive')
         socket.current.disconnect();
+        updateSocketState(null);
       }
-      
     }
-    // setAppState(nextAppState);
   };
 
   useEffect(() => {
@@ -65,6 +63,15 @@ export default () => {
     }
   }, []);
 
+  return (
+    <View />
+  );
+};
+
+export default () => {
+  
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+ 
   if (!fontsLoaded) {
     return (
       <AppLoading
@@ -81,6 +88,7 @@ export default () => {
         <ProfileProvider>
           <ChatProvider>
             <AuthProvider>
+              <SocketHandler />
               <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
             </AuthProvider>
           </ChatProvider>

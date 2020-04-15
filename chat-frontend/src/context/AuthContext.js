@@ -23,6 +23,8 @@ const authReducer = (state, action) => {
       return { ...state, errorMessageSignup: action.payload };
     case 'clear_error':
       return { ...state, errorMessageSignup: '', errorMessageSignin: '' };
+    case 'update_socket':
+      return { ...state, socketState: action.payload };
     default: 
       return state;
   }
@@ -100,8 +102,24 @@ const signout = dispatch => async () => {
   }  
 };
 
+const updateSocketState = dispatch => (socketState) => {
+  dispatch({ type: 'update_socket', payload: socketState });
+};
+
 export const { Context, Provider } = createDataContext(
   authReducer,
-  { signup, signin, autoLogin, clearErrorMessage, signout },
-  { token: null, userId: null, username: null, errorMessageSignin: '', errorMessageSignup: '' }
+  { signup,
+    signin, 
+    autoLogin, 
+    clearErrorMessage, 
+    signout,
+    updateSocketState 
+  },
+  { token: null, 
+    userId: null, 
+    username: null, 
+    errorMessageSignin: '', 
+    errorMessageSignup: '',
+    socketState: null   
+  }
 );

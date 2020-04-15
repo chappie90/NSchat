@@ -445,7 +445,7 @@ const ChatDetailScreen = ({ navigation }) => {
             position: 'absolute',
             bottom: 0
           }}>
-            <Text style={{ color: '#fff', fontSize: 16 }}>{props.currentMessage.user._id}</Text>
+            <Text style={{ color: '#fff', fontSize: 16 }}>{props.currentMessage.user.name}</Text>
           </View>
           <View style={{ paddingBottom: 2, marginRight: 60, marginLeft: 52 }}>
             <View style={{ borderRadius: 15, backgroundColor: '#E8E8E8' }}>

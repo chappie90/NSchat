@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { View, StyleSheet, AppState, AsyncStorage } from 'react-native';
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
@@ -11,6 +11,7 @@ import { Provider as ContactsProvider } from './src/context/ContactsContext';
 import { Provider as GroupsProvider } from './src/context/GroupsContext';
 import { setNavigator } from './src/components/navigationRef';
 import { init } from './src/database/db';
+import { connectToSocket } from './src/socket/chat';
 
 init().then(() => {
   console.log('Successfully initialized database');
@@ -27,6 +28,42 @@ const fetchFonts = () => {
 
 export default () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const socket = useRef(null);
+  // const [appState, setAppState] = useState(AppState.currentState);
+
+  const checkAuth = async () => {
+    let data = await AsyncStorage.getItem('data');
+    data = JSON.parse(data);
+
+    if (data && data.username) {
+      console.log('auth active')
+      socket.current = connectToSocket(data.username);
+    }    
+  };
+
+  const _handleAppStateChange = nextAppState => { 
+    if ((nextAppState === undefined && AppState.currentState === 'active') || nextAppState === 'active') {
+      checkAuth();
+    }
+
+    if (nextAppState === 'inactive') {
+      if (socket.current) {
+        console.log('auth inactive')
+        socket.current.disconnect();
+      }
+      
+    }
+    // setAppState(nextAppState);
+  };
+
+  useEffect(() => {
+    _handleAppStateChange();
+    AppState.addEventListener('change', _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener('change', _handleAppStateChange);
+    }
+  }, []);
 
   if (!fontsLoaded) {
     return (

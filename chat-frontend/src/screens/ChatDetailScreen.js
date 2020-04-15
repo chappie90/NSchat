@@ -351,8 +351,10 @@ const ChatDetailScreen = ({ navigation }) => {
     setOverlayMode(false);
   };
  
-  const startTypingHandler = () => {
-    socket.current.emit('start_typing', { username, recipient });
+  const startTypingHandler = (text) => {
+    if (text) {
+      socket.current.emit('start_typing', { username, recipient });
+    }
 
     if (stopTypingTimeout) {
       clearTimeout(stopTypingTimeout);

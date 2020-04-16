@@ -113,7 +113,7 @@ const ChatsListScreen = ({ navigation }) => {
       checkAuth();
     }
 
-    if (nextAppState === 'inactive') {
+    if (nextAppState === 'inactive' || nextAppState === 'background') {
       if (socket.current) {
         socket.current.disconnect();
         updateSocketState(null);

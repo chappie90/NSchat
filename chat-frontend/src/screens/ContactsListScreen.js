@@ -24,13 +24,12 @@ import { Context as ContactsContext } from '../context/ContactsContext';
 import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
-import { connectToSocket } from '../socket/chat';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 
 const ContactsListScreen = ({ navigation }) => {
   const { state: { contacts, onlineContacts }, getContacts, getActiveStatus } = useContext(ContactsContext);
-  const { state: { username } } = useContext(AuthContext);
+  const { state: { username, socketState } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const socket = useRef(null);
@@ -39,22 +38,27 @@ const ContactsListScreen = ({ navigation }) => {
     getContacts({ username }).then(res => {
       setIsLoading(false);
     });
-    socket.current = connectToSocket(username);
-    socket.current.on('online', users => {
-      const onlineUsers = JSON.parse(users);
-      if (Array.isArray(onlineUsers)) {
-        getActiveStatus(onlineUsers);
-      } else {
-        // refactor to get new array - concat?
-        onlineContacts.push(users);
-        getActiveStatus(onlineContacts);
-      }
-    });
-    socket.current.on('offline', user => {
-      const updatedContacts = onlineContacts.filter(item => item !== user);
-      getActiveStatus(updatedContacts);
-    });
   }, []);
+
+  useEffect(() => {
+    if (socketState) {
+      socket.current = socketState;
+      socket.current.on('online', users => {
+        const onlineUsers = JSON.parse(users);
+        if (Array.isArray(onlineUsers)) {
+          getActiveStatus(onlineUsers);
+        } else {
+          // refactor to get new array - concat?
+          onlineContacts.push(users);
+          getActiveStatus(onlineContacts);
+        }
+      });
+      socket.current.on('offline', user => {
+        const updatedContacts = onlineContacts.filter(item => item !== user);
+        getActiveStatus(updatedContacts);
+      });
+    }
+  }, [socketState]);
 
   const closeModal = () => {
     setNewContactMode(false);

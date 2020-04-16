@@ -234,6 +234,18 @@ const ChatDetailScreen = ({ navigation }) => {
     }
     let token = await Notifications.getExpoPushTokenAsync();
 
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250]
+      });
+    }
+
+    sendPushNotificationToken(token, username);
+
+    const notificationSubscription = Notifications.addListener(handleNotification);
     // return fetch(PUSH_REGISTRATION_ENDPOINT, {
     //   method: 'POST',
     //   headers: {
@@ -250,15 +262,11 @@ const ChatDetailScreen = ({ navigation }) => {
     //     }
     //   })
     // });
-
-    // sendPushNotificationToken(token, 'Stoyan');
-
-    // const notificationSubscription = Notifications.addListener(handleNotification);
   };
 
   const handleNotification = async (notification) => {
+    console.log('received notification')
     setNotification({ notification });
-    // console.log(notification);
 
     // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
     // setBadgeNumber(badgeNumber + 1);
@@ -267,8 +275,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const sendPushNotificationToken = async (token, username) => {
     try {
       const response = await chatApi.post('/token', { token, username });
-      
-      // console.log(response.data); 
 
     } catch (err) {
       console.log(err);

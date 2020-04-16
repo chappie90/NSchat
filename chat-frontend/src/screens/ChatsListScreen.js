@@ -122,9 +122,7 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-
     if (socketState) {
-
       socket.current = socketState;  
       socket.current.on('online', users => {
         const onlineUsers = JSON.parse(users);
@@ -154,9 +152,7 @@ const ChatsListScreen = ({ navigation }) => {
         setIsTyping(false);
         setTypingUser(null);
       });
-
     }
-
   }, [socketState])
 
   useEffect(() => {

@@ -31,13 +31,12 @@ import HeadingText from '../components/HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
 import chatApi from '../api/chat';
-import { connectToSocket } from '../socket/chat';
 import FadeViewAnim from '../components/animations/FadeViewAnim';
 import GroupSettingsScreen from './GroupSettingsScreen';
 import { getTabBarHeight } from '../components/TabBarComponent';
 
 const ChatDetailScreen = ({ navigation }) => {
-  const { state: { username } } = useContext(AuthContext);
+  const { state: { username, socketState } } = useContext(AuthContext);
   const { state: { chat }, getChats, getMessages, updateMessages, deleteMessage, resetChatState } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
@@ -99,8 +98,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const MESSAGE_ENPOINT = `${chatApi}/message`;
 
   useEffect(() => {
-    let mounted = true;
-
     setChatType(navigation.getParam('type'));
     setChatId(navigation.getParam('chatId'));
     navigation.setParams({ 
@@ -111,47 +108,54 @@ const ChatDetailScreen = ({ navigation }) => {
       isBackgroundYou: isBackgroundYoutube.current 
     });
     registerForPushNotificationsAsync();
-    socket.current = connectToSocket(username);
-    socket.current.on('message', message => {
-      getChats({ username });
-      if (message.user.name === username) {
-        updateMessages({ message });
-        setIncomingMsgs(prevState => prevState.map(msg => {
-          return msg._id === message._id ? { ...msg, read: false } : msg;
-        }));
-        return;
-      }
-      if (mounted) {
-        setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-      }
-    });
-    socket.current.on('is_typing', () => {
-      navigation.setParams({ isTyping: 'is typing...' });
-    });
-    socket.current.on('is_not_typing', () => {
-      navigation.setParams({ isTyping: '' });
-    });
-    // socket.current.on('message_deleted', message => {
-    //   if (message) {
-    //     const deletedMessage = chat.map(item => {
-    //     return item._id === message._id ? { ...item, text: 'Message deleted', deleted: true } : item;
-    //   });
-    //   setIncomingMsgs(deletedMessage);
-    //   }
-    // });
-    socket.current.on('has_joined_chat', user => {
-      if (user === recipient) {
-        getMessages({ username, recipient, page: currentPage })
-          .then((chat) => {
-            setIncomingMsgs(chat);
-        });
-      } 
-    });
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (socketState) {
+      socket.current = socketState;  
+      socket.current.on('message', message => {
+        getChats({ username });
+        if (message.user.name === username) {
+          updateMessages({ message });
+          setIncomingMsgs(prevState => prevState.map(msg => {
+            return msg._id === message._id ? { ...msg, read: false } : msg;
+          }));
+          return;
+        }
+        if (mounted) {
+          setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+        }
+      });
+      socket.current.on('is_typing', () => {
+        navigation.setParams({ isTyping: 'is typing...' });
+      });
+      socket.current.on('is_not_typing', () => {
+        navigation.setParams({ isTyping: '' });
+      });
+      // socket.current.on('message_deleted', message => {
+      //   if (message) {
+      //     const deletedMessage = chat.map(item => {
+      //     return item._id === message._id ? { ...item, text: 'Message deleted', deleted: true } : item;
+      //   });
+      //   setIncomingMsgs(deletedMessage);
+      //   }
+      // });
+      socket.current.on('has_joined_chat', user => {
+        if (user === recipient) {
+          getMessages({ username, recipient, page: currentPage })
+            .then((chat) => {
+              setIncomingMsgs(chat);
+          });
+        } 
+      });
+    }
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [socketState]);
 
   // useEffect(() => {
   //   async () => {

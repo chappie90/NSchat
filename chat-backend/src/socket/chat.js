@@ -191,6 +191,8 @@ module.exports = function(io) {
     }
 
     if (type === 'private') {
+      console.log('private message')
+
       const tempUserId = await User.find({ username: from });
       const tempUserId2 = await User.find({ username: to });
 
@@ -318,6 +320,9 @@ module.exports = function(io) {
           reply: messageText,
           replyAuthor: messageAuthor
         };
+
+      console.log('socket id ' + socketId);
+      console.log('recipient sockt id ' + recipientSocketId);
 
       io.to(recipientSocketId).emit('message', returnMsgRecipient);
       io.to(socketId).emit('message', returnMsgUser);

@@ -14,15 +14,17 @@ import {
   PanResponder,
   Animated,
   Easing,
+  AppState,
+  AsyncStorage,
   Dimensions
 } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
-import { AsyncStorage } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
 import { SwipeListView } from 'react-native-swipe-list-view';;
 import Modal from "react-native-modal";
 
+import { connectToSocket } from '../socket/chat';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
@@ -30,14 +32,13 @@ import { Context as ContactsContext } from '../context/ContactsContext';
 import { Context as GroupsContext } from '../context/GroupsContext';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
-import { connectToSocket } from '../socket/chat';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import ScaleViewTriggerAnim from '../components/animations/ScaleViewTriggerAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 import AddGroupScreen from './AddGroupScreen';
 
 const ChatsListScreen = ({ navigation }) => {
-  const { state: { username } } = useContext(AuthContext);
+  const { state: { username, socketState }, updateSocketState } = useContext(AuthContext);
   const { 
     state: { previousChats },
     getChats, 
@@ -89,33 +90,74 @@ const ChatsListScreen = ({ navigation }) => {
     getChats({ username }).then(res => {
       setIsLoading(false);
     });
-    socket.current = connectToSocket(username);   
-    socket.current.on('online', users => {
-      const onlineUsers = JSON.parse(users);
-      if (Array.isArray(onlineUsers)) {
-        getActiveStatus(onlineUsers);
-      } else {
-        // refactor to get new array - concat?
-        onlineContacts.push(users);
-        getActiveStatus(onlineContacts);
-      }
-    });
-    socket.current.on('offline', user => {
-      const updatedContacts = onlineContacts.filter(item => item !== user);
-      getActiveStatus(updatedContacts);
-    });
-    socket.current.on('message', message => {
-      getChats({ username });
-    });
-    socket.current.on('is_typing', username => {
-      setIsTyping(true);
-      setTypingUser(username);
-    });
-    socket.current.on('is_not_typing', () => {
-      setIsTyping(false);
-      setTypingUser(null);
-    });
+    _handleAppStateChange();
+    AppState.addEventListener('change', _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener('change', _handleAppStateChange);
+    }  
   }, []);
+
+  const checkAuth = async () => {
+    let data = await AsyncStorage.getItem('data');
+    data = JSON.parse(data);
+
+    if (data && data.username) {
+      socket.current = connectToSocket(data.username);
+      updateSocketState(socket.current);
+    }    
+  };
+
+  const _handleAppStateChange = nextAppState => { 
+    if ((nextAppState === undefined && AppState.currentState === 'active') || nextAppState === 'active') {
+      checkAuth();
+    }
+
+    if (nextAppState === 'inactive') {
+      if (socket.current) {
+        socket.current.disconnect();
+        updateSocketState(null);
+      }
+    }
+  };
+
+  useEffect(() => {
+
+    if (socketState) {
+
+      socket.current = socketState;  
+      socket.current.on('online', users => {
+        const onlineUsers = JSON.parse(users);
+        if (Array.isArray(onlineUsers)) {
+          getActiveStatus(onlineUsers);
+        } else {
+          // refactor to get new array - concat?
+          onlineContacts.push(users);
+          getActiveStatus(onlineContacts);
+        }
+      });
+      socket.current.on('offline', user => {
+        console.log('offline triggered')
+        const updatedContacts = onlineContacts.filter(item => item !== user);
+        getActiveStatus(updatedContacts);
+      });
+      socket.current.on('message', message => {
+        console.log(message)
+        getChats({ username });
+      });
+      socket.current.on('is_typing', username => {
+        console.log('is typing')
+        setIsTyping(true);
+        setTypingUser(username);
+      });
+      socket.current.on('is_not_typing', () => {
+        setIsTyping(false);
+        setTypingUser(null);
+      });
+
+    }
+
+  }, [socketState])
 
   useEffect(() => {
     // console.log(previousChats);

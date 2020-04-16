@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { View, StyleSheet, AppState, AsyncStorage } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
@@ -11,8 +11,6 @@ import { Provider as ContactsProvider } from './src/context/ContactsContext';
 import { Provider as GroupsProvider } from './src/context/GroupsContext';
 import { setNavigator } from './src/components/navigationRef';
 import { init } from './src/database/db';
-import { connectToSocket } from './src/socket/chat';
-import { Context as AuthContext } from './src/context/AuthContext';
 
 init().then(() => {
   console.log('Successfully initialized database');
@@ -27,49 +25,7 @@ const fetchFonts = () => {
   });
 };
 
-const SocketHandler = () => {
-  const { state: { socketState }, updateSocketState } = useContext(AuthContext);
-   const socket = useRef(null);
-
-  const checkAuth = async () => {
-    let data = await AsyncStorage.getItem('data');
-    data = JSON.parse(data);
-
-    if (data && data.username) {
-      socket.current = connectToSocket(data.username);
-      updateSocketState(socket.current);
-    }    
-  };
-
-  const _handleAppStateChange = nextAppState => { 
-    if ((nextAppState === undefined && AppState.currentState === 'active') || nextAppState === 'active') {
-      checkAuth();
-    }
-
-    if (nextAppState === 'inactive') {
-      if (socket.current) {
-        socket.current.disconnect();
-        updateSocketState(null);
-      }
-    }
-  };
-
-  useEffect(() => {
-    _handleAppStateChange();
-    AppState.addEventListener('change', _handleAppStateChange);
-
-    return () => {
-      AppState.removeEventListener('change', _handleAppStateChange);
-    }
-  }, []);
-
-  return (
-    <View />
-  );
-};
-
-export default () => {
-  
+export default () => {  
   const [fontsLoaded, setFontsLoaded] = useState(false);
  
   if (!fontsLoaded) {
@@ -88,7 +44,6 @@ export default () => {
         <ProfileProvider>
           <ChatProvider>
             <AuthProvider>
-              <SocketHandler />
               <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
             </AuthProvider>
           </ChatProvider>

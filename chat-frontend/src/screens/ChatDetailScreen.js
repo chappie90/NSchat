@@ -20,8 +20,6 @@ import { Overlay } from 'react-native-elements';
 import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time, Send } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
-import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
 import { MaterialIcons, MaterialCommunityIcons, FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -95,9 +93,6 @@ const ChatDetailScreen = ({ navigation }) => {
       },
     }), []);
 
-  const PUSH_REGISTRATION_ENDPOINT = `${chatApi}/token`;
-  const MESSAGE_ENPOINT = `${chatApi}/message`;
-
   useEffect(() => {
     setChatType(navigation.getParam('type'));
     setChatId(navigation.getParam('chatId'));
@@ -108,7 +103,6 @@ const ChatDetailScreen = ({ navigation }) => {
       setAsBackgroundYoutube: setYoutubeAsBackgroundHandler,
       isBackgroundYou: isBackgroundYoutube.current 
     });
-    registerForPushNotificationsAsync();
   }, []);
 
   useEffect(() => {
@@ -227,55 +221,6 @@ const ChatDetailScreen = ({ navigation }) => {
   //   console.log(getRecipientParam);
   //   getMessages({ username, recipient: getRecipientParam, page: 1 });
   // };
-
-  const registerForPushNotificationsAsync = async () => {
-    if (Constants.isDevice) {
-      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
-        return;
-      }
-      let token = await Notifications.getExpoPushTokenAsync();
-
-      if (Platform.OS === 'android') {
-        Notifications.createChannelAndroidAsync('default', {
-          name: 'default',
-          sound: true,
-          priority: 'max',
-          vibrate: [0, 250, 250, 250],
-        });
-      }
-
-      sendPushNotificationToken(token, username);
-
-      const notificationSubscription = Notifications.addListener(handleNotification);
-    } else {
-      alert('Must use physical device for Push Notifications');
-    }
-  };
-
-  const handleNotification = async (notification) => {
-    console.log('received notification')
-    setNotification({ notification });
-
-    // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
-    // setBadgeNumber(badgeNumber + 1);
-  }
-
-  const sendPushNotificationToken = async (token, username) => {
-    try {
-      const response = await chatApi.post('/token', { token, username });
-
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
 
   const loadMoreMessages = () => {
     let page = currentPage + 1;  

@@ -23,7 +23,11 @@ import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
 import { SwipeListView } from 'react-native-swipe-list-view';;
 import Modal from "react-native-modal";
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
+import chatApi from '../api/chat';
 import { connectToSocket } from '../socket/chat';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -87,6 +91,7 @@ const ChatsListScreen = ({ navigation }) => {
       },
     }), []);
   useEffect(() => {
+    registerForPushNotificationsAsync();
     getChats({ username }).then(res => {
       setIsLoading(false);
     });
@@ -165,6 +170,55 @@ const ChatsListScreen = ({ navigation }) => {
       });
     // }
   }, [previousChats]);
+
+  const registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      let token = await Notifications.getExpoPushTokenAsync();
+
+      if (Platform.OS === 'android') {
+        Notifications.createChannelAndroidAsync('default', {
+          name: 'default',
+          sound: true,
+          priority: 'max',
+          vibrate: [0, 250, 250, 250],
+        });
+      }
+
+      sendPushNotificationToken(token, username);
+
+      const notificationSubscription = Notifications.addListener(handleNotification);
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+  };
+
+  const handleNotification = async (notification) => {
+    console.log('received notification')
+    alert('Failed to get push token for push notification!');
+    setNotification({ notification });
+
+    // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
+    // setBadgeNumber(badgeNumber + 1);
+  }
+
+  const sendPushNotificationToken = async (token, username) => {
+    try {
+      const response = await chatApi.post('/token', { token, username });
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const closeModal = () => {
     setNewGroupMode(false);

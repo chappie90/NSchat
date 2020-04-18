@@ -23,6 +23,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "notification": {
+      "iosDisplayInForeground": true
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.stoyangarov.chat-app-course",

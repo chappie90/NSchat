@@ -366,7 +366,9 @@ const ChatsListScreen = ({ navigation }) => {
                   { rowData.item.profile.imgPath ? (
                     <Image source={{ uri: rowData.item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
                   ) : (
-                    <Image source={require('../../assets/avatar2.png')} style={{ width: '100%', height: '100%' }} />
+                    <Image
+                      source={rowData.item.type === 'private' ? require('../../assets/avatar-small.png') : require('../../assets/group-small.png') } 
+                      style={{ width: '100%', height: '100%' }} />
                   )}
                 </View>
                 <View style={{ flex: 1, marginLeft: 10, height: 70 }}>

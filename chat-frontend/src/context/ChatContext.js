@@ -194,9 +194,10 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
     let uriParts = groupImage.split('.');
     let fileType = uriParts[uriParts.length - 1];
 
-    groupMembers.push(username);
+    let allMembers = groupMembers.slice();
+    allMembers.push(username);
 
-    const groupMembersStr = JSON.stringify(groupMembers);
+    const groupMembersStr = JSON.stringify(allMembers);
 
     let formData = new FormData();
 

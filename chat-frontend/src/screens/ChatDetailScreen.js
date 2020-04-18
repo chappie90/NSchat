@@ -15,6 +15,7 @@ import {
   Animated,
   Dimensions
 } from 'react-native';
+import Constants from 'expo-constants';
 import { Overlay } from 'react-native-elements';
 import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time, Send } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
@@ -228,40 +229,34 @@ const ChatDetailScreen = ({ navigation }) => {
   // };
 
   const registerForPushNotificationsAsync = async () => {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
-      return;
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      let token = await Notifications.getExpoPushTokenAsync();
+
+      if (Platform.OS === 'android') {
+        Notifications.createChannelAndroidAsync('default', {
+          name: 'default',
+          sound: true,
+          priority: 'max',
+          vibrate: [0, 250, 250, 250],
+        });
+      }
+
+      sendPushNotificationToken(token, username);
+
+      const notificationSubscription = Notifications.addListener(handleNotification);
+    } else {
+      alert('Must use physical device for Push Notifications');
     }
-    let token = await Notifications.getExpoPushTokenAsync();
-
-    if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('default', {
-        name: 'default',
-        sound: true,
-        priority: 'max',
-        vibrate: [0, 250, 250, 250]
-      });
-    }
-
-    sendPushNotificationToken(token, username);
-
-    const notificationSubscription = Notifications.addListener(handleNotification);
-    // return fetch(PUSH_REGISTRATION_ENDPOINT, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     token: {
-    //       value: token
-    //     },
-    //     user: {
-    //       username:'warly',
-    //       name: 'Dan Ward'
-    //     }
-    //   })
-    // });
   };
 
   const handleNotification = async (notification) => {

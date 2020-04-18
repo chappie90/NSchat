@@ -188,12 +188,9 @@ const deleteMessage = dispatch => async ({ messageId }) => {
   }
 };
 
-const createGroup = dispatch => async ({ username, groupName, groupImage = '', groupMembers = '' }) => {
+const createGroup = dispatch => async ({ username, groupName, groupImage = '', groupMembers = [] }) => {
   
   try {
-    let uriParts = groupImage.split('.');
-    let fileType = uriParts[uriParts.length - 1];
-
     let allMembers = groupMembers.slice();
     allMembers.push(username);
 
@@ -201,11 +198,17 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
 
     let formData = new FormData();
 
-    formData.append('group', {
-      uri: groupImage,
-      name: `${username}_${groupName}`,
-      type: `image/${fileType}`
-    });
+    if (groupImage) {
+      let uriParts = groupImage.split('.');
+      let fileType = uriParts[uriParts.length - 1];
+
+      formData.append('group', {
+        uri: groupImage,
+        name: `${username}_${groupName}`,
+        type: `image/${fileType}`
+      });      
+    }
+
     formData.append('username', username);
     formData.append('groupName', groupName);
     formData.append('groupMembers', groupMembersStr);

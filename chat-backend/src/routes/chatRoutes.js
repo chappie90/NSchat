@@ -290,9 +290,13 @@ router.post(
     const groupName = req.body.groupName;
     let groupMembers = req.body.groupMembers;
     groupMembers = JSON.parse(groupMembers);
-    const url = req.protocol + '://' + req.get('host');
-    const imgPath = url + '/public/uploads/' + req.file.filename;
-
+    
+    let imgPath;
+    if (req.file) {
+      const url = req.protocol + '://' + req.get('host');
+      imgPath = url + '/public/uploads/' + req.file.filename;
+    }
+   
     try {
       let participantsArr = [];
       for (let member of groupMembers) {
@@ -306,8 +310,8 @@ router.post(
         owner: username,
         participants: participantsArr,
         avatar: {
-          imagePath: imgPath,
-          imageName: req.file.filename
+          imagePath: imgPath ? imgPath : null,
+          imageName: req.file ? req.file.filename : ''
         }
       });
       await group.save();
@@ -341,8 +345,8 @@ router.post(
         date: initialGroupMessage.message.created,
         contact: groupName,
         profile: {
-          imgPath: imgPath,
-          imgName: req.file.filename
+          imagePath: imgPath ? imgPath : null,
+          imageName: req.file ? req.file.filename : ''
         },
         groupOwner: username,
         unreadMessageCount: 0

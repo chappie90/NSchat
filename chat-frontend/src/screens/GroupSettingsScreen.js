@@ -242,7 +242,7 @@ const GroupSettingsScreen = (props) => {
           <TouchableOpacity activeOpacity={1}>
             <View>
               <View>
-                {group.avatar ?
+                {group.avatar && group.avatar.imagePath ?
                   <Animated.Image 
                     placeholderStyle={styles.placeholder}
                     source={{ uri: group.avatar.imagePath }}

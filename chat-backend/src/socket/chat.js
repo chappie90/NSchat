@@ -159,7 +159,7 @@ module.exports = function(io) {
      
       const returnGroupMsgRecipient = 
         {
-          _id: groupMessage.message.id,
+          _id: groupMessage.message.giftedChatId,
           text,
           createdAt,
           user: {
@@ -174,7 +174,7 @@ module.exports = function(io) {
 
       const returnGroupMsgUser = 
        {
-          _id: groupMessage.message.id,
+          _id: groupMessage.message.giftedChatId,
           text,
           createdAt,
           user: {

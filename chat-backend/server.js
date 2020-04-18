@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
 const savedPushTokens = [];
 
 const saveToken = (token) => {
-  if (savedPushTokens.indexOf(token === -1)) {
+  if (savedPushTokens.indexOf(token) === -1) {
     savedPushTokens.push(token);
   }
 }
@@ -80,7 +80,8 @@ const handlePushTokens = (message) => {
       sound: 'default',
       title: 'Message received!',
       body: message,
-      data: { message }
+      data: { message },
+      _displayInForeground: true
     });
   }
 
@@ -90,7 +91,6 @@ const handlePushTokens = (message) => {
     for (let chunk of chunks) {
       try {
         let receipts = await expo.sendPushNotificationsAsync(chunk);
-        console.log(receipts);
       } catch (error) {
         console.log(error);
       }

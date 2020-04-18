@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "234325164184",
+    "firebase_url": "https://nora-and-stoyan-chat-app.firebaseio.com",
+    "project_id": "nora-and-stoyan-chat-app",
+    "storage_bucket": "nora-and-stoyan-chat-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234325164184:android:d5f28cabb78b48e05750ed",
+        "android_client_info": {
+          "package_name": "com.stoyangarov.chat_app_course"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "234325164184-o192dd0t7m7tfu5tst4p5kp1qtjieq3t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPpCTyhr1JSoKEdP1sblpV0g64Ls56ZZU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "234325164184-o192dd0t7m7tfu5tst4p5kp1qtjieq3t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

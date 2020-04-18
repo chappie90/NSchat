@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  expoToken: String,
   contacts: [
      { 
        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

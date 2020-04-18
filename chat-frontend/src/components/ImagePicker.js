@@ -144,7 +144,7 @@ const ImgPicker = props => {
                   placeholderStyle={styles.placeholder}
                   source={{ uri: profileImage }}
                   style={styles.image} /> : 
-                <Image source={require('../../assets/avatar2.png')} style={styles.image} />
+                <Image source={require('../../assets/avatar-big.png')} style={styles.image} />
               }
             </View>   
             <View style={styles.cameraIconContainer}>

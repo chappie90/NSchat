@@ -62,7 +62,7 @@ const AddContactScreen = (props) => {
                     placeholderStyle={styles.placeholder}
                     source={{ uri: item.profile.imgPath }}
                     /> : 
-                  <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar2.png')} />
+                  <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar-small.png')} />
                 }
               </View>                  
                <View style={styles.itemContainer}>

@@ -389,7 +389,7 @@ const AddGroupScreen = props => {
                       </View>
                       <Image
                         style={{ width: 48, height: 48, borderRadius: 24 }}
-                        source={require("../../assets/avatar2.png")}
+                        source={require("../../assets/avatar-small.png")}
                       />
                       <Text style={{ marginTop: 4, color: "#fff" }} key={item}>
                         {item}
@@ -484,7 +484,7 @@ const AddGroupScreen = props => {
                           ) : (
                             <Image
                               style={{ width: 48, height: 48 }}
-                              source={require("../../assets/avatar2.png")}
+                              source={require("../../assets/avatar-small.png")}
                             />
                           )}
                         </View>

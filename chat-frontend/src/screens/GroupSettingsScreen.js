@@ -250,7 +250,7 @@ const GroupSettingsScreen = (props) => {
                     style={[{ opacity: animateOpacity, transform: [{ scale: animateScale }] }, styles.image]}>
                   </Animated.Image> : 
                   <Animated.Image
-                    source={require('../../assets/avatar2.png')}
+                    source={require('../../assets/group-big.png')}
                     style={[{ opacity: animateOpacity, transform: [{ scale: animateScale }] }, styles.image]}>
                   </Animated.Image>
                 }
@@ -281,7 +281,7 @@ const GroupSettingsScreen = (props) => {
           <View style={styles.participant}>
             <Image
               style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
-              source={require("../../assets/avatar2.png")} />
+              source={require("../../assets/avatar-small.png")} />
             <BodyText>{group.owner}</BodyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 8, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
@@ -297,7 +297,7 @@ const GroupSettingsScreen = (props) => {
               <View key={index} style={styles.participant}>
                 <Image
                   style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
-                  source={require("../../assets/avatar2.png")} />
+                  source={require("../../assets/avatar-small.png")} />
                 <BodyText>{item.user.username}</BodyText>
               </View>
             ))}      

@@ -656,7 +656,9 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
           {params.image ? (
             <Image source={{ uri: params.image }} style={{ width: '100%', height: '100%' }} />
           ) : (
-            <Image style={{ width: '100%', height: '100%' }} source={require('../../assets/avatar2.png')} />
+            <Image
+              style={{ width: '100%', height: '100%' }} 
+              source={params.type === 'private' ? require('../../assets/avatar-small.png') : require('../../assets/group-small.png')} />
           )}
         </FadeViewAnim>
         <Text style={{ marginLeft: 10, fontFamily: 'open-sans-semi-bold', fontSize: 18 }}>{params.username} {params.isTyping ? params.isTyping : ''}</Text>

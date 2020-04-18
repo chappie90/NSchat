@@ -25,7 +25,6 @@ const AccountScreen = ({ navigation }) => {
         <ImagePicker />
         <Text style={styles.user}>{username}</Text>
       </View>
-      {/* <PrimaryButton onPress={() => navigation.navigate('SpeechToText')}>Speech</PrimaryButton> */}
     </View>
   );
 };

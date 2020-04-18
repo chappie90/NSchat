@@ -69,6 +69,7 @@ const AddGroupScreen = props => {
   const createGroupHandler = (username, groupName, groupImage, groupMembers) => {
     setIsLoading(true);
     createGroup({ username, groupName, groupImage, groupMembers }).then(res => {
+      getChats({ username });
       setAddToGroupArr([]);
       setGroupContacts(contacts);
       setDisableCreateBtn(true);

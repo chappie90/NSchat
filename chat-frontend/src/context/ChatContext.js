@@ -40,6 +40,8 @@ const chatReducer = (state, action) => {
       return { ...state, chat: deletedMessage };
     case 'create_group':
       return { ...state, previousChats: [action.payload].concat(state.previousChats) }; // [action.payload, ...state.previousChats]
+    case 'save_expo_token':
+      return { ...state, expoToken: action.payload };
     default:
       return state;
   }
@@ -216,6 +218,21 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
   }
 };
 
+const saveExpoToken = dispatch => async (token, username) => {
+  try {
+    const response = await chatApi.post('/token', { token, username });
+
+    if (!response.data) {
+      return;
+    }
+
+    dispatch({ type: 'save_expo_token', payload: response.data.expoToken });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { 
@@ -227,10 +244,12 @@ export const { Context, Provider } = createDataContext(
     deleteMessage,
     createGroup,
     resetChatState,
-    togglePinChat
+    togglePinChat,
+    saveExpoToken
   },
   {  
     previousChats: [], 
-    chat: []
+    chat: [],
+    expoToken: null
   }
 );

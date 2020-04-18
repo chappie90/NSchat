@@ -98,12 +98,6 @@ const handlePushTokens = (message) => {
   })();
 };
 
-app.post('/token', (req, res) => { 
-  saveToken(req.body.token);
-  console.log(`Received push token, ${req.body.token}`);
-  res.send(`Received push token, ${req.body.token}`);
-});
-
 app.post('/message', (req, res) => {
   console.log(req.body.message);
    handlePushTokens(req.body.message);

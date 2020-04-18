@@ -48,7 +48,9 @@ const ChatsListScreen = ({ navigation }) => {
     getChats, 
     deleteChat,
     togglePinChat,
-    markMessagesAsRead } = useContext(ChatContext);
+    markMessagesAsRead,
+    saveExpoToken 
+  } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
@@ -183,7 +185,7 @@ const ChatsListScreen = ({ navigation }) => {
         alert('Failed to get push token for push notification!');
         return;
       }
-      let token = await Notifications.getExpoPushTokenAsync();
+      let expoToken = await Notifications.getExpoPushTokenAsync();
 
       if (Platform.OS === 'android') {
         Notifications.createChannelAndroidAsync('default', {
@@ -194,7 +196,7 @@ const ChatsListScreen = ({ navigation }) => {
         });
       }
 
-      sendPushNotificationToken(token, username);
+      saveExpoToken(expoToken, username);
 
       const notificationSubscription = Notifications.addListener(handleNotification);
     } else {
@@ -210,15 +212,6 @@ const ChatsListScreen = ({ navigation }) => {
     // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
     // setBadgeNumber(badgeNumber + 1);
   }
-
-  const sendPushNotificationToken = async (token, username) => {
-    try {
-      const response = await chatApi.post('/token', { token, username });
-
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   const closeModal = () => {
     setNewGroupMode(false);

@@ -356,4 +356,26 @@ router.post(
   }
 );
 
+router.post('/expo/token', checkAuth, async (req, res) => {
+  const username = req.body.username;
+  const expoToken = req.body.expoToken;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { username: username },
+      { expoToken },
+      { new: true }
+    );
+
+    if (!user) {
+      return  res.status(422).send({ error: 'Something went wrong with your request' });
+    }
+
+    res.status(200).send({ expoToken });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not save expo token' });
+  }
+});
+
 module.exports = router;

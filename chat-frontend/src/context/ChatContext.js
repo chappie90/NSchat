@@ -218,14 +218,14 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
   }
 };
 
-const saveExpoToken = dispatch => async (token, username) => {
+const saveExpoToken = dispatch => async (expoToken, username) => {
   try {
-    const response = await chatApi.post('/token', { token, username });
+    const response = await chatApi.post('/expo/token', { expoToken, username });
 
     if (!response.data) {
       return;
     }
-
+    
     dispatch({ type: 'save_expo_token', payload: response.data.expoToken });
   } catch (err) {
     console.log(err);

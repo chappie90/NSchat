@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Expo } = require('expo-server-sdk');
 const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
 const PrivateChat = mongoose.model('PrivateChat');
@@ -9,6 +10,7 @@ const users = {};
 let onlineContacts = [];
 
 module.exports = function(io) {
+  const expo = new Expo();
 
   io.on('connection', async socket => {
   console.log('A user connected');
@@ -122,6 +124,8 @@ module.exports = function(io) {
     // messageHandler.handleMessage(socket, users); 
 
     // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
+    let expoPushTokens = [];
+    let notifications = [];
 
     if (type === 'group') {
 
@@ -191,10 +195,11 @@ module.exports = function(io) {
     }
 
     if (type === 'private') {
-      console.log('private message')
 
       const tempUserId = await User.find({ username: from });
       const tempUserId2 = await User.find({ username: to });
+
+      expoPushTokens.push(tempUserId2[0].expoToken);
 
       const contactRecipient = await User.find({
         username: to, 
@@ -321,12 +326,33 @@ module.exports = function(io) {
           replyAuthor: messageAuthor
         };
 
-      console.log('socket id ' + socketId);
-      console.log('recipient sockt id ' + recipientSocketId);
-
       io.to(recipientSocketId).emit('message', returnMsgRecipient);
       io.to(socketId).emit('message', returnMsgUser);
 
+      if (!Expo.isExpoPushToken(expoPushTokens[0])) {
+        console.log(`Push token ${pushToken} is not a valid Expo push token`);
+      }
+
+      notifications.push({
+        to: expoPushTokens[0],
+        sound: 'default',
+        title: 'Message received!',
+        body: text,
+        data: { text },
+        _displayInForeground: true
+      });
+
+      let chunks = expo.chunkPushNotifications(notifications);
+
+      (async () => {
+        for (let chunk of chunks) {
+          try {
+            let receipts = await expo.sendPushNotificationsAsync(chunk);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      })();
     }
 
     } catch(err) {

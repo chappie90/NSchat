@@ -225,7 +225,7 @@ const saveExpoToken = dispatch => async (expoToken, username) => {
     if (!response.data) {
       return;
     }
-    
+
     dispatch({ type: 'save_expo_token', payload: response.data.expoToken });
   } catch (err) {
     console.log(err);

@@ -103,8 +103,6 @@ module.exports = function(io) {
 
   socket.on('join_chat', data => {
     if (users[data.recipient]) {
-      console.log(data.recipient);
-      console.log(data.username);
       io.to(users[data.recipient].id).emit('has_joined_chat', data.username);
     }
   });

@@ -36,10 +36,19 @@ import { getTabBarHeight } from '../components/TabBarComponent';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username, socketState } } = useContext(AuthContext);
-  const { state: { chat }, getChats, getMessages, updateMessages, deleteMessage, resetChatState } = useContext(ChatContext);
+  const {
+   state: { chat }, 
+   getChats, 
+   getMessages, 
+   updateMessages, 
+   deleteMessage, 
+   resetChatState,
+   markMessageAsRead 
+ } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
+  const [loadMoreHelper, setLoadMoreHelper] = useState(false);
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -112,8 +121,6 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current.on('message', message => {
         getChats({ username });
         if (message.user.name === username) {
-          console.log('yeah')
-          console.log(message)
           updateMessages({ message });
           setIncomingMsgs(prevState => prevState.map(msg => {
             return msg._id === message._id ? { ...msg, read: false } : msg;
@@ -141,12 +148,15 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current.on('has_joined_chat', user => {
         let chatType =  chatType || navigation.getParam('type');
         let chatId = chatId || navigation.getParam('chatId');
+        let recipient = recipient || navigation.getParam('username');
 
         if (user === recipient) {
-          getMessages({ chatType, chatId, username, recipient, page: currentPage })
-            .then((chat) => {
-              setIncomingMsgs(chat);
-          });
+          markMessageAsRead({ username, recipient });
+          // getMessages({ chatType, chatId, username, recipient, page: 1 })
+          //   .then((chat) => {
+          //     console.log(chat)
+          //     // setIncomingMsgs(chat);
+          // });
         } 
       });
     }
@@ -188,8 +198,10 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
-    // console.log('check')
-    // setIncomingMsgs(chat);
+    if (!loadMoreHelper) {
+      setIncomingMsgs(chat);
+    }   
+    setLoadMoreHelper(false);
   }, [chat]);
 
   const didFocusHandler = () => {
@@ -229,6 +241,7 @@ const ChatDetailScreen = ({ navigation }) => {
   // };
 
   const loadMoreMessages = () => {
+    setLoadMoreHelper(true);
     let page = currentPage + 1; 
     let chatType =  chatType || navigation.getParam('type');
     let chatId = chatId || navigation.getParam('chatId');

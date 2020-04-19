@@ -33,6 +33,12 @@ const chatReducer = (state, action) => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
       });
       return { ...state, previousChats: markedMessages };
+    case 'mark_message_read':    
+      // if you have more than initial 50 messages loaded it will jump back to first 50...
+      const markedMessage = state.chat.map(item => {
+        return item.read === false ? { ...item, read: true } : item;
+      });
+      return { ...state, chat: markedMessage };
     case 'delete_message':
       const deletedMessage = state.chat.map(item => {
         return item._id === action.payload ? { ...item, text: 'Message deleted', deleted: true } : item;
@@ -48,10 +54,9 @@ const chatReducer = (state, action) => {
 };
 
 const getChats = dispatch => async ({ username }) => {
-  const source = axios.CancelToken.source();
 
   try {
-    const response = await chatApi.post('/chats', { username }, { cancelToken: source.token });
+    const response = await chatApi.post('/chats', { username });
     
     const chats = response.data.chats.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -60,11 +65,7 @@ const getChats = dispatch => async ({ username }) => {
     dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);
-    source.cancel();
-    if (axios.isCancel(err)) {
-      console.log(err);
-      console.log('request cancelled')
-    }
+    throw err;
   }
 };
 
@@ -81,6 +82,7 @@ const deleteChat = dispatch => async (username, chatId, type) => {
     dispatch({ type: 'delete_chat', payload: chatId });
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
@@ -103,6 +105,7 @@ const togglePinChat = dispatch => async (username, chatId, type, currentValue) =
     dispatch({ type: 'pin_chat', payload: { chatId, currentValue }});
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
@@ -156,6 +159,7 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
 
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
@@ -171,7 +175,23 @@ const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
     dispatch({ type: 'mark_messages_read', payload: recipient });
   } catch (err) {
     console.log(err);
+    throw err;
   }
+};
+
+const markMessageAsRead = dispatch => async ({ username, recipient }) => {
+  // try {
+  //   const response = await chatApi.patch('/message/read', { username, recipient });
+
+  //   if (!response.data.response) {
+  //     return;
+  //   }
+
+    dispatch({ type: 'mark_message_read' });
+  // } catch (err) {
+  //   console.log(err);
+  //   throw err;
+  // }
 };
 
 const deleteMessage = dispatch => async ({ messageId }) => {
@@ -185,6 +205,7 @@ const deleteMessage = dispatch => async ({ messageId }) => {
     dispatch({ type: 'delete_message', payload: messageId });
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
@@ -249,7 +270,8 @@ export const { Context, Provider } = createDataContext(
     createGroup,
     resetChatState,
     togglePinChat,
-    saveExpoToken
+    saveExpoToken,
+    markMessageAsRead
   },
   {  
     previousChats: [], 

@@ -31,6 +31,7 @@ const searchContacts = dispatch => async ({ username, search }) => {
     }
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
@@ -47,6 +48,7 @@ const addContact = dispatch => async ({ username, contact }) => {
     navigate('ContactsList');
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
@@ -58,6 +60,7 @@ const getContacts = dispatch => async ({ username }) => {
 
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 

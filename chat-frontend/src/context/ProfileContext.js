@@ -71,6 +71,7 @@ const getImage = dispatch => async (user) => {
     dispatch({ type: 'update_image', payload: imagePayload });
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
@@ -86,6 +87,7 @@ const deleteImage = dispatch => async (user) => {
     dispatch({ type: 'update_image', payload: null });
   } catch (err) {
     console.log(err);
+    throw err;
     // throw err;
   }
 };

@@ -40,7 +40,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
-  const [notification, setNotification] = useState(null);
   // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -114,6 +113,7 @@ const ChatDetailScreen = ({ navigation }) => {
         getChats({ username });
         if (message.user.name === username) {
           console.log('yeah')
+          console.log(message)
           updateMessages({ message });
           setIncomingMsgs(prevState => prevState.map(msg => {
             return msg._id === message._id ? { ...msg, read: false } : msg;
@@ -139,8 +139,11 @@ const ChatDetailScreen = ({ navigation }) => {
       //   }
       // });
       socket.current.on('has_joined_chat', user => {
+        let chatType =  chatType || navigation.getParam('type');
+        let chatId = chatId || navigation.getParam('chatId');
+
         if (user === recipient) {
-          getMessages({ username, recipient, page: currentPage })
+          getMessages({ chatType, chatId, username, recipient, page: currentPage })
             .then((chat) => {
               setIncomingMsgs(chat);
           });
@@ -185,7 +188,8 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
-    setIncomingMsgs(chat);
+    // console.log('check')
+    // setIncomingMsgs(chat);
   }, [chat]);
 
   const didFocusHandler = () => {
@@ -225,8 +229,10 @@ const ChatDetailScreen = ({ navigation }) => {
   // };
 
   const loadMoreMessages = () => {
-    let page = currentPage + 1;  
-    getMessages({ username, recipient, page })
+    let page = currentPage + 1; 
+    let chatType =  chatType || navigation.getParam('type');
+    let chatId = chatId || navigation.getParam('chatId');
+    getMessages({ chatType, chatId, username, recipient, page })
       .then((chat) => {
         setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
       });

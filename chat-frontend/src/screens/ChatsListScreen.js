@@ -58,6 +58,7 @@ const ChatsListScreen = ({ navigation }) => {
   const openRowRefs = [];
   const [isTyping, setIsTyping] = useState(false);
   const [pinAnimate, setPinAnimate] = useState(false);
+  // const [notification, setNotification] = useState(null);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -129,6 +130,7 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
+
     if (socketState) {
       socket.current = socketState;  
       socket.current.on('online', users => {
@@ -161,6 +163,10 @@ const ChatsListScreen = ({ navigation }) => {
         setTypingUser(null);
       });
     }
+
+    return () => {
+      socket.current.removeAllListeners();
+    };
   }, [socketState])
 
   useEffect(() => {
@@ -208,7 +214,7 @@ const ChatsListScreen = ({ navigation }) => {
   const handleNotification = async (notification) => {
     console.log('received notification')
     alert('Failed to get push token for push notification!');
-    setNotification({ notification });
+    // setNotification({ notification });
 
     // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
     // setBadgeNumber(badgeNumber + 1);

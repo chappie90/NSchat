@@ -113,6 +113,7 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current.on('message', message => {
         getChats({ username });
         if (message.user.name === username) {
+          console.log('yeah')
           updateMessages({ message });
           setIncomingMsgs(prevState => prevState.map(msg => {
             return msg._id === message._id ? { ...msg, read: false } : msg;
@@ -149,6 +150,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
     return () => {
       mounted = false;
+      socket.current.removeAllListeners();
     };
   }, [socketState]);
 
@@ -262,12 +264,6 @@ const ChatDetailScreen = ({ navigation }) => {
     }
     
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-
-    // try {
-    //   const response = await chatApi.post('/message/new', { message: text });
-    // } catch (err) {
-    //   console.log(err);
-    // }
 
   };
 

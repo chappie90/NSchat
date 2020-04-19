@@ -148,6 +148,7 @@ const ChatsListScreen = ({ navigation }) => {
       });
       socket.current.on('message', message => {
         console.log(message)
+        console.log('getting group message chat list')
         getChats({ username });
       });
       socket.current.on('is_typing', username => {

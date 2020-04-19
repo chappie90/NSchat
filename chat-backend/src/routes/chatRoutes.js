@@ -159,6 +159,12 @@ router.post('/chats', checkAuth, async (req, res) => {
 router.post('/messages', checkAuth, async (req, res) => {
   const { chatType, chatId, username, recipient, page } = req.body;
 
+  console.log(chatType)
+  console.log(chatId)
+  console.log(username)
+  console.log(recipient)
+  console.log(page)
+
   const skip = 50 * (page - 1);
   let messages;
 
@@ -177,11 +183,11 @@ router.post('/messages', checkAuth, async (req, res) => {
                                    .sort({ 'message.created': -1 })
                                    .limit(50);
     }
-    
+
     res.status(200).send({ messages });
   } catch (err) {
     console.log(err);
-    return res.status(422).send({ error: 'Could not fetch messages' });
+    res.status(422).send({ error: 'Could not fetch messages' });
   }
 });
 
@@ -200,6 +206,26 @@ router.patch('/messages/clear', checkAuth, async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Could not clear messages' });
+  }
+});
+
+
+// this is only for private chats, need to update for groups
+router.patch('/messages/read', checkAuth, async (req, res) => {
+  const { username, recipient } = req.body;
+  try {
+    const messages = await PrivateMessage.update(
+      { between: { $all: [username, recipient] }, from: username, read: false },
+      { $set: { read: true } },
+      { multi: true }
+    );
+
+    console.log(messages);
+
+    res.status(200).send({ messages });
+  } catch (err) {
+    console.log(err);
+    return res.status(422).send({ error: 'Could not mark messages as read' });
   }
 });
 

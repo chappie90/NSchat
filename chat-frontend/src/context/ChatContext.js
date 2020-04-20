@@ -12,6 +12,8 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [] };
     case 'update_messages':
       return { ...state, chat: [action.payload].concat(state.chat) };
+    case 'load_more_messages':
+      return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':
       return { ...state, previousChats: action.payload };
     case 'delete_chat':
@@ -153,14 +155,18 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
       });
     }
 
-    dispatch({ type: 'get_messages', payload: chatArr });
+    if (page === 1) {
+      dispatch({ type: 'get_messages', payload: chatArr });
+    } else {
+      dispatch({ type: 'load_more_messages', payload: chatArr });
+    } 
 
     return chatArr;
 
   } catch (err) {
     console.log(err);
     throw err;
-  }
+  } 
 };
 
 const markMessagesAsRead = dispatch => async ({ username, recipient }) => {

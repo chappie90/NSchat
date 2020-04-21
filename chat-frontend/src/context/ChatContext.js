@@ -215,6 +215,10 @@ const deleteMessage = dispatch => async ({ messageId }) => {
   }
 };
 
+const deleteMessageState = dispatch => async ({ messageId }) => {
+  dispatch({ type: 'delete_message', payload: messageId });
+};
+
 const createGroup = dispatch => async ({ username, groupName, groupImage = '', groupMembers = [] }) => {
   
   try {
@@ -277,7 +281,8 @@ export const { Context, Provider } = createDataContext(
     resetChatState,
     togglePinChat,
     saveExpoToken,
-    markMessageAsRead
+    markMessageAsRead,
+    deleteMessageState
   },
   {  
     previousChats: [], 

@@ -43,7 +43,8 @@ const ChatDetailScreen = ({ navigation }) => {
    updateMessages, 
    deleteMessage, 
    resetChatState,
-   markMessageAsRead 
+   markMessageAsRead,
+   deleteMessageState
  } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
@@ -117,7 +118,10 @@ const ChatDetailScreen = ({ navigation }) => {
     let mounted = true;
 
     if (socketState) {
-      socket.current = socketState;  
+      socket.current = socketState; 
+
+      let recipient = recipient || navigation.getParam('username');
+
       socket.current.on('message', message => {
         getChats({ username });
         if (message.user.name === username) {
@@ -128,7 +132,7 @@ const ChatDetailScreen = ({ navigation }) => {
           return;
         }
 
-        let recipient = recipient || navigation.getParam('username');
+        
         if (message.user.name === recipient) {
           socket.current.emit('join_chat', { username, recipient });
         }
@@ -151,18 +155,18 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current.on('is_not_typing', () => {
         navigation.setParams({ isTyping: '' });
       });
-      // socket.current.on('message_deleted', message => {
-      //   if (message) {
-      //     const deletedMessage = chat.map(item => {
-      //     return item._id === message._id ? { ...item, text: 'Message deleted', deleted: true } : item;
-      //   });
-      //   setIncomingMsgs(deletedMessage);
-      //   }
-      // });
+      socket.current.on('message_deleted', data => {
+        if (username === data.recipient) {
+          deleteMessageState({ messageId: data.selectedMessage._id })
+        }
+        //   const deletedMessage = chat.map(item => {
+        //   return item._id === message._id ? { ...item, text: 'Message deleted', deleted: true } : item;
+        // });
+        // setIncomingMsgs(deletedMessage);
+      });
       socket.current.on('has_joined_chat', user => {
         let chatType =  chatType || navigation.getParam('type');
         let chatId = chatId || navigation.getParam('chatId');
-        let recipient = recipient || navigation.getParam('username');
 
         if (user === recipient) {
           markMessageAsRead({ username, recipient });
@@ -320,8 +324,10 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const deleteMessageHandler = () => {
-    deleteMessage({ messageId: selectedMessage._id });
-    // socket.current.emit('delete_message', selectedMessage);  
+    deleteMessage({ messageId: selectedMessage._id })
+      .then(res => {
+        socket.current.emit('delete_message', { selectedMessage, recipient });
+      });
     setOverlayMode(false);
   };
 

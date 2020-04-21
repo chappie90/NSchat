@@ -84,21 +84,10 @@ module.exports = function(io) {
     }
   });
 
-  socket.on('delete_message', async (msg) => {
-
-    try {
-      const message = await PrivateMessage.update(
-        { 'message.id': msg._id },
-        { $set: { 'message.text': 'Message deleted', deleted: true } },
-        { new: true }
-      );
-
-    let response = message.nModified > 0 ? msg : false;
-
-    io.to(socketId).emit('message_deleted', response);
-  } catch (err) {
-    console.log(err);
-  }
+  socket.on('delete_message', async (data) => {
+    if (users[data.recipient]){
+      io.to(users[data.recipient].id).emit('message_deleted', data);
+    }
   });
 
   socket.on('join_chat', data => {

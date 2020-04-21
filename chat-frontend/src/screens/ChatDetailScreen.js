@@ -127,9 +127,23 @@ const ChatDetailScreen = ({ navigation }) => {
           }));
           return;
         }
+
+        let recipient = recipient || navigation.getParam('username');
+        if (message.user.name === recipient) {
+          socket.current.emit('join_chat', { username, recipient });
+        }
+
         if (mounted) {
           setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
         }
+
+        
+        // // let chatType =  chatType || navigation.getParam('type');
+        // // let chatId = chatId || navigation.getParam('chatId');
+
+        // // if (message.user.name === recipient) {
+        // //   markMessageAsRead({ username, recipient });
+        // } 
       });
       socket.current.on('is_typing', () => {
         navigation.setParams({ isTyping: 'is typing...' });

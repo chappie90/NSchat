@@ -124,23 +124,22 @@ const ChatDetailScreen = ({ navigation }) => {
 
       socket.current.on('message', message => {
         getChats({ username });
-        if (message.user.name === username) {
+        if (mounted) {
           updateMessages({ message });
+        }
+        if (message.user.name === username) {
           setIncomingMsgs(prevState => prevState.map(msg => {
             return msg._id === message._id ? { ...msg, read: false } : msg;
           }));
-          return;
         }
-
         
         if (message.user.name === recipient) {
+          // if (mounted) {
+          //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+          // }
+
           socket.current.emit('join_chat', { username, recipient });
         }
-
-        if (mounted) {
-          setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-        }
-
         
         // // let chatType =  chatType || navigation.getParam('type');
         // // let chatId = chatId || navigation.getParam('chatId');

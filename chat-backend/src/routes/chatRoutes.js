@@ -211,23 +211,31 @@ router.patch('/messages/clear', checkAuth, async (req, res) => {
 
 
 // this is only for private chats, need to update for groups
-router.patch('/messages/read', checkAuth, async (req, res) => {
-  const { username, recipient } = req.body;
-  try {
-    const messages = await PrivateMessage.update(
-      { between: { $all: [username, recipient] }, from: username, read: false },
-      { $set: { read: true } },
-      { multi: true }
-    );
+// router.patch('/message/read', checkAuth, async (req, res) => {
+//   const { username, recipient } = req.body;
+//   try {
 
-    console.log(messages);
+//     const test = await PrivateMessage.find( { between: { $all: [username, recipient] }, read: false });
 
-    res.status(200).send({ messages });
-  } catch (err) {
-    console.log(err);
-    return res.status(422).send({ error: 'Could not mark messages as read' });
-  }
-});
+//     console.log(test);
+
+//     const messages = await PrivateMessage.update(
+//       { between: { $all: [username, recipient] }, from: recipient, read: false },
+//       { $set: { read: true } },
+//       { multi: true }
+//     );
+
+//     // console.log(messages);
+
+//     let response = messages.nModified > 0 ? true : false;
+
+//     console.log(response)
+//     res.status(200).send({ response });
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(422).send({ error: 'Could not mark messages as read' });
+//   }
+// });
 
 router.patch('/message/delete', checkAuth, async (req, res) => {
   const { messageId } = req.body;

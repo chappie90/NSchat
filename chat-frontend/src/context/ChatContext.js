@@ -11,7 +11,8 @@ const chatReducer = (state, action) => {
     case 'reset_chat_state':
       return { ...state, chat: [] };
     case 'update_messages':
-      return { ...state, chat: [action.payload].concat(state.chat) };
+      // return { ...state, chat: [action.payload].concat(state.chat) };
+      return { ...state, chat: [ action.payload, ...state.chat ] };
     case 'load_more_messages':
       return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':

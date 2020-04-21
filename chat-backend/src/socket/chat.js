@@ -141,6 +141,29 @@ module.exports = function(io) {
       for (let p of groupParticipants) {
         if (p.user.username !== from && users[p.user.username]) {
           activeGroupParticipants.push(users[p.user.username].id);
+          if (!Expo.isExpoPushToken(p.user.expoToken)) {
+            console.log(`Push token ${p.user.expoToken} is not a valid Expo push token`);
+          }
+          notifications.push({
+            to: p.user.expoToken,
+            sound: 'default',
+            title: 'Message received!',
+            body: text,
+            data: { text },
+            _displayInForeground: true
+          });
+
+          let chunks = expo.chunkPushNotifications(notifications);
+
+          (async () => {
+            for (let chunk of chunks) {
+              try {
+                let receipts = await expo.sendPushNotificationsAsync(chunk);
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          })();
         }
       }
      

@@ -68,31 +68,31 @@ const ChatsListScreen = ({ navigation }) => {
   const rowOpenValue = useRef(0);
   const isRowOpen = useRef(false);
   const screenWidth = Math.round(Dimensions.get('window').width);
-  const panResponder = React.useMemo(() => PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetResponderCapture: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
-      onPanResponderGrant: (e, gestureState) => {
-        position.setOffset({ x: position.x._value, y: position.y._value });
-        position.setValue({x: 0, y: 0});
-      },
-      onPanResponderStart: (e, gestureState) => {
+  // const panResponder = React.useMemo(() => PanResponder.create({
+  //     onStartShouldSetPanResponder: (evt, gestureState) => true,
+  //     onMoveShouldSetResponderCapture: () => true,
+  //     onMoveShouldSetPanResponderCapture: () => true,
+  //     onPanResponderGrant: (e, gestureState) => {
+  //       position.setOffset({ x: position.x._value, y: position.y._value });
+  //       position.setValue({x: 0, y: 0});
+  //     },
+  //     onPanResponderStart: (e, gestureState) => {
       
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        position.setValue({x: gestureState.dx, y: gestureState.dy});
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        // console.log(gestureState);
-        // if (gestureState.dx < screenWidth / 2 - 50) {
-        //   position.setValue({ x: 0, y: gestureState.dy });
+  //     },
+  //     onPanResponderMove: (evt, gestureState) => {
+  //       position.setValue({x: gestureState.dx, y: gestureState.dy});
+  //     },
+  //     onPanResponderRelease: (evt, gestureState) => {
+  //       // console.log(gestureState);
+  //       // if (gestureState.dx < screenWidth / 2 - 50) {
+  //       //   position.setValue({ x: 0, y: gestureState.dy });
         
-        // } else {
-        //   position.setValue({ x: (screenWidth - 100), y: gestureState.dy });
-        // }
-        position.flattenOffset();
-      },
-    }), []);
+  //       // } else {
+  //       //   position.setValue({ x: (screenWidth - 100), y: gestureState.dy });
+  //       // }
+  //       position.flattenOffset();
+  //     },
+  //   }), []);
   useEffect(() => {
     registerForPushNotificationsAsync();
     getChats({ username }).then(res => {
@@ -289,7 +289,7 @@ const ChatsListScreen = ({ navigation }) => {
     // }
   };
 
-  const closeRow = (index, rowMapx) => {
+  const closeRow = (index, rowMap) => {
     if (rowMap[index]) {
       rowMap[index].closeRow();
     }
@@ -348,6 +348,7 @@ const ChatsListScreen = ({ navigation }) => {
         data={previousChats}
         keyExtractor={(data, index) => index.toString()}
         renderItem={ (rowData, rowMap) => {
+          console.log(rowData.item)
           return (
             <TouchableWithoutFeedback
               onPress={() => {
@@ -516,13 +517,13 @@ const ChatsListScreen = ({ navigation }) => {
         </View>
       </Modal>
     <AddGroupScreen visible={newGroupMode} closeModal={closeModal} />
-     <Animated.View
+    {/*} <Animated.View
             {...panResponder.panHandlers}
             style={[
               {transform: position.getTranslateTransform()},
               styles.appStyles,
             ]}>
-        </Animated.View>
+        </Animated.View> */}
       <View style={styles.background} />
       <View style={styles.headerContainer}>
         <HeadingText style={styles.header}>My Chats</HeadingText>

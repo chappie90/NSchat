@@ -381,11 +381,11 @@ const ChatsListScreen = ({ navigation }) => {
                 <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
                   <View style={styles.itemContainer}>
                     <HeadingText numberOfLines={1} style={rowData.item.groupOwner ? styles.groupName : styles.name}>{rowData.item.contact}</HeadingText>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>  
+                    <View style={{ flexDirection: 'row', alignItems: 'center'}}>  
                       <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
                       {rowData.item.pinned && (
                         <ScaleViewTriggerAnim triggerPinAnim={pinAnimate}>
-                          <AntDesign style={{marginLeft: 8}} name="pushpin" size={20} color="lightgrey" />
+                          <AntDesign style={{marginLeft: 5}} name="pushpin" size={20} color="lightgrey" />
                         </ScaleViewTriggerAnim>
                       )}
                     </View>

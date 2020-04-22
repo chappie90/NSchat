@@ -658,7 +658,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
           name="ios-arrow-back" 
           size={34} 
           color={Colors.primary} 
-          style={{ paddingHorizontal: 10,  paddingTop: 5, marginLeft: 10 }} />
+          style={{ paddingHorizontal: 10,  paddingTop: 5, marginLeft: 8 }} />
       </TouchableOpacity>
     ), 
     headerRight: (
@@ -666,9 +666,9 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         {params.isBackgroundYou && <TouchableOpacity onPress={() => params.setAsBackgroundYoutube(params.isBackgroundYou)}>
           <MaterialCommunityIcons name="flip-to-back" style={{ paddingHorizontal: 8, paddingTop: 3}} size={30} color={Colors.tertiary} />
         </TouchableOpacity>}
-        <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
+       {/* <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
           <FontAwesome name="youtube" size={32} style={{ paddingRight: 6, paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
        {params.type === 'group' && (
          <TouchableOpacity onPress={() => params.openModal()}>
           <MaterialIcons
@@ -684,7 +684,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         flex: 1, 
         flexDirection: 'row', 
         alignItems: 'center',
-        paddingLeft: 55,
+        paddingLeft: 45,
         paddingTop: 20 }}>
         <FadeViewAnim style={{ overflow: 'hidden', width: 40, height: 40, borderRadius: 20 }}>
           {params.image ? (
@@ -695,7 +695,11 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
               source={params.type === 'private' ? require('../../assets/avatar-small.png') : require('../../assets/group-small.png')} />
           )}
         </FadeViewAnim>
-        <Text style={{ marginLeft: 10, fontFamily: 'open-sans-semi-bold', fontSize: 18 }}>{params.username} {params.isTyping ? params.isTyping : ''}</Text>
+        <HeadingText
+          numberOfLines={1}
+          style={{ marginLeft: 10, maxWidth: '60%', fontFamily: 'open-sans-semi-bold', fontSize: 17 }}>
+          {params.username} {params.isTyping ? params.isTyping : ''}
+        </HeadingText>
       </View>
     )
   }

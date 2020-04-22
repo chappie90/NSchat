@@ -32,7 +32,7 @@ import { connectToSocket } from '../socket/chat';
 
 const AddGroupScreen = props => {
   const { state: { contacts }, getContacts } = useContext(ContactsContext);
-  const { state: { username } } = useContext(AuthContext);
+  const { state: { username, socketState } } = useContext(AuthContext);
   const { createGroup, getChats } = useContext(ChatContext);
   const {
     state: { profileImage },
@@ -70,6 +70,7 @@ const AddGroupScreen = props => {
     setIsLoading(true);
     createGroup({ username, groupName, groupImage, groupMembers }).then(res => {
       getChats({ username });
+      socketState.emit('new_group', { groupMembers });
       setAddToGroupArr([]);
       setGroupContacts(contacts);
       setDisableCreateBtn(true);

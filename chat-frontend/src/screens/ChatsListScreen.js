@@ -144,23 +144,22 @@ const ChatsListScreen = ({ navigation }) => {
         }
       });
       socket.current.on('offline', user => {
-        console.log('offline triggered')
         const updatedContacts = onlineContacts.filter(item => item !== user);
         getActiveStatus(updatedContacts);
       });
       socket.current.on('message', message => {
-        console.log(message)
-        console.log('getting group message chat list')
         getChats({ username });
       });
       socket.current.on('is_typing', username => {
-        console.log('is typing')
         setIsTyping(true);
         setTypingUser(username);
       });
       socket.current.on('is_not_typing', () => {
         setIsTyping(false);
         setTypingUser(null);
+      });
+      socket.current.on('new_group', () => {
+        getChats({ username });
       });
     }
 

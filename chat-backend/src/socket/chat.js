@@ -41,8 +41,6 @@ module.exports = function(io) {
     for (const c of contacts) {
       for (let [key, value] of Object.entries(users)) {
         if (c === key) {
-          // console.log(key);
-          // console.log(value.id);
           if (!onlineContacts.includes(key)) {
             onlineContacts.push(key);
           }
@@ -93,6 +91,14 @@ module.exports = function(io) {
   socket.on('join_chat', data => {
     if (users[data.recipient]) {
       io.to(users[data.recipient].id).emit('has_joined_chat', data.username);
+    }
+  });
+
+  socket.on('new_group', data => {
+    for (let member of data.groupMembers) {
+      if (users[member]) {
+        io.to(users[member].id).emit('new_group');
+      }
     }
   });
 

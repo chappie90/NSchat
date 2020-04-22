@@ -564,7 +564,7 @@ const ChatDetailScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>}
       </Animated.View>}
-        <GroupSettingsScreen visible={groupSettingsModal} closeModal={closeModalHandler} />
+        <GroupSettingsScreen navigation={navigation} visible={groupSettingsModal} closeModal={closeModalHandler} />
           <GiftedChat
               renderUsernameOnMessage 
               messages={incomingMsgs} 

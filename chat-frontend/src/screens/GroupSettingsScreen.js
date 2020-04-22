@@ -308,6 +308,7 @@ const GroupSettingsScreen = (props) => {
           leaveGroup(group._id, userId).then(res => {
             getChats({username}).then(res => {
               setIsLoading(false);
+              props.navigation.navigate('ChatsList');
             });
           });
         }}>

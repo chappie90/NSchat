@@ -348,7 +348,6 @@ const ChatsListScreen = ({ navigation }) => {
         data={previousChats}
         keyExtractor={(data, index) => index.toString()}
         renderItem={ (rowData, rowMap) => {
-          console.log(rowData.item)
           return (
             <TouchableWithoutFeedback
               onPress={() => {

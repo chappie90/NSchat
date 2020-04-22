@@ -35,9 +35,6 @@ const leaveGroup = dispatch => async (chatId, userId) => {
   try {
     const response = await chatApi.patch('/group/leave', { chatId, userId });
 
-    if (response) {
-      navigate('ChatsList');
-    }
   } catch (err) {
     console.log(err);
     throw err;

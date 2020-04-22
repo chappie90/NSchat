@@ -697,7 +697,12 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         </FadeViewAnim>
         <HeadingText
           numberOfLines={1}
-          style={{ marginLeft: 10, maxWidth: '60%', fontFamily: 'open-sans-semi-bold', fontSize: 17 }}>
+          style={{ 
+            marginLeft: 10, 
+            maxWidth: '60%', 
+            fontFamily: 'open-sans-semi-bold', 
+            fontSize: 17,
+            color: '#202020' }}>
           {params.username} {params.isTyping ? params.isTyping : ''}
         </HeadingText>
       </View>

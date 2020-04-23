@@ -161,11 +161,11 @@ router.post('/chats', checkAuth, async (req, res) => {
 router.post('/messages', checkAuth, async (req, res) => {
   const { chatType, chatId, username, recipient, page } = req.body;
 
-  console.log(chatType)
-  console.log(chatId)
-  console.log(username)
-  console.log(recipient)
-  console.log(page)
+  // console.log(chatType)
+  // console.log(chatId)
+  // console.log(username)
+  // console.log(recipient)
+  // console.log(page)
 
   const skip = 50 * (page - 1);
   let messages;

@@ -53,7 +53,7 @@ module.exports = function(io) {
     // console.log(`${onlineContacts} after`);
     // Get the clients in a room
     io.in(username).clients((err , clients) => {
-      console.log(clients);
+      // console.log(clients);
     });
     // need to send yourself array of online contacts and
     // send all clients in the room your name so they can add update their state and add you in their array
@@ -213,7 +213,8 @@ module.exports = function(io) {
     if (type === 'private') {
 
       const tempUserId = await User.find({ username: from });
-      const tempUserId2 = await User.find({ username: to });
+      const tempUserId2 = await User.find({ username: to })
+        .populate('privateChats.privateChat');
 
       expoPushTokens.push(tempUserId2[0].expoToken);
 
@@ -345,6 +346,33 @@ module.exports = function(io) {
       io.to(recipientSocketId).emit('message', returnMsgRecipient);
       io.to(socketId).emit('message', returnMsgUser);
 
+      const privateChats = tempUserId2[0].privateChats;
+
+      let unreadMessage;
+      let unreadMessageCount = 0;
+
+      for (let p of privateChats) {
+        let contact = p.privateChat.participants.filter(c => c != to);
+
+        const contactProfile = await User.find({
+          username: contact[0]
+        });
+
+        unreadMessage = await PrivateMessage.find(
+          { 
+            between: { $all: [to, contactProfile[0].username] },
+            to: to,
+            read: false, 
+          }
+        )
+        .sort({ 'message.createdAt': -1 })
+        .limit(1);
+
+        if (unreadMessage.length > 0) {
+          unreadMessageCount++;
+        }
+      }
+
       if (!Expo.isExpoPushToken(expoPushTokens[0])) {
         console.log(`Push token ${pushToken} is not a valid Expo push token`);
       }
@@ -354,7 +382,7 @@ module.exports = function(io) {
         sound: 'default',
         title: from,
         ttl: 2419200,
-        // badge: 10,
+        badge: unreadMessageCount,
         body: text,
         data: { text },
         _displayInForeground: true

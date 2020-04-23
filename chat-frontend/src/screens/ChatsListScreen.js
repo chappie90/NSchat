@@ -212,7 +212,10 @@ const ChatsListScreen = ({ navigation }) => {
 
   const handleNotification = async (notification) => {
     console.log('received notification')
-    alert('Failed to get push token for push notification!');
+    // alert('Failed to get push token for push notification!');
+    navigation.navigate('ChatDetail', {
+      username: 1
+    });
     // setNotification({ notification });
 
     // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);

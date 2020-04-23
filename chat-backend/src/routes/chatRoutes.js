@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const { Expo } = require('expo-server-sdk');
 
 const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
@@ -10,6 +11,7 @@ const PrivateChat = mongoose.model('PrivateChat');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
+const expo = new Expo();
 
 const MIME_TYPE_GROUPIMAGE = {
   'image/png': 'png',
@@ -324,6 +326,9 @@ router.post(
     const groupName = req.body.groupName;
     let groupMembers = req.body.groupMembers;
     groupMembers = JSON.parse(groupMembers);
+
+    let expoPushTokens = [];
+    let notifications = [];
     
     let imgPath;
     if (req.file) {
@@ -336,6 +341,7 @@ router.post(
       for (let member of groupMembers) {
         let memberId = await User.find({ username: member });
         participantsArr.push({ user: memberId[0]._id });
+        expoPushTokens.push(memberId[0].expoToken);
       }
 
       // $push and $addToSet don't work with inserts only with updates
@@ -385,6 +391,32 @@ router.post(
         groupOwner: username,
         unreadMessageCount: 0
       };
+
+      for (let token of expoPushTokens) {
+          if (!Expo.isExpoPushToken(token)) {
+            console.log(`Push token ${token} is not a valid Expo push token`);
+          }
+          notifications.push({
+            to: token,
+            sound: 'default',
+            title: `${username} added you to a group`,
+            body: '',
+            data: { },
+            _displayInForeground: true
+          });
+
+          let chunks = expo.chunkPushNotifications(notifications);
+
+          (async () => {
+            for (let chunk of chunks) {
+              try {
+                let receipts = await expo.sendPushNotificationsAsync(chunk);
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          })();
+      }
 
       res.status(200).send({ newGroup });
     } catch (err) {

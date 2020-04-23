@@ -213,8 +213,14 @@ module.exports = function(io) {
     if (type === 'private') {
 
       const tempUserId = await User.find({ username: from });
-      const tempUserId2 = await User.find({ username: to })
-        .populate('privateChats.privateChat');
+      const tempUserId2 = await User.find({ username: to });
+
+      const updateBadge = await User.updateOne(
+        { username: to }, 
+        { $inc: { badgeCount: 1 } }
+      );
+
+      let badgeCount = tempUserId2[0].badgeCount + 1;
 
       expoPushTokens.push(tempUserId2[0].expoToken);
 
@@ -346,32 +352,32 @@ module.exports = function(io) {
       io.to(recipientSocketId).emit('message', returnMsgRecipient);
       io.to(socketId).emit('message', returnMsgUser);
 
-      const privateChats = tempUserId2[0].privateChats;
+      // const privateChats = tempUserId2[0].privateChats;
 
-      let unreadMessage;
-      let unreadMessageCount = 0;
+      // let unreadMessage;
+      // let unreadMessageCount = 0;
 
-      for (let p of privateChats) {
-        let contact = p.privateChat.participants.filter(c => c != to);
+      // for (let p of privateChats) {
+      //   let contact = p.privateChat.participants.filter(c => c != to);
 
-        const contactProfile = await User.find({
-          username: contact[0]
-        });
+      //   const contactProfile = await User.find({
+      //     username: contact[0]
+      //   });
 
-        unreadMessage = await PrivateMessage.find(
-          { 
-            between: { $all: [to, contactProfile[0].username] },
-            to: to,
-            read: false, 
-          }
-        )
-        .sort({ 'message.createdAt': -1 })
-        .limit(1);
+      //   unreadMessage = await PrivateMessage.find(
+      //     { 
+      //       between: { $all: [to, contactProfile[0].username] },
+      //       to: to,
+      //       read: false, 
+      //     }
+      //   )
+      //   .sort({ 'message.createdAt': -1 })
+      //   .limit(1);
 
-        if (unreadMessage.length > 0) {
-          unreadMessageCount++;
-        }
-      }
+      //   if (unreadMessage.length > 0) {
+      //     unreadMessageCount++;
+      //   }
+      // }
 
       if (!Expo.isExpoPushToken(expoPushTokens[0])) {
         console.log(`Push token ${pushToken} is not a valid Expo push token`);
@@ -382,7 +388,7 @@ module.exports = function(io) {
         sound: 'default',
         title: from,
         ttl: 2419200,
-        badge: unreadMessageCount,
+        badge: badgeCount,
         body: text,
         data: { text },
         _displayInForeground: true

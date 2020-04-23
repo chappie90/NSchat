@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   expoToken: String,
-  badgeCount: Number,
+  badgeCount: { type: Number, default: 0 },
   contacts: [
      { 
        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

@@ -117,6 +117,9 @@ const ChatsListScreen = ({ navigation }) => {
       if (Platform.OS === 'ios') {
         await Notifications.setBadgeNumberAsync(0);
       }
+      if (Platform.OS === 'android') {
+        await Notifications.dismissAllNotificationsAsync();
+      }
       resetBadgeCount(username);
     }    
   };

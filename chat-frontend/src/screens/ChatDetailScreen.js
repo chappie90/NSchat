@@ -180,7 +180,9 @@ const ChatDetailScreen = ({ navigation }) => {
 
     return () => {
       mounted = false;
-      socket.current.removeAllListeners();
+      if (socket.current) {
+        socket.current.removeAllListeners();
+      }
     };
   }, [socketState]);
 
@@ -215,7 +217,9 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [chat]);
 
   const didFocusHandler = () => {
-    socket.current.emit('join_chat', { username, recipient });
+    if (socket.current) {
+      socket.current.emit('join_chat', { username, recipient });
+    }
   };
 
   const willBlurHandler = () => {

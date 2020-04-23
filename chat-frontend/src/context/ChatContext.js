@@ -254,6 +254,19 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
   }
 };
 
+const resetBadgeCount = dispatch => async (username) => {
+  try {
+    const response = await chatApi.post('/badge/clear', { username });
+
+    if (!response.data) {
+      return;
+    }
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 const saveExpoToken = dispatch => async (expoToken, username) => {
   try {
     const response = await chatApi.post('/expo/token', { expoToken, username });
@@ -283,7 +296,8 @@ export const { Context, Provider } = createDataContext(
     togglePinChat,
     saveExpoToken,
     markMessageAsRead,
-    deleteMessageState
+    deleteMessageState,
+    resetBadgeCount
   },
   {  
     previousChats: [], 

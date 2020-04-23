@@ -448,4 +448,25 @@ router.post('/expo/token', checkAuth, async (req, res) => {
   }
 });
 
+
+router.post('/badge/clear', checkAuth, async (req, res) => {
+  const username = req.body.username;
+
+  try {
+    const user = await User.updateOne(
+      { username: username },
+      { badgeCount: 0 },
+    );
+
+    if (!user) {
+      return  res.status(422).send({ error: 'Something went wrong with your request' });
+    }
+
+    res.status(200).send({ message: 'Badge count reset' });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not reset badge count' });
+  }
+});
+
 module.exports = router;

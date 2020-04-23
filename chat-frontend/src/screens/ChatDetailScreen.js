@@ -184,13 +184,6 @@ const ChatDetailScreen = ({ navigation }) => {
     };
   }, [socketState]);
 
-  // useEffect(() => {
-  //   async () => {
-  //     const resetBadgeNumber = await Notifications.setBadgeNumberAsync(0);
-  //   };
-  //   setBadgeNumber(0);
-  // }, [badgeNumber]);
-
   useEffect(() => {
     let mounted = true;
 

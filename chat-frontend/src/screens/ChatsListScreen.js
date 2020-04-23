@@ -49,7 +49,8 @@ const ChatsListScreen = ({ navigation }) => {
     deleteChat,
     togglePinChat,
     markMessagesAsRead,
-    saveExpoToken 
+    saveExpoToken,
+    resetBadgeCount
   } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
@@ -113,6 +114,10 @@ const ChatsListScreen = ({ navigation }) => {
     if (data && data.username) {
       socket.current = connectToSocket(data.username);
       updateSocketState(socket.current);
+      if (Platform.OS === 'ios') {
+        await Notifications.setBadgeNumberAsync(0);
+      }
+      resetBadgeCount(username);
     }    
   };
 
@@ -217,9 +222,6 @@ const ChatsListScreen = ({ navigation }) => {
       username: 1
     });
     // setNotification({ notification });
-
-    // const setBadgeNumber = await Notifications.setBadgeNumberAsync(badgeNumber + 1);
-    // setBadgeNumber(badgeNumber + 1);
   }
 
   const closeModal = () => {

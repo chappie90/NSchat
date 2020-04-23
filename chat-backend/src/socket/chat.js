@@ -153,7 +153,7 @@ module.exports = function(io) {
           notifications.push({
             to: p.user.expoToken,
             sound: 'default',
-            title: 'Message received!',
+            title: from,
             body: text,
             data: { text },
             _displayInForeground: true
@@ -352,7 +352,9 @@ module.exports = function(io) {
       notifications.push({
         to: expoPushTokens[0],
         sound: 'default',
-        title: 'Message received!',
+        title: from,
+        ttl: 2419200,
+        // badge: 10,
         body: text,
         data: { text },
         _displayInForeground: true

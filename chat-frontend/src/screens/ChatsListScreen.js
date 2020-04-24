@@ -16,7 +16,8 @@ import {
   Easing,
   AppState,
   AsyncStorage,
-  Dimensions
+  Dimensions,
+  Vibration
 } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
 import { Badge } from 'react-native-elements';
@@ -66,6 +67,7 @@ const ChatsListScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const rowTranslateAnimatedValues = useRef({}).current;
+  const localNotificationReceived = useRef(false);
   const rowOpenValue = useRef(0);
   const isRowOpen = useRef(false);
   const screenWidth = Math.round(Dimensions.get('window').width);
@@ -124,7 +126,7 @@ const ChatsListScreen = ({ navigation }) => {
     }    
   };
 
-  const _handleAppStateChange = nextAppState => { 
+  const _handleAppStateChange = async nextAppState => { 
     if ((nextAppState === undefined && AppState.currentState === 'active') || nextAppState === 'active') {
       checkAuth();
     }
@@ -219,12 +221,33 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   const handleNotification = async (notification) => {
-    console.log('received notification')
-    // alert('Failed to get push token for push notification!');
-    navigation.navigate('ChatDetail', {
-      username: 1
-    });
-    // setNotification({ notification });
+    let { origin, data } = notification;
+
+    console.log(notification)
+
+    if (notification.remote) {
+      Vibration.vibrate();                                                  
+      const notificationId = Notifications.presentLocalNotificationAsync({      
+        title: data.title,  
+        body: data.body,                                             
+        ios: { _displayInForeground: true }                          
+      }); 
+
+      if (origin === 'received' && AppState.currentState === 'active') {
+        console.log('active');
+        if (Platform.OS === 'ios') {
+          await Notifications.setBadgeNumberAsync(0);
+        }
+        if (Platform.OS === 'android') {
+          await Notifications.dismissAllNotificationsAsync();
+        }
+        resetBadgeCount(username); 
+      }             
+
+      if (origin === 'touched') {
+        navigation.navigate('ChatDetail', { username: 1 });
+      }                                                        
+    } 
   }
 
   const closeModal = () => {

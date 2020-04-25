@@ -233,21 +233,21 @@ const ChatsListScreen = ({ navigation }) => {
         title: data.title,  
         body: data.body,                                             
         ios: { _displayInForeground: true }                          
-      }); 
+      });                                                                   
+    } 
 
-      if (origin === 'received' && AppState.currentState === 'active') {
-        if (Platform.OS === 'ios') {
-          await Notifications.setBadgeNumberAsync(0);
-        }
-        if (Platform.OS === 'android') {
-          await Notifications.dismissAllNotificationsAsync();
-        }
-        resetBadgeCount(username); 
-      }             
+    if (origin === 'received' && AppState.currentState === 'active') {
+      if (Platform.OS === 'ios') {
+        await Notifications.setBadgeNumberAsync(0);
+      }
+      if (Platform.OS === 'android') {
+        await Notifications.dismissAllNotificationsAsync();
+      }
+      resetBadgeCount(username); 
+    }  
 
-      if (origin === 'touched') {
-        navigation.navigate('ChatDetail', { username: 1 });
-      }                                                        
+    if (origin === 'touched') {
+      navigation.navigate('ChatDetail', { username: 1 });
     } 
   }
 

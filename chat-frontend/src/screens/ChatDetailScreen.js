@@ -145,7 +145,7 @@ const ChatDetailScreen = ({ navigation }) => {
           // if (mounted) {
           //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
           // }
-
+          
           socket.current.emit('join_chat', { username, recipient });
         }
         

@@ -220,7 +220,8 @@ module.exports = function(io) {
         { $inc: { badgeCount: 1 } }
       );
 
-      let badgeCount = tempUserId2[0].badgeCount + 1;
+      const badgeCount = tempUserId2[0].badgeCount + 1;
+      const recipientImage = tempUserId2[0].profile.imgPath;
 
       expoPushTokens.push(tempUserId2[0].expoToken);
 
@@ -352,33 +353,6 @@ module.exports = function(io) {
       io.to(recipientSocketId).emit('message', returnMsgRecipient);
       io.to(socketId).emit('message', returnMsgUser);
 
-      // const privateChats = tempUserId2[0].privateChats;
-
-      // let unreadMessage;
-      // let unreadMessageCount = 0;
-
-      // for (let p of privateChats) {
-      //   let contact = p.privateChat.participants.filter(c => c != to);
-
-      //   const contactProfile = await User.find({
-      //     username: contact[0]
-      //   });
-
-      //   unreadMessage = await PrivateMessage.find(
-      //     { 
-      //       between: { $all: [to, contactProfile[0].username] },
-      //       to: to,
-      //       read: false, 
-      //     }
-      //   )
-      //   .sort({ 'message.createdAt': -1 })
-      //   .limit(1);
-
-      //   if (unreadMessage.length > 0) {
-      //     unreadMessageCount++;
-      //   }
-      // }
-
       if (!Expo.isExpoPushToken(expoPushTokens[0])) {
         console.log(`Push token ${pushToken} is not a valid Expo push token`);
       }
@@ -390,7 +364,12 @@ module.exports = function(io) {
         // ttl: 2419200,
         badge: badgeCount,
         body: text,
-        data: { title: from, body: text },
+        data: {
+          sender: from, 
+          message: text,
+          img: recipientImage, 
+          type: type, 
+          chatId: chatId },
         // _displayInForeground: true
       });
 

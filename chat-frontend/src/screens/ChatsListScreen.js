@@ -227,11 +227,15 @@ const ChatsListScreen = ({ navigation }) => {
   const handleNotification = async (notification) => {
     let { origin, data } = notification;
 
+    // if (Platform.OS === 'android') {
+    //   await  Notifications.dismissNotificationAsync(notification.notificationId);
+    // }
+
     if (notification.remote && screen.current !== 'ChatDetail') {
-      Vibration.vibrate();                                                  
+       Vibration.vibrate();                                                  
       const notificationId = Notifications.presentLocalNotificationAsync({      
-        title: data.title,  
-        body: data.body,                                             
+        title: data.sender,  
+        body: data.message,                                             
         ios: { _displayInForeground: true }                          
       });                                                                   
     } 
@@ -246,9 +250,15 @@ const ChatsListScreen = ({ navigation }) => {
       resetBadgeCount(username); 
     }  
 
-    if (origin === 'touched') {
-      navigation.navigate('ChatDetail', { username: 1 });
-    } 
+    if (origin === 'selected') {
+      navigation.navigate('ChatDetail', {
+        username: data.sender,
+        image: data.img,
+        type: data.type,
+        chatId: data.chatId
+      });
+    }
+
   }
 
   const closeModal = () => {

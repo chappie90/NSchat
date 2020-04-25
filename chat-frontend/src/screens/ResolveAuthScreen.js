@@ -25,7 +25,7 @@ const ResolveAuthScreen = () => {
             height: '100%',
             // backgroundColor: '#eee',
           }}
-          // loop={false}
+          loop={false}
           // imageAssetsFolder
           autoSize={true}
           source={require('../../assets/splash.json')}

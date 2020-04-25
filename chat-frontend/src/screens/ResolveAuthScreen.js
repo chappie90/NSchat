@@ -1,5 +1,6 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import LottieView from 'lottie-react-native';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -8,18 +9,29 @@ import FadeViewAnim from '../components/animations/FadeViewAnim';
 
 const ResolveAuthScreen = () => {
   const { autoLogin } = useContext(AuthContext);
+  const animation = useRef();
 
   useEffect(() => {
-    autoLogin();
+    animation.current.play();
   }, []);
 
   return (
-    <FadeViewAnim style={styles.container}>
-      <Image style={styles.image}  source={require('../../assets/starter-icon.jpg')} />
-      <View style={styles.textWrapper}>
-        <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
+
+     <View style={styles.container}>
+        <LottieView
+          ref={animation}
+          style={{
+            width: '100%',
+            height: '100%',
+            // backgroundColor: '#eee',
+          }}
+          // loop={false}
+          // imageAssetsFolder
+          autoSize={true}
+          source={require('../../assets/splash.json')}
+          onAnimationFinish={autoLogin}
+        />
       </View>
-    </FadeViewAnim>
   );
 };  
 
@@ -27,7 +39,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#202020'
   },
   image: {
     width: 250,

@@ -79,8 +79,8 @@ router.post('/chats', checkAuth, async (req, res) => {
         type: p.privateChat.type,
         contact: contactProfile[0].username,
         profile: {
-          imgPath: contactProfile[0].profile.imagePath,
-          imgName: contactProfile[0].profile.imageName
+          imgPath: contactProfile[0].profile.imgPath,
+          imgName: contactProfile[0].profile.imgName
         },
         chatId: p.privateChat._id, 
         pinned: p.pinned,

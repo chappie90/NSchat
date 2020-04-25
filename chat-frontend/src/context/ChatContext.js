@@ -51,6 +51,8 @@ const chatReducer = (state, action) => {
       return { ...state, previousChats: [action.payload].concat(state.previousChats) }; // [action.payload, ...state.previousChats]
     case 'save_expo_token':
       return { ...state, expoToken: action.payload };
+    case 'get_current_screen':
+      return { ...state, currentScreen: action.payload };
     default:
       return state;
   }
@@ -282,6 +284,10 @@ const saveExpoToken = dispatch => async (expoToken, username) => {
   }
 };
 
+const getCurrentScreen = dispatch => screen => {
+  dispatch({ type: 'get_current_screen', payload: screen });
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { 
@@ -297,11 +303,13 @@ export const { Context, Provider } = createDataContext(
     saveExpoToken,
     markMessageAsRead,
     deleteMessageState,
-    resetBadgeCount
+    resetBadgeCount,
+    getCurrentScreen
   },
   {  
     previousChats: [], 
     chat: [],
-    expoToken: null
+    expoToken: null,
+    currentScreen: null
   }
 );

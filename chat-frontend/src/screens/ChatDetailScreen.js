@@ -37,20 +37,20 @@ import { getTabBarHeight } from '../components/TabBarComponent';
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username, socketState } } = useContext(AuthContext);
   const {
-   state: { chat }, 
+   state: { chat, currentScreen }, 
    getChats, 
    getMessages, 
    updateMessages, 
    deleteMessage, 
    resetChatState,
    markMessageAsRead,
-   deleteMessageState
+   deleteMessageState,
+   getCurrentScreen
  } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
   const [loadMoreHelper, setLoadMoreHelper] = useState(false);
-  // const [badgeNumber, setBadgeNumber] = useState(null);
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
@@ -113,6 +113,14 @@ const ChatDetailScreen = ({ navigation }) => {
       isBackgroundYou: isBackgroundYoutube.current 
     });
   }, []);
+
+  useEffect(() => {
+    getCurrentScreen(navigation.state.routeName);
+
+    return () => {
+      getCurrentScreen(null);
+    };
+  }, [currentScreen]);
 
   useEffect(() => {
     let mounted = true;

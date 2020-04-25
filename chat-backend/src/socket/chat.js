@@ -387,11 +387,11 @@ module.exports = function(io) {
         to: expoPushTokens[0],
         sound: 'default',
         title: from,
-        ttl: 2419200,
+        // ttl: 2419200,
         badge: badgeCount,
         body: text,
-        data: { text },
-        _displayInForeground: true
+        data: { title: from, body: text },
+        // _displayInForeground: true
       });
 
       let chunks = expo.chunkPushNotifications(notifications);

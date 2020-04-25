@@ -45,7 +45,7 @@ import AddGroupScreen from './AddGroupScreen';
 const ChatsListScreen = ({ navigation }) => {
   const { state: { username, socketState }, updateSocketState } = useContext(AuthContext);
   const { 
-    state: { previousChats },
+    state: { previousChats, currentScreen },
     getChats, 
     deleteChat,
     togglePinChat,
@@ -60,6 +60,7 @@ const ChatsListScreen = ({ navigation }) => {
   const openRowRefs = [];
   const [isTyping, setIsTyping] = useState(false);
   const [pinAnimate, setPinAnimate] = useState(false);
+  const screen = useRef(null);
   // const [notification, setNotification] = useState(null);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
@@ -67,7 +68,6 @@ const ChatsListScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const rowTranslateAnimatedValues = useRef({}).current;
-  const localNotificationReceived = useRef(false);
   const rowOpenValue = useRef(0);
   const isRowOpen = useRef(false);
   const screenWidth = Math.round(Dimensions.get('window').width);
@@ -108,6 +108,10 @@ const ChatsListScreen = ({ navigation }) => {
       AppState.removeEventListener('change', _handleAppStateChange);
     }  
   }, []);
+
+  useEffect(() => {
+    screen.current = currentScreen;
+  }, [currentScreen]);
 
   const checkAuth = async () => {
     let data = await AsyncStorage.getItem('data');
@@ -223,9 +227,7 @@ const ChatsListScreen = ({ navigation }) => {
   const handleNotification = async (notification) => {
     let { origin, data } = notification;
 
-    console.log(notification)
-
-    if (notification.remote) {
+    if (notification.remote && screen.current !== 'ChatDetail') {
       Vibration.vibrate();                                                  
       const notificationId = Notifications.presentLocalNotificationAsync({      
         title: data.title,  
@@ -234,7 +236,6 @@ const ChatsListScreen = ({ navigation }) => {
       }); 
 
       if (origin === 'received' && AppState.currentState === 'active') {
-        console.log('active');
         if (Platform.OS === 'ios') {
           await Notifications.setBadgeNumberAsync(0);
         }

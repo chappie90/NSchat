@@ -23,9 +23,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    // "notification": {
-    //   "iosDisplayInForeground": true
-    // },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.stoyangarov.chat-app-course",
@@ -38,7 +35,7 @@
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE"
       ],
-      "googleServicesFile": "./google-services.json",
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

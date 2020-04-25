@@ -9,7 +9,7 @@ import FadeViewAnim from '../components/animations/FadeViewAnim';
 
 const ResolveAuthScreen = () => {
   const { autoLogin } = useContext(AuthContext);
-  const animation = useRef();
+  const animation = useRef(null);
 
   useEffect(() => {
     animation.current.play();
@@ -23,11 +23,8 @@ const ResolveAuthScreen = () => {
           style={{
             width: '100%',
             height: '100%',
-            // backgroundColor: '#eee',
           }}
           loop={false}
-          // imageAssetsFolder
-          autoSize={true}
           source={require('../../assets/splash.json')}
           onAnimationFinish={autoLogin}
         />

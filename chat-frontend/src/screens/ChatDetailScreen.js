@@ -45,7 +45,7 @@ const ChatDetailScreen = ({ navigation }) => {
    resetChatState,
    markMessageAsRead,
    deleteMessageState,
-   getCurrentScreen
+   getCurrentScreen,
  } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
@@ -197,6 +197,11 @@ const ChatDetailScreen = ({ navigation }) => {
   useEffect(() => {
     let mounted = true;
 
+    if (chat.hasOwnProperty(recipient)) {
+      setIncomingMsgs(chat[recipient]);
+      return;
+    }
+
     setCurrentPage(1);
     setRecipient(navigation.getParam('username'));
 
@@ -205,11 +210,17 @@ const ChatDetailScreen = ({ navigation }) => {
       let chatType =  chatType || navigation.getParam('type');
       let chatId = chatId || navigation.getParam('chatId');
       getMessages({ chatType, chatId, username, recipient, page })
-      .then((chat) => {
-        if (mounted) {
-          setIncomingMsgs(chat); 
-        }         
+        .then((messages) => {
+          if (mounted) {
+            setIncomingMsgs(messages); 
+          }         
       });
+      // getMessages({ chatType, chatId, username, recipient, page })
+      // .then((chat) => {
+      //   if (mounted) {
+      //     setIncomingMsgs(chat); 
+      //   }         
+      // });
     }
 
     return () => {
@@ -218,8 +229,10 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
+    let recipient = recipient || navigation.getParam('username');
+
     if (!loadMoreHelper) {
-      setIncomingMsgs(chat);
+      setIncomingMsgs(chat[recipient]);
     }   
     setLoadMoreHelper(false);
   }, [chat]);
@@ -231,7 +244,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const willBlurHandler = () => {
-    resetChatState();
+    // resetChatState();
   };
 
   const openModalHandler = () => {
@@ -246,7 +259,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const setYoutubeAsBackgroundHandler = (val) => {
     isBackgroundYoutube.current = !val;
     navigation.setParams({ isBackgroundYou: !val });
-    console.log(isBackgroundYoutube);
   };
 
   const closeModalHandler = () => {
@@ -524,7 +536,8 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderLoadEarlier = (props) => {
-    if (!chat || chat.length < 50) {
+    let recipient = recipient || navigation.getParam('username');
+    if (chat.hasOwnProperty(recipient) && chat[recipient].length < 50) {
       return;
     }
 

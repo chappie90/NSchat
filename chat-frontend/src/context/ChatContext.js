@@ -7,6 +7,8 @@ import { navigate } from '../components/navigationRef';
 const chatReducer = (state, action) => {
   switch (action.type) {
     case 'get_messages':
+      return { ...state, chat: { ...state.chat, [action.payload.user]: action.payload.messages }};
+    case 'get_messages_old':
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'reset_chat_state':
       return { ...state, chat: [] };
@@ -158,12 +160,8 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
       });
     }
 
-    if (page === 1) {
-      dispatch({ type: 'get_messages', payload: chatArr });
-    } else {
-      dispatch({ type: 'load_more_messages', payload: chatArr });
-    } 
-
+    dispatch({ type: 'get_messages', payload: { user: recipient, messages: chatArr } });
+  
     return chatArr;
 
   } catch (err) {
@@ -171,6 +169,64 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
     throw err;
   } 
 };
+
+// const getMessages = dispatch => async ({ chatType, chatId, username, recipient, page }) => {
+
+//   try {
+
+//     const response = await chatApi.post('/messages', { chatType, chatId, username, recipient, page });
+
+//     const chatArr = [];
+
+//     if (chatType === 'private') {
+//       response.data.messages.map(message => {
+//         chatArr.push({
+//           _id: message.message.id,
+//           text: message.message.text,
+//           createdAt: message.message.createdAt,
+//           user: {
+//             _id: message.from === username ? 1 : 2,
+//             name: message.from === username ? username : recipient
+//           },
+//           read: message.read,
+//           deleted: message.deleted,
+//           reply: message.replyTo ? message.replyTo.messageText : null,
+//           replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
+//         });
+//       });
+//     }
+
+//     if (chatType === 'group') {
+//       response.data.messages.map(message => {
+//         chatArr.push({
+//           _id: message.message.giftedChatId ? message.message.giftedChatId : message._id,
+//           text: message.message.text,
+//           createdAt: message.message.created,
+//           user: {
+//             _id: message.from === username ? 1 : 2,
+//             name: message.from
+//           },
+//           read: message.read,
+//           deleted: message.deleted,
+//           reply: message.reply ? message.reply.originalMsgText : null,
+//           replyAuthor: message.reply ? message.reply.originalMsgAuthor : null
+//         });
+//       });
+//     }
+
+//     if (page === 1) {
+//       dispatch({ type: 'get_messages', payload: chatArr });
+//     } else {
+//       dispatch({ type: 'load_more_messages', payload: chatArr });
+//     } 
+
+//     return chatArr;
+
+//   } catch (err) {
+//     console.log(err);
+//     throw err;
+//   } 
+// };
 
 const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
 
@@ -308,7 +364,8 @@ export const { Context, Provider } = createDataContext(
   },
   {  
     previousChats: [], 
-    chat: [],
+    // chat: [],
+    chat: {},
     expoToken: null,
     currentScreen: null
   }

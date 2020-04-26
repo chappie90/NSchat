@@ -14,15 +14,19 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [] };
     case 'update_messages':
       // return { ...state, chat: [action.payload].concat(state.chat) };
-      return state.chat[action.payload.user] ?
-       { ...state, chat: {
-        ...state.chat, 
-          [action.payload.user]: 
-            [ action.payload.message, ...state.chat[action.payload.user] ] } } :
-       { ...state, chat: {
-        ...state.chat, 
-          [action.payload.user]: 
-            [ action.payload.message ] } };
+      // return state.chat[action.payload.user] ?
+      //  { ...state, chat: {
+      //   ...state.chat, 
+      //     [action.payload.user]: 
+      //       [ action.payload.message, ...state.chat[action.payload.user] ] } } :
+      //  { ...state, chat: {
+      //   ...state.chat, 
+      //     [action.payload.user]: 
+      //       [ action.payload.message ] } };
+        return { ...state, chat: {
+          ...state.chat, 
+            [action.payload.user]: 
+              [ action.payload.message, ...state.chat[action.payload.user] ] } }; 
     case 'load_more_messages':
       return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':
@@ -48,12 +52,22 @@ const chatReducer = (state, action) => {
       return { ...state, previousChats: markedMessages };
     case 'mark_message_read': 
       // if you have more than initial 50 messages loaded it will jump back to first 50...
-      const markedMessage = state.chat[action.payload].map(item => {
-        return item.read === false ? { ...item, read: true } : item;
-      });
-      return { ...state, chat: { 
-        ...state.chat, 
-        [action.payload]: markedMessage } };
+      // if (state.chat[action.payload]) {
+      //   const markedMessage = state.chat[action.payload].map(item => {
+      //     return item.read === false ? { ...item, read: true } : item;
+      //   });
+      //   return { ...state, chat: { 
+      //     ...state.chat, 
+      //     [action.payload]: markedMessage } };
+      // } else {
+      //   return state;
+      // }
+       const markedMessage = state.chat[action.payload].map(item => {
+          return item.read === false ? { ...item, read: true } : item;
+        });
+        return { ...state, chat: { 
+          ...state.chat, 
+          [action.payload]: markedMessage } };
     case 'delete_message':
       const deletedMessage = state.chat[action.payload.user].map(item => {
         return item._id === action.payload.messageId ? { ...item, text: 'Message deleted', deleted: true } : item;

@@ -132,23 +132,23 @@ const ChatDetailScreen = ({ navigation }) => {
 
       socket.current.on('message', message => {
         getChats({ username });
+       if (mounted) {
+          updateMessages({ user: recipient, message });
+        }
         if (message.user.name === username) {
-          if (mounted) {
-            updateMessages({ user: recipient, message });
-          }
           setIncomingMsgs(prevState => prevState.map(msg => {
             return msg._id === message._id ? { ...msg, read: false } : msg;
           }));
         }
         
         if (message.user.name === recipient) {
-          if (mounted) {
-            updateMessages({ user: username, message });
-          }
+          // if (mounted) {
+          //   updateMessages({ user: recipient, message });
+          // }
 
-          if (mounted) {
-            setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-          }
+          // if (mounted) {
+          //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+          // }
           
           socket.current.emit('join_chat', { username, recipient });
         }
@@ -215,6 +215,7 @@ const ChatDetailScreen = ({ navigation }) => {
       let chatId = chatId || navigation.getParam('chatId');
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
+          console.log('callesd')
           if (mounted) {
             setIncomingMsgs(messages); 
           }         
@@ -233,6 +234,7 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
+    // console.log(chat);
     let recipient = recipient || navigation.getParam('username');
 
     if (!loadMoreHelper) {

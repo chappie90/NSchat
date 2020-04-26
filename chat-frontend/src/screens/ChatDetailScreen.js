@@ -168,7 +168,7 @@ const ChatDetailScreen = ({ navigation }) => {
       });
       socket.current.on('message_deleted', data => {
         if (username === data.recipient) {
-          deleteMessageState({ messageId: data.selectedMessage._id })
+          deleteMessageState({ user: recipient, messageId: data.selectedMessage._id })
         }
         //   const deletedMessage = chat.map(item => {
         //   return item._id === message._id ? { ...item, text: 'Message deleted', deleted: true } : item;
@@ -180,7 +180,7 @@ const ChatDetailScreen = ({ navigation }) => {
         let chatId = chatId || navigation.getParam('chatId');
 
         if (user === recipient) {
-          markMessageAsRead({ user: recipient });
+          markMessageAsRead({ user:recipient });
           // getMessages({ chatType, chatId, username, recipient, page: 1 })
           //   .then((chat) => {
           //     console.log(chat)
@@ -344,7 +344,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const deleteMessageHandler = () => {
-    deleteMessage({ messageId: selectedMessage._id })
+    deleteMessage({ user: recipient, messageId: selectedMessage._id })
       .then(res => {
         socket.current.emit('delete_message', { selectedMessage, recipient });
       });

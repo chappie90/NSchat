@@ -7,7 +7,14 @@ import { navigate } from '../components/navigationRef';
 const chatReducer = (state, action) => {
   switch (action.type) {
     case 'get_messages':
-      return { ...state, chat: { ...state.chat, [action.payload.user]: action.payload.messages } };
+      return state.chat[action.payload.user] ?
+        { ...state, chat: 
+          { ...state.chat, 
+          [action.payload.user]:
+            [ ...state.chat[action.payload.user], ...action.payload.messages ] } } :
+         { ...state, chat: 
+          { ...state.chat, 
+          [action.payload.user]: action.payload.messages } };
     case 'get_messages_old':
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'reset_chat_state':

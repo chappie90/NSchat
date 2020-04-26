@@ -287,7 +287,7 @@ const ChatDetailScreen = ({ navigation }) => {
     let chatId = chatId || navigation.getParam('chatId');
     getMessages({ chatType, chatId, username, recipient, page })
       .then((chat) => {
-        // setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
+         setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
       });
     setCurrentPage(currentPage + 1);
   };

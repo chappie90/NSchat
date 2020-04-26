@@ -41,12 +41,14 @@ const chatReducer = (state, action) => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
       });
       return { ...state, previousChats: markedMessages };
-    case 'mark_message_read':    
+    case 'mark_message_read': 
       // if you have more than initial 50 messages loaded it will jump back to first 50...
-      const markedMessage = state.chat.map(item => {
+      const markedMessage = state.chat[action.payload].map(item => {
         return item.read === false ? { ...item, read: true } : item;
       });
-      return { ...state, chat: markedMessage };
+      return { ...state, chat: { 
+        ...state.chat, 
+        [action.payload]: markedMessage } };
     case 'delete_message':
       const deletedMessage = state.chat.map(item => {
         return item._id === action.payload ? { ...item, text: 'Message deleted', deleted: true } : item;
@@ -247,7 +249,7 @@ const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
   }
 };
 
-const markMessageAsRead = dispatch => async ({ username, recipient }) => {
+const markMessageAsRead = dispatch => async ({ user }) => {
   // try {
   //   const response = await chatApi.patch('/message/read', { username, recipient });
 
@@ -255,7 +257,7 @@ const markMessageAsRead = dispatch => async ({ username, recipient }) => {
   //     return;
   //   }
 
-    dispatch({ type: 'mark_message_read' });
+  dispatch({ type: 'mark_message_read', payload: user });
   // } catch (err) {
   //   console.log(err);
   //   throw err;

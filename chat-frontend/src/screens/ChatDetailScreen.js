@@ -180,7 +180,7 @@ const ChatDetailScreen = ({ navigation }) => {
         let chatId = chatId || navigation.getParam('chatId');
 
         if (user === recipient) {
-          markMessageAsRead({ username, recipient });
+          markMessageAsRead({ user: recipient });
           // getMessages({ chatType, chatId, username, recipient, page: 1 })
           //   .then((chat) => {
           //     console.log(chat)

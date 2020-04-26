@@ -146,9 +146,9 @@ const ChatDetailScreen = ({ navigation }) => {
             updateMessages({ user: username, message });
           }
 
-          // if (mounted) {
-          //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-          // }
+          if (mounted) {
+            setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+          }
           
           socket.current.emit('join_chat', { username, recipient });
         }

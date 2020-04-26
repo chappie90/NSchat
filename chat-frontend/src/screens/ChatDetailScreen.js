@@ -132,16 +132,20 @@ const ChatDetailScreen = ({ navigation }) => {
 
       socket.current.on('message', message => {
         getChats({ username });
-        if (mounted) {
-          updateMessages({ message });
-        }
         if (message.user.name === username) {
+          if (mounted) {
+            updateMessages({ user: recipient, message });
+          }
           setIncomingMsgs(prevState => prevState.map(msg => {
             return msg._id === message._id ? { ...msg, read: false } : msg;
           }));
         }
         
         if (message.user.name === recipient) {
+          if (mounted) {
+            updateMessages({ user: username, message });
+          }
+
           // if (mounted) {
           //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
           // }
@@ -281,7 +285,7 @@ const ChatDetailScreen = ({ navigation }) => {
     let chatId = chatId || navigation.getParam('chatId');
     getMessages({ chatType, chatId, username, recipient, page })
       .then((chat) => {
-        setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
+        // setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
       });
     setCurrentPage(currentPage + 1);
   };

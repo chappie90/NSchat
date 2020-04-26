@@ -7,14 +7,17 @@ import { navigate } from '../components/navigationRef';
 const chatReducer = (state, action) => {
   switch (action.type) {
     case 'get_messages':
-      return { ...state, chat: { ...state.chat, [action.payload.user]: action.payload.messages }};
+      return { ...state, chat: { ...state.chat, [action.payload.user]: action.payload.messages } };
     case 'get_messages_old':
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'reset_chat_state':
       return { ...state, chat: [] };
     case 'update_messages':
       // return { ...state, chat: [action.payload].concat(state.chat) };
-      return { ...state, chat: [ action.payload, ...state.chat ] };
+      return { ...state, chat: {
+        ...state.chat, 
+          [action.payload.user]: 
+            [ action.payload.message, ...state.chat[action.payload.user] ] } };
     case 'load_more_messages':
       return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':
@@ -93,8 +96,8 @@ const deleteChat = dispatch => async (username, chatId, type) => {
   }
 };
 
-const updateMessages = dispatch => ({ message }) => {
-  dispatch({ type: 'update_messages', payload: message });
+const updateMessages = dispatch => ({ user, message }) => {
+  dispatch({ type: 'update_messages', payload: { user, message } });
 };
 
 const resetChatState = dispatch => () => {

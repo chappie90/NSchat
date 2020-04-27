@@ -51,6 +51,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
   const [loadMoreHelper, setLoadMoreHelper] = useState(false);
+  const [allMessagesLoaded, setAllMessagesLoaded] = useState(false);
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
@@ -286,8 +287,19 @@ const ChatDetailScreen = ({ navigation }) => {
     let chatType =  chatType || navigation.getParam('type');
     let chatId = chatId || navigation.getParam('chatId');
     getMessages({ chatType, chatId, username, recipient, page })
-      .then((chat) => {
-         setIncomingMsgs(prevState => GiftedChat.prepend(prevState, chat));
+      .then((messages) => {
+        if (messages.length < 50) {
+          setAllMessagesLoaded(true);
+          setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
+        } else if (messages.length === 50) {
+          setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
+          getMessages({ chatType, chatId, username, recipient, page: page + 1 })
+            .then((messages) => {
+              if (messages.length === 0) {
+                setAllMessagesLoaded(true);           
+              }
+            });
+        }
       });
     setCurrentPage(currentPage + 1);
   };
@@ -543,7 +555,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const renderLoadEarlier = (props) => {
     let recipient = recipient || navigation.getParam('username');
-    if (chat.hasOwnProperty(recipient) && chat[recipient].length < 50) {
+    if (chat.hasOwnProperty(recipient) && (chat[recipient].length < 50 || allMessagesLoaded)) {
       return;
     }
 

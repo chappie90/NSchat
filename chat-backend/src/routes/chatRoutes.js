@@ -381,12 +381,14 @@ router.post(
       await initialGroupMessage.save();
 
       const newGroup = {
+        chatId: group._id,
+        type: 'group',
         text: initialGroupMessage.message.text,
         date: initialGroupMessage.message.created,
         contact: groupName,
         profile: {
-          imagePath: imgPath ? imgPath : null,
-          imageName: req.file ? req.file.filename : ''
+          imgPath: imgPath ? imgPath : null,
+          imgName: req.file ? req.file.filename : ''
         },
         groupOwner: username,
         unreadMessageCount: 0

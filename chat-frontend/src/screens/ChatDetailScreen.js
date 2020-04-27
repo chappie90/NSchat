@@ -66,6 +66,7 @@ const ChatDetailScreen = ({ navigation }) => {
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
+  let mounted = true;
 
   const height = useRef(new Animated.Value(0)).current;
 
@@ -124,7 +125,6 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [currentScreen]);
 
   useEffect(() => {
-    let mounted = true;
 
     if (socketState) {
       socket.current = socketState; 
@@ -200,7 +200,6 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [socketState]);
 
   useEffect(() => {
-    let mounted = true;
 
     if (chat.hasOwnProperty(recipient)) {
       if (chat[recipient].length > 50) {
@@ -292,17 +291,19 @@ const ChatDetailScreen = ({ navigation }) => {
     let chatId = chatId || navigation.getParam('chatId');
     getMessages({ chatType, chatId, username, recipient, page })
       .then((messages) => {
-        if (messages.length < 50) {
-          setAllMessagesLoaded(true);
-          setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
-        } else if (messages.length === 50) {
-          setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
-          getMessages({ chatType, chatId, username, recipient, page: page + 1 })
-            .then((messages) => {
-              if (messages.length === 0) {
-                setAllMessagesLoaded(true);           
-              }
-            });
+        if (mounted) {
+          if (messages.length < 50) {
+            setAllMessagesLoaded(true);
+            setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
+          } else if (messages.length === 50) {
+            setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
+            getMessages({ chatType, chatId, username, recipient, page: page + 1 })
+              .then((messages) => {
+                if (messages.length === 0) {
+                  setAllMessagesLoaded(true);           
+                }
+              });
+          }
         }
       });
     setCurrentPage(currentPage + 1);

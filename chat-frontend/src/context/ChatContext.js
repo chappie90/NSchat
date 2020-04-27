@@ -18,7 +18,7 @@ const chatReducer = (state, action) => {
     case 'get_messages_old':
       return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
     case 'reset_chat_state':
-      return { ...state, chat: [] };
+      return { ...state, chat: { [action.payload]: state.chat[action.payload].slice(0, 50) } };
     case 'update_messages':
       // return { ...state, chat: [action.payload].concat(state.chat) };
       // return state.chat[action.payload.user] ?
@@ -130,8 +130,8 @@ const updateMessages = dispatch => ({ user, message }) => {
   dispatch({ type: 'update_messages', payload: { user, message } });
 };
 
-const resetChatState = dispatch => () => {
-  dispatch({ type: 'reset_chat_state' });
+const resetChatState = dispatch => (user) => {
+  dispatch({ type: 'reset_chat_state', payload: user });
 };
 
 const togglePinChat = dispatch => async (username, chatId, type, currentValue) => {

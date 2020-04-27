@@ -203,6 +203,11 @@ const ChatDetailScreen = ({ navigation }) => {
     let mounted = true;
 
     if (chat.hasOwnProperty(recipient)) {
+      if (chat[recipient].length > 50) {
+        resetChatState(recipient);
+        setIncomingMsgs(chat[recipient].slice(0, 50));
+        return;
+      }
       setIncomingMsgs(chat[recipient]);
       return;
     }
@@ -216,7 +221,6 @@ const ChatDetailScreen = ({ navigation }) => {
       let chatId = chatId || navigation.getParam('chatId');
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
-          console.log('callesd')
           if (mounted) {
             setIncomingMsgs(messages); 
           }         

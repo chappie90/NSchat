@@ -398,13 +398,19 @@ router.post(
           if (!Expo.isExpoPushToken(token)) {
             console.log(`Push token ${token} is not a valid Expo push token`);
           }
+
           notifications.push({
             to: token,
             sound: 'default',
-            title: `${username} added you to a group`,
-            body: '',
-            data: { },
-            _displayInForeground: true
+            title: username,
+            body: 'You were added to a group',
+            data: {
+              sender: group.name,
+              message: `${username} added you to a group`,
+              img: group.avatar.imagePath,
+              type: 'group',
+              chatId: group._id
+            }
           });
 
           let chunks = expo.chunkPushNotifications(notifications);

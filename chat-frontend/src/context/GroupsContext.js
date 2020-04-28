@@ -31,9 +31,9 @@ const getGroup = dispatch => async (chatId) => {
   }
 };
 
-const leaveGroup = dispatch => async (chatId, userId) => {
+const leaveGroup = dispatch => async (chatId, userId, username) => {
   try {
-    const response = await chatApi.patch('/group/leave', { chatId, userId });
+    const response = await chatApi.patch('/group/leave', { chatId, userId, username });
 
   } catch (err) {
     console.log(err);

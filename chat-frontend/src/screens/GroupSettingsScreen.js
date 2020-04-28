@@ -305,7 +305,7 @@ const GroupSettingsScreen = (props) => {
         </View>
         <TouchableOpacity onPress={() => {
           setIsLoading(true);
-          leaveGroup(group._id, userId).then(res => {
+          leaveGroup(group._id, userId, username).then(res => {
             getChats({username}).then(res => {
               setIsLoading(false);
               props.navigation.navigate('ChatsList');

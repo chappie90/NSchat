@@ -399,8 +399,12 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderMessage = (props) => {
+    console.log(props.currentMessage)
     if (props.currentMessage.reply) {
-      return <RenderMessageReplyBubble { ...props } />;
+      return <MessageReplyBubble { ...props } />;
+    }
+    if (props.currentMessage.user.name === 'admin') {
+      return <AdminBubble { ...props } />;
     }
     return <Message { ...props } />;
   };  
@@ -423,7 +427,23 @@ const ChatDetailScreen = ({ navigation }) => {
     );
   }
 
-  const RenderMessageReplyBubble = (props) => {
+  const AdminBubble = props => {
+    return (
+      <View style={{ alignSelf: 'center', marginVertical: 8 }}>
+          <Text style={{ 
+            borderRadius: 10, 
+            overflow: 'hidden', 
+            backgroundColor: '#A8A8A8', 
+            paddingVertical: 4, 
+            paddingHorizontal: 8, 
+            color: '#fff' }}>
+            {props.currentMessage.text}
+          </Text>
+      </View>
+    );
+  };
+
+  const MessageReplyBubble = (props) => {
     if (props.currentMessage.user._id === 1)  {
       return (
         <View style={props.containerStyle}> 

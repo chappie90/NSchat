@@ -4,6 +4,7 @@ const multer = require('multer');
 
 const Group = mongoose.model('Group');
 const User = mongoose.model('User');
+const GroupMessage = mongoose.model('GroupMessage');
 const checkAuth = require('../middlewares/checkAuth');
 
 const router = express.Router();
@@ -54,6 +55,7 @@ router.get('/group', checkAuth, async (req, res) => {
 router.patch('/group/leave', checkAuth, async (req, res) => {
   const groupId = req.body.chatId;
   const userId = req.body.userId;
+  const username = req.body.username;
 
   try {
     const user = await User.update(
@@ -75,6 +77,16 @@ router.patch('/group/leave', checkAuth, async (req, res) => {
       } },
       { new: true }
     );
+
+   const userLeftGroupMessage = new GroupMessage({
+      group:groupId,
+      from: 'admin',
+      message: {
+        text: `${username} has left the group`,
+        created: Date.now()
+      }
+    });
+    await userLeftGroupMessage.save();
     
     res.status(200).send({ message: 'You\'ve left the group' });
   } catch (err) {

@@ -372,7 +372,7 @@ router.post(
 
       const initialGroupMessage = new GroupMessage({
         group: group._id,
-        from: username,
+        from: 'admin',
         message: {
           text: `${username} created group "${groupName}"`,
           created: Date.now()

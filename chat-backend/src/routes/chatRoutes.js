@@ -341,7 +341,9 @@ router.post(
       for (let member of groupMembers) {
         let memberId = await User.find({ username: member });
         participantsArr.push({ user: memberId[0]._id });
-        expoPushTokens.push(memberId[0].expoToken);
+        if (member !== username) {
+          expoPushTokens.push(memberId[0].expoToken);
+        }        
       }
 
       // $push and $addToSet don't work with inserts only with updates

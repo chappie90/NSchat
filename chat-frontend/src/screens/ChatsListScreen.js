@@ -251,6 +251,10 @@ const ChatsListScreen = ({ navigation }) => {
     }  
 
     if (origin === 'selected') {
+      if (data.type === 'group') {
+        getCurrentGroupId(data.chatId);
+      }
+
       navigation.navigate('ChatDetail', {
         username: data.sender,
         image: data.img,

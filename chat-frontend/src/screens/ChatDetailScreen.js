@@ -125,6 +125,7 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [currentScreen]);
 
   useEffect(() => {
+    let mounted = true;
 
     if (socketState) {
       socket.current = socketState; 
@@ -200,6 +201,7 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [socketState]);
 
   useEffect(() => {
+    let mounted = true;
 
     if (chat.hasOwnProperty(recipient)) {
       if (chat[recipient].length > 50) {
@@ -238,7 +240,6 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
-    // console.log(chat);
     let recipient = recipient || navigation.getParam('username');
 
     if (!loadMoreHelper) {

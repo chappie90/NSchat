@@ -133,8 +133,8 @@ const ChatDetailScreen = ({ navigation }) => {
       let recipient = recipient || navigation.getParam('username');
 
       socket.current.on('message', message => {
-        getChats({ username });
-       if (mounted) {
+        socket.current.emit('stop_typing', recipient); 
+        if (mounted) {
           updateMessages({ user: recipient, message });
         }
         if (message.user.name === username) {
@@ -145,13 +145,8 @@ const ChatDetailScreen = ({ navigation }) => {
         
         if (message.user.name === recipient) {
           // if (mounted) {
-          //   updateMessages({ user: recipient, message });
-          // }
-
-          // if (mounted) {
           //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-          // }
-          
+          // }    
           socket.current.emit('join_chat', { username, recipient });
         }
         

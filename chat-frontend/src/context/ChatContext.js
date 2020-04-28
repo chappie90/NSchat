@@ -102,8 +102,6 @@ const getChats = dispatch => async ({ username }) => {
 
     chats.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
 
-    console.log(chats)
-
     dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);
@@ -118,8 +116,6 @@ const deleteChat = dispatch => async (username, chatId, type) => {
     if (!response.data) {
       return;
     }
-
-    console.log(response.data);
 
     dispatch({ type: 'delete_chat', payload: chatId });
   } catch (err) {
@@ -339,8 +335,6 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
     formData.append('groupMembers', groupMembersStr);
 
     const response = await chatApi.post('/group/new', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-
-    console.log(response.data.newGroup)
 
     dispatch({ type: 'create_group', payload: response.data.newGroup });
   } catch (err) {

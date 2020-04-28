@@ -66,9 +66,9 @@ const updateGroupImage = dispatch => async (username, chatId, groupName, groupIm
   }
 };
 
-const updateGroupName = dispatch => async (chatId, groupName) => {
+const updateGroupName = dispatch => async (chatId, groupName, username) => {
   try {
-    const response = await chatApi.patch('/group/name/update', { chatId, groupName });
+    const response = await chatApi.patch('/group/name/update', { chatId, groupName, username });
 
     dispatch({ type: 'get_group', payload: response.data.group });
   } catch (err) {

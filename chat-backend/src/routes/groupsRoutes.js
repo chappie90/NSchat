@@ -152,6 +152,7 @@ router.patch('/group/image/delete', checkAuth, async (req, res) => {
 router.patch('/group/name/update', checkAuth, async (req, res) => {
   const groupId = req.body.chatId;
   const groupName = req.body.groupName;
+  const username = req.body.username;
 
   try {
     const group = await Group.findOneAndUpdate(
@@ -163,6 +164,16 @@ router.patch('/group/name/update', checkAuth, async (req, res) => {
     if (!group) {
       return res.status(422).send({ error: 'Could not update group name' });
     }
+
+    const updatedGroupNameMessage = new GroupMessage({
+      group: groupId,
+      from: 'admin',
+      message: {
+        text: `${username} changed group name to '${groupName}'`,
+        created: Date.now()
+      }
+    });
+    await updatedGroupNameMessage.save();
 
     res.status(200).send({ group });
   } catch (err) {

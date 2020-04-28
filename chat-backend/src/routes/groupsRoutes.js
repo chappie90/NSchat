@@ -120,6 +120,16 @@ router.post(
       if (!group) {
         return res.status(422).send({ error: 'Could not update image' });
       }  
+
+     const updatedGroupImageMessage = new GroupMessage({
+        group:groupId,
+        from: 'admin',
+        message: {
+          text: `${username} updated the group image`,
+          created: Date.now()
+        }
+      });
+      await updatedGroupImageMessage.save();
       
       res.status(200).send({ group });
     } catch (err) {

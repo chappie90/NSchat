@@ -150,7 +150,7 @@ const GroupSettingsScreen = (props) => {
 
   const deletePhotoHandler = () => {
     if (group.avatar) {
-      deleteGroupImage(group._id);
+      deleteGroupImage(group._id, username);
     }
     setModalVisible(false);
   };

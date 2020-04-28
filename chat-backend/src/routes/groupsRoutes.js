@@ -122,7 +122,7 @@ router.post(
       }  
 
      const updatedGroupImageMessage = new GroupMessage({
-        group:groupId,
+        group: groupId,
         from: 'admin',
         message: {
           text: `${username} updated the group image`,
@@ -140,6 +140,7 @@ router.post(
 
 router.patch('/group/image/delete', checkAuth, async (req, res) => {
   const groupId = req.body.chatId;
+  const username = req.body.username;
 
   try {
     const group = await Group.findOneAndUpdate(
@@ -151,6 +152,16 @@ router.patch('/group/image/delete', checkAuth, async (req, res) => {
     if (!group) {
       return res.status(422).send({ error: 'Could not delete image' });
     }
+
+    const deletedGroupImageMessage = new GroupMessage({
+      group: groupId,
+      from: 'admin',
+      message: {
+        text: `${username} deleted the group image`,
+        created: Date.now()
+      }
+    });
+    await deletedGroupImageMessage.save();
 
     res.status(200).send({ group });
   } catch (err) {
@@ -193,6 +204,7 @@ router.patch('/group/name/update', checkAuth, async (req, res) => {
 });
 
 router.patch('/group/participants/add', checkAuth, async (req, res) => {
+  const username = req.body.username;
   const groupId = req.body.chatId;
   const newMembers = req.body.newMembers;
   let memberIds = [];
@@ -212,6 +224,18 @@ router.patch('/group/participants/add', checkAuth, async (req, res) => {
 
     if (!group) {
       return res.status(422).send({ error: 'Could not add group members' });
+    }
+
+    for (const member of newMembers) {
+      const addedGroupMemberMessage = new GroupMessage({
+        group: groupId,
+        from: 'admin',
+        message: {
+          text: `${username} added ${member.contactName} to the group`,
+          created: Date.now()
+        }
+      });
+      await addedGroupMemberMessage.save();
     }
 
     res.status(200).send({ group });

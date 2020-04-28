@@ -77,9 +77,9 @@ const updateGroupName = dispatch => async (chatId, groupName, username) => {
   }
 };
 
-const deleteGroupImage = dispatch => async (chatId) => {
+const deleteGroupImage = dispatch => async (chatId, username) => {
   try {
-    const response = await chatApi.patch('/group/image/delete', { chatId});
+    const response = await chatApi.patch('/group/image/delete', { chatId, username});
 
     if (!response.data.group) {
       return;
@@ -92,7 +92,7 @@ const deleteGroupImage = dispatch => async (chatId) => {
 };
 
 const addGroupMember = dispatch => async (username, chatId, newMembers) => {
-  console.log(newMembers);
+
   try {
     const response = await chatApi.patch('/group/participants/add', { username, chatId, newMembers });
 

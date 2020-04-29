@@ -51,7 +51,8 @@ const ChatsListScreen = ({ navigation }) => {
     togglePinChat,
     markMessagesAsRead,
     saveExpoToken,
-    resetBadgeCount
+    resetBadgeCount,
+    updateMessages
   } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
@@ -61,7 +62,7 @@ const ChatsListScreen = ({ navigation }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [pinAnimate, setPinAnimate] = useState(false);
   const screen = useRef(null);
-  // const [notification, setNotification] = useState(null);
+  const notificationState = useRef(null);
   const [typingUser, setTypingUser] = useState(null);
   const [newGroupMode, setNewGroupMode] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -97,6 +98,7 @@ const ChatsListScreen = ({ navigation }) => {
   //     },
   //   }), []);
   useEffect(() => {
+    console.log(username)
     registerForPushNotificationsAsync();
     getChats({ username }).then(res => {
       setIsLoading(false);
@@ -144,6 +146,7 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
+    let mounted = true;
 
     if (socketState) {
       socket.current = socketState;  
@@ -162,7 +165,17 @@ const ChatsListScreen = ({ navigation }) => {
         getActiveStatus(updatedContacts);
       });
       socket.current.on('message', message => {
-        getChats({ username });
+        // console.log(mounted)
+        // console.log(username)
+        // console.log(message.user.name)
+        if (mounted) {
+          // console.log(username)
+          // if (username !== message.user.name) {
+          //   console.log('why')
+          //   updateMessages({ user: message.user.name, message });
+          // }       
+          getChats({ username });
+        }
       });
       socket.current.on('is_typing', username => {
         setIsTyping(true);
@@ -178,7 +191,10 @@ const ChatsListScreen = ({ navigation }) => {
     }
 
     return () => {
-      socket.current.removeAllListeners();
+      mounted = false;
+      if (socket.current) {
+        socket.current.removeAllListeners();
+      }
     };
   }, [socketState])
 
@@ -230,9 +246,39 @@ const ChatsListScreen = ({ navigation }) => {
     // if (Platform.OS === 'android') {
     //   await  Notifications.dismissNotificationAsync(notification.notificationId);
     // }
+    if (notification.data.chatId) {
+      notificationState.current = notification;
+    }
+
+    if (origin === 'selected') {
+      if (notificationState.current.data.type === 'group') {
+        getCurrentGroupId(notificationState.current.data.chatId);
+      }
+
+      navigation.navigate('ChatDetail', {
+        username: notificationState.current.data.sender,
+        image: notificationState.current.data.img,
+        type: notificationState.current.data.type,
+        chatId: notificationState.current.data.chatId
+      });
+    }
+
+    if (!notification.remote && origin === 'received') {
+      if (notificationState.current.data.type === 'group') {
+        getCurrentGroupId(notificationState.current.data.chatId);
+      }
+
+      navigation.navigate('ChatDetail', {
+        username: notificationState.current.data.sender,
+        image: notificationState.current.data.img,
+        type: notificationState.current.data.type,
+        chatId: notificationState.current.data.chatId
+      });
+    }
 
     if (notification.remote && screen.current !== 'ChatDetail') {
-       Vibration.vibrate();                                                  
+      
+      Vibration.vibrate();                                                  
       const notificationId = Notifications.presentLocalNotificationAsync({      
         title: data.sender,  
         body: data.message,                                             
@@ -241,6 +287,7 @@ const ChatsListScreen = ({ navigation }) => {
     } 
 
     if (origin === 'received' && AppState.currentState === 'active') {
+
       if (Platform.OS === 'ios') {
         await Notifications.setBadgeNumberAsync(0);
       }
@@ -249,19 +296,6 @@ const ChatsListScreen = ({ navigation }) => {
       }
       resetBadgeCount(username); 
     }  
-
-    if (origin === 'selected') {
-      if (data.type === 'group') {
-        getCurrentGroupId(data.chatId);
-      }
-
-      navigation.navigate('ChatDetail', {
-        username: data.sender,
-        image: data.img,
-        type: data.type,
-        chatId: data.chatId
-      });
-    }
 
   }
 

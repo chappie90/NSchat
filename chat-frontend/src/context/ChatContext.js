@@ -21,19 +21,19 @@ const chatReducer = (state, action) => {
       return { ...state, chat: { [action.payload]: state.chat[action.payload].slice(0, 50) } };
     case 'update_messages':
       // return { ...state, chat: [action.payload].concat(state.chat) };
-      // return state.chat[action.payload.user] ?
-      //  { ...state, chat: {
-      //   ...state.chat, 
-      //     [action.payload.user]: 
-      //       [ action.payload.message, ...state.chat[action.payload.user] ] } } :
-      //  { ...state, chat: {
-      //   ...state.chat, 
-      //     [action.payload.user]: 
-      //       [ action.payload.message ] } };
-        return { ...state, chat: {
-          ...state.chat, 
-            [action.payload.user]: 
-              [ action.payload.message, ...state.chat[action.payload.user] ] } }; 
+      return state.chat[action.payload.user] ?
+       { ...state, chat: {
+        ...state.chat, 
+          [action.payload.user]: 
+            [ action.payload.message, ...state.chat[action.payload.user] ] } } :
+       { ...state, chat: {
+        ...state.chat, 
+          [action.payload.user]: 
+            [ action.payload.message ] } };
+        // return { ...state, chat: {
+        //   ...state.chat, 
+        //     [action.payload.user]: 
+        //       [ action.payload.message, ...state.chat[action.payload.user] ] } }; 
     case 'load_more_messages':
       return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':
@@ -94,6 +94,8 @@ const chatReducer = (state, action) => {
 };
 
 const getChats = dispatch => async ({ username }) => {
+
+  console.log('get chats called')
 
   try {
     const response = await chatApi.post('/chats', { username });

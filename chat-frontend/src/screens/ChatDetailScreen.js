@@ -399,7 +399,6 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderMessage = (props) => {
-    console.log(props.currentMessage)
     if (props.currentMessage.reply) {
       return <MessageReplyBubble { ...props } />;
     }
@@ -434,7 +433,8 @@ const ChatDetailScreen = ({ navigation }) => {
             borderRadius: 10, 
             overflow: 'hidden', 
             backgroundColor: '#A8A8A8', 
-            paddingVertical: 4, 
+            paddingTop: 2,
+            paddingBottom: 4,
             paddingHorizontal: 8, 
             color: '#fff' }}>
             {props.currentMessage.text}

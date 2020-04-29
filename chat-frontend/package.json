@@ -36,7 +36,8 @@
     "redux-socket.io": "^1.4.0",
     "socket.io-client": "2.1.1",
     "react-native-webview": "7.4.3",
-    "lottie-react-native": "~2.6.1"
+    "lottie-react-native": "~2.6.1",
+    "@react-native-community/viewpager": "2.0.2"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0"

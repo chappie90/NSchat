@@ -7,7 +7,11 @@ import {
  TouchableOpacity,
  Animated
 } from 'react-native';
+import ViewPager from '@react-native-community/viewpager';
 
+import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
+import BodyText from '../components/BodyText';
+import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import Colors from '../constants/colors';
 import HeadingText from '../components/HeadingText';
 import PrimaryButton from '../components/PrimaryButton';
@@ -36,20 +40,54 @@ const StarterScreen = ({ navigation }) => {
   };
 
   return (
-    <FadeViewAnim style={styles.container}>
-      <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
-      <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
-      <Image style={styles.image}  source={require('../../assets/starter-icon-min.jpg')} />
-      <View style={styles.textWrapper}>
-        <HeadingText style={styles.textLeft}>You & Me</HeadingText><HeadingText style={styles.textRight}> Chat</HeadingText>
+    <View style={styles.container}>
+      <ViewPager showPageIndicator={true} style={styles.viewPager} initialPage={0}>
+        <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
+        <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
+        <View style={styles.page} key="1">
+          <View style={styles.imageContainer}>
+          <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_chat.png')} />
+          <TranslateFadeViewAnim>
+            <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+          </TranslateFadeViewAnim>
+        </View>
+        </View>
+        <View style={styles.page} key="2">
+          <View style={styles.imageContainer}>
+        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_contact.png')} />
+        <TranslateFadeViewAnim>
+          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        </TranslateFadeViewAnim>
       </View>
-      <View style={{ marginTop: 'auto'}}>
-        <PrimaryButton style={styles.signupButton} onPress={() => setSignupMode(true)}>Get Started</PrimaryButton>
+      </View>
+        <View style={styles.page} key="3">
+          <View style={styles.imageContainer}>
+        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_search.png')} />
+        <TranslateFadeViewAnim>
+          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        </TranslateFadeViewAnim>
+      </View>
+        </View>
+        <View style={styles.page} key="4">
+          <View style={styles.imageContainer}>
+        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_chat.png')} />
+        <TranslateFadeViewAnim>
+          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+        </TranslateFadeViewAnim>
+      </View>
+        </View>
+      </ViewPager>
+      <View style={{ alignItems: 'center' }}>
+        <PrimaryButton
+          style={styles.signupButton} 
+          onPress={() => setSignupMode(true)}>
+          Get Started
+        </PrimaryButton>
         <TouchableOpacity style={styles.signinButton} onPress={() => setSigninMode(true)}>
           <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
         </TouchableOpacity>
       </View>
-    </FadeViewAnim>
+    </View>
   );
 };
 
@@ -60,14 +98,14 @@ StarterScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#202020',
+    paddingVertical: 8
+  },
+  viewPager: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100,
-    paddingBottom: 30
-  },
-  image: {
-    width: 250,
-    height: 203.25  
+    backgroundColor: '#202020'
   },
   textWrapper: {
     flexDirection: 'row'
@@ -80,15 +118,38 @@ const styles = StyleSheet.create({
     fontSize: 30
   },
   signupButton: {
-    marginTop: 'auto'
+    textAlign: 'center',
+    paddingHorizontal: 8,
+     marginBottom: 12
   },
   signinButton: {
-    padding: 10
+    padding: 10,
+    marginBottom: 10
   },
   signinButtonText: {
     fontSize: 20,
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+    color: '#fff'
+  },
+  page: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+   image: {
+    width: 100,
+    height: 100
+  },
+   imageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+    imageCaption: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 10,
+    color: '#fff'
+  },
 });
 
 export default StarterScreen;

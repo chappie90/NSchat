@@ -154,6 +154,7 @@ module.exports = function(io) {
             to: p.user.expoToken,
             sound: 'default',
             title: from,
+            ttl: 2419200,
             body: text,
             data: { text },
             _displayInForeground: true
@@ -350,8 +351,15 @@ module.exports = function(io) {
           replyAuthor: messageAuthor
         };
 
-      io.to(recipientSocketId).emit('message', returnMsgRecipient);
-      io.to(socketId).emit('message', returnMsgUser);
+      const updatePreviousChatsUser = {
+        chatId: privateChatId,
+        contact: to,
+        date: createdAt,
+        text,
+      };
+
+      io.to(recipientSocketId).emit('message', { message: returnMsgRecipient });
+      io.to(socketId).emit('message', { message: returnMsgUser, chat: updatePreviousChatsUser });
 
       if (!Expo.isExpoPushToken(expoPushTokens[0])) {
         console.log(`Push token ${pushToken} is not a valid Expo push token`);
@@ -361,7 +369,7 @@ module.exports = function(io) {
         to: expoPushTokens[0],
         sound: 'default',
         title: from,
-        // ttl: 2419200,
+        ttl: 2419200,
         badge: badgeCount,
         body: text,
         data: {

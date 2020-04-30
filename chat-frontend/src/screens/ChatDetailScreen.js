@@ -37,15 +37,16 @@ import { getTabBarHeight } from '../components/TabBarComponent';
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username, socketState } } = useContext(AuthContext);
   const {
-   state: { chat, currentScreen }, 
-   getChats, 
-   getMessages, 
-   updateMessages, 
-   deleteMessage, 
-   resetChatState,
-   markMessageAsRead,
-   deleteMessageState,
-   getCurrentScreen,
+    state: { chat, currentScreen }, 
+    getChats, 
+    getMessages, 
+    updateMessages, 
+    deleteMessage, 
+    resetChatState,
+    markMessageAsRead,
+    deleteMessageState,
+    getCurrentScreen,
+    updateChatState
  } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
@@ -135,15 +136,16 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current.on('message', message => {
         socket.current.emit('stop_typing', recipient); 
         if (mounted) {
-          updateMessages({ user: recipient, message });
+          updateMessages({ user: recipient, message: message.message });
         }
-        if (message.user.name === username) {
+        if (message.message.user.name === username) {
           setIncomingMsgs(prevState => prevState.map(msg => {
-            return msg._id === message._id ? { ...msg, read: false } : msg;
+            return msg._id === message.message._id ? { ...msg, read: false } : msg;
           }));
+          updateChatState(message.chat);
         }
         
-        if (message.user.name === recipient) {
+        if (message.message.user.name === recipient) {
           // if (mounted) {
           //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
           // }    

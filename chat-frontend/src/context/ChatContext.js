@@ -38,6 +38,18 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':
       return { ...state, previousChats: action.payload };
+    case 'update_chat_state':
+      let updatedChat = state.previousChats.map(item => {
+        return item.chatId === action.payload.chatId ?
+          { ...item,
+            date: action.payload.date,
+            text: action.payload.text 
+          } :
+          item
+      });
+      updatedChat = updatedChat.sort((a, b) => new Date(b.date) - new Date(a.date));
+      updatedChat.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
+      return { ...state, previousChats: updatedChat };
     case 'delete_chat':
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };
@@ -95,10 +107,12 @@ const chatReducer = (state, action) => {
 
 const getChats = dispatch => async ({ username }) => {
 
-  console.log('get chats called')
+  // console.log('get chats called')
 
   try {
     const response = await chatApi.post('/chats', { username });
+
+    // console.log(response.data)
     
     const chats = response.data.chats.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -128,6 +142,10 @@ const deleteChat = dispatch => async (username, chatId, type) => {
 
 const updateMessages = dispatch => ({ user, message }) => {
   dispatch({ type: 'update_messages', payload: { user, message } });
+};
+
+const updateChatState = dispatch => (chat) => {
+  dispatch({ type: 'update_chat_state', payload: chat });
 };
 
 const resetChatState = dispatch => (user) => {
@@ -393,7 +411,8 @@ export const { Context, Provider } = createDataContext(
     markMessageAsRead,
     deleteMessageState,
     resetBadgeCount,
-    getCurrentScreen
+    getCurrentScreen,
+    updateChatState
   },
   {  
     previousChats: [], 

@@ -336,6 +336,13 @@ module.exports = function(io) {
           replyAuthor: messageAuthor
         };
 
+      const updatePreviousChatsRecipient = {
+        chatId: privateChatId,
+        contact: from,
+        date: createdAt,
+        text
+      };
+
       const returnMsgUser = 
        {
           _id: privateMessage.message.id,
@@ -358,7 +365,7 @@ module.exports = function(io) {
         text,
       };
 
-      io.to(recipientSocketId).emit('message', { message: returnMsgRecipient });
+      io.to(recipientSocketId).emit('message', { message: returnMsgRecipient, chat: updatePreviousChatsRecipient });
       io.to(socketId).emit('message', { message: returnMsgUser, chat: updatePreviousChatsUser });
 
       if (!Expo.isExpoPushToken(expoPushTokens[0])) {

@@ -146,6 +146,7 @@ const ChatDetailScreen = ({ navigation }) => {
         }
         
         if (message.message.user.name === recipient) {
+          updateChatState(message.chat);
           // if (mounted) {
           //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
           // }    

@@ -13,7 +13,7 @@ module.exports = function(io) {
   const expo = new Expo();
 
   io.on('connection', async socket => {
-  console.log('A user connected');
+  // console.log('A user connected');
 
   const username = socket.handshake.query.username;
   const socketId = socket.id;
@@ -21,23 +21,22 @@ module.exports = function(io) {
   // To have a client join a room you need to get the clients obejct (socket)
   // Could have everyone join an 'All' room instead of using users object?
   users[username] = socket;
+
   // every socket is automatically connected to their own room with the id socket.id 
   // but we are creating our own to have more control
   socket.join(username);
   // show list of all rooms
   // console.log(io.sockets.adapter.rooms);
   try {
-    const user = await User.findOne({ username }, { 'contacts.username': 1, _id: 0 });
+    const user = await User.findOne({ username }).populate('contacts.user');
+
     if (!user) {
       return;
       // ? exit socket ?
       // return res.status(422).send({ error: 'Something went wrong with your request' });
     }
-    const contacts = user.contacts.map(c => c.username);
-    // console.log(username);
-    // console.log(socketId);
-    // console.log(contacts);
-    // console.log(`${onlineContacts} before`);
+    const contacts = user.contacts.map(c => c.user.username);
+
     for (const c of contacts) {
       for (let [key, value] of Object.entries(users)) {
         if (c === key) {
@@ -50,7 +49,7 @@ module.exports = function(io) {
         }
       }
     }
-    // console.log(`${onlineContacts} after`);
+ 
     // Get the clients in a room
     io.in(username).clients((err , clients) => {
       // console.log(clients);
@@ -62,9 +61,7 @@ module.exports = function(io) {
     // send to everyone in the room except the sender
     socket.broadcast.to(username).emit('online', username);
     // send to sender only
-    // socket.emit('online', onlineContacts);
-    const clientsStr = JSON.stringify(onlineContacts);
-    socket.emit('online', clientsStr);
+    socket.emit('online', onlineContacts);
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Something went wrong with your request' });

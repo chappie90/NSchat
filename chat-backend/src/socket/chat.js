@@ -13,7 +13,7 @@ module.exports = function(io) {
   const expo = new Expo();
 
   io.on('connection', async socket => {
-  // console.log('A user connected');
+  console.log('A user connected');
 
   const username = socket.handshake.query.username;
   const socketId = socket.id;
@@ -59,9 +59,10 @@ module.exports = function(io) {
     // send to everyone in the room including the sender
     //io.sockets.in(username).emit('online', onlineContacts);
     // send to everyone in the room except the sender
-    socket.broadcast.to(username).emit('online', username);
+    let onlineUser = [username];
+    socket.broadcast.to(username).emit('online', onlineUser);
     // send to sender only
-    socket.emit('online', onlineContacts);
+    io.to(socketId).emit('online', onlineContacts);
   } catch (err) {
     console.log(err);
     return res.status(422).send({ error: 'Something went wrong with your request' });

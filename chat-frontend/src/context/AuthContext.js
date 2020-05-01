@@ -74,11 +74,15 @@ const signin = dispatch => async ({ username, password }) => {
 
 const autoLogin = dispatch => async () => {
   let data = await AsyncStorage.getItem('data');
-  data = JSON.parse(data);
 
-  if (data && data.token) {
-    dispatch({ type: 'signin', payload: data });
-    navigate('MainFlow');
+  if (data) {
+    data = JSON.parse(data);
+    if (data.token) {
+      dispatch({ type: 'signin', payload: data });
+      navigate('MainFlow');
+    } else {
+      navigate('Starter');
+    }
   } else {
     navigate('Starter');
   }

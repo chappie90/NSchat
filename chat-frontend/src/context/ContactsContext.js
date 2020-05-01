@@ -13,10 +13,25 @@ const contactsReducer = (state, action) => {
     case 'get_contacts':
       return { ...state, contacts: action.payload }; // change to contacts: action.payload
     case 'get_active_status':
-      return { ...state, onlineContacts: action.payload };
+      let onlineUsers = [];
+      for (let user of action.payload) {
+        if (!state.onlineContacts.includes(user)) {
+          onlineUsers.push(user);
+        }
+      }
+      return { ...state, onlineContacts: [ ...state.onlineContacts, ...onlineUsers ] };
+    case 'user_is_offline':
+      console.log('offline reducer')
+      console.log(state.onlineContacts)
+      console.log(action.payload)
+      return { ...state, onlineContacts: state.onlineContacts.filter(item => item !== action.payload) };
     default:
       return state;  
   }
+};
+
+const userIsOffline = dispatch => user => {
+  dispatch({ type: 'user_is_offline', payload: user });
 };
 
 const getActiveStatus = dispatch => (users) => {
@@ -71,7 +86,8 @@ export const { Context, Provider } = createDataContext(
     clearSearchResults, 
     addContact, 
     getContacts,
-    getActiveStatus
+    getActiveStatus,
+    userIsOffline
   },
   { 
     searchResults: [], 

@@ -52,9 +52,10 @@ const ChatsListScreen = ({ navigation }) => {
     markMessagesAsRead,
     saveExpoToken,
     resetBadgeCount,
-    updateMessages
+    updateMessages,
+    updateChatState
   } = useContext(ChatContext);
-  const { state: { onlineContacts }, getActiveStatus } = useContext(ContactsContext);
+  const { state: { onlineContacts }, getActiveStatus, userIsOffline } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const socket = useRef(null);
@@ -98,7 +99,7 @@ const ChatsListScreen = ({ navigation }) => {
   //     },
   //   }), []);
   useEffect(() => {
-    console.log(username)
+    // console.log(username)
     registerForPushNotificationsAsync();
     getChats({ username }).then(res => {
       setIsLoading(false);
@@ -111,25 +112,31 @@ const ChatsListScreen = ({ navigation }) => {
     }  
   }, []);
 
+  useEffect(() =>{
+    console.log(onlineContacts)
+  }, [onlineContacts])
+
   useEffect(() => {
     screen.current = currentScreen;
   }, [currentScreen]);
 
   const checkAuth = async () => {
     let data = await AsyncStorage.getItem('data');
-    data = JSON.parse(data);
-
-    if (data && data.username) {
-      socket.current = connectToSocket(data.username);
-      updateSocketState(socket.current);
-      if (Platform.OS === 'ios') {
-        await Notifications.setBadgeNumberAsync(0);
+    
+    if (data) {
+      data = JSON.parse(data);
+      if (data.username) {
+        socket.current = connectToSocket(data.username);
+        updateSocketState(socket.current);
+        if (Platform.OS === 'ios') {
+          await Notifications.setBadgeNumberAsync(0);
+        }
+        if (Platform.OS === 'android') {
+          await Notifications.dismissAllNotificationsAsync();
+        }
+        resetBadgeCount(username);
       }
-      if (Platform.OS === 'android') {
-        await Notifications.dismissAllNotificationsAsync();
-      }
-      resetBadgeCount(username);
-    }    
+    }   
   };
 
   const _handleAppStateChange = async nextAppState => { 
@@ -151,30 +158,26 @@ const ChatsListScreen = ({ navigation }) => {
     if (socketState) {
       socket.current = socketState;  
       socket.current.on('online', users => {
-        const onlineUsers = JSON.parse(users);
-        if (Array.isArray(onlineUsers)) {
-          getActiveStatus(onlineUsers);
-        } else {
-          // refactor to get new array - concat?
-          onlineContacts.push(users);
-          getActiveStatus(onlineContacts);
-        }
+        getActiveStatus(users);
       });
       socket.current.on('offline', user => {
-        const updatedContacts = onlineContacts.filter(item => item !== user);
-        getActiveStatus(updatedContacts);
+        userIsOffline(user);
       });
       socket.current.on('message', message => {
         // console.log(mounted)
         // console.log(username)
         // console.log(message.user.name)
         if (mounted) {
+        console.log('every time')
+        console.log(mounted)
+        console.log(username)
           // console.log(username)
-          // if (username !== message.user.name) {
-          //   console.log('why')
-          //   updateMessages({ user: message.user.name, message });
-          // }       
-          getChats({ username });
+          if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
+            console.log('why')
+            updateChatState(message.chat);
+            updateMessages({ user: message.message.user.name, message: message.message });
+          }       
+          // getChats({ username });
         }
       });
       socket.current.on('is_typing', username => {
@@ -263,7 +266,7 @@ const ChatsListScreen = ({ navigation }) => {
       });
     }
 
-    if (!notification.remote && origin === 'received') {
+    if (Platform.OS === 'ios' && !notification.remote && origin === 'received') {
       if (notificationState.current.data.type === 'group') {
         getCurrentGroupId(notificationState.current.data.chatId);
       }

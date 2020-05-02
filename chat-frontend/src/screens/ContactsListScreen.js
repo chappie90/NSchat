@@ -108,8 +108,12 @@ const ContactsListScreen = ({ navigation }) => {
                   <View style={styles.itemContainer}>
                     <HeadingText style={styles.name}>{rowData.item.user.username}</HeadingText>
                   </View>
-                 
-                  <View style={styles.badge} />
+                  {onlineContacts.includes(rowData.item.user.username) && (
+                    <Badge
+                      badgeStyle={styles.badge}
+                      containerStyle={styles.badgeContainer}
+                    />
+                  )}  
                 </View>
               </TouchableWithoutFeedback>
             );
@@ -255,15 +259,17 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   badge: {
-    backgroundColor: '#32CD32', 
-    width: 14, 
-    height: 14, 
-    borderRadius: 7, 
+   backgroundColor: '#32CD32', 
+    width: 15, 
+    height: 15, 
+    borderRadius: 10, 
     borderWidth: 2, 
-    borderColor: 'white',
-     position: 'absolute', 
-    top: 36, 
-    left: 52
+    borderColor: 'white'
+  },
+    badgeContainer: {
+    position: 'absolute', 
+    top: 35, 
+    left: 50
   },
    rowBack: {
     alignItems: 'center',

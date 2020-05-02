@@ -726,14 +726,6 @@ const styles = StyleSheet.create({
     top: 15, 
     left: 9
   },
-  badge: {
-    backgroundColor: '#32CD32', 
-    width: 15, 
-    height: 15, 
-    borderRadius: 10, 
-    borderWidth: 2, 
-    borderColor: 'white'
-  },
   unreadBadge: {
     backgroundColor: Colors.tertiary,
   },

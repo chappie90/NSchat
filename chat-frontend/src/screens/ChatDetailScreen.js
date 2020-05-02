@@ -361,6 +361,27 @@ const ChatDetailScreen = ({ navigation }) => {
     }
   };
 
+  const renderActions = props => {
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', height: '100%', paddingLeft: 6 }}>
+        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={() => {}}>
+          <MaterialIcons color="#C8C8C8" name="camera-alt" size={29} />
+        </TouchableOpacity>
+        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={() => {}}>
+          <Ionicons color="#C8C8C8" name="md-images" size={29} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderAccessory = props => {
+    return (
+      <View style={{backgroundColor: 'green'}}>
+        <Text>Some</Text>
+      </View>
+    );
+  }
+
   const deleteMessageHandler = () => {
     deleteMessage({ user: recipient, messageId: selectedMessage._id })
       .then(res => {
@@ -649,6 +670,8 @@ const ChatDetailScreen = ({ navigation }) => {
               renderLoading={renderLoading}
               ref={ref => giftedChatRef = ref}
               renderSend={renderSend}
+              renderActions={renderActions}
+              // onPressActionButton
               renderChatFooter={renderChatFooter}
               renderCustomView={false ? null : renderCustomView}
               isCustomViewBottom={true}
@@ -661,6 +684,7 @@ const ChatDetailScreen = ({ navigation }) => {
               //isLoadingEarlier={true}
               bottomOffset={ Platform.OS === 'android' ? null : 46 }
               scrollToBottom={true}
+              // isAnimated
               scrollToBottomComponent={() => {
                 return (
                   <View style={styles.scrollContainer}>

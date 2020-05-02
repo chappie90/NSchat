@@ -166,10 +166,9 @@ const ChatsListScreen = ({ navigation }) => {
         userIsOffline(user);
       });
       socket.current.on('message', message => {
-         console.log(username)
         if (mounted) {
           if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
-            updateChatState(message.chat);
+            updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
             updateMessages({ user: message.message.user.name, message: message.message });
           }       
         }
@@ -304,7 +303,7 @@ const ChatsListScreen = ({ navigation }) => {
       });
       socket.current.on('message', message => {
         if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
-          updateChatState(message.chat);
+          updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
           updateMessages({ user: message.message.user.name, message: message.message });
         }       
       });

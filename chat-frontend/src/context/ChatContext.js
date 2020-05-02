@@ -39,16 +39,14 @@ const chatReducer = (state, action) => {
     case 'get_chats':
       return { ...state, previousChats: action.payload };
     case 'update_chat_state':
-      // console.log('state chat')
-      // console.log(action.payload)
       let updatedChat;
-      if (action.payload.unreadMessageCount) {
+      if (action.payload.updateUnreadMessageCount) {
         updatedChat = state.previousChats.map(item => {
-          return item.chatId === action.payload.chatId ?
+          return item.chatId === action.payload.chat.chatId ?
             { ...item,
-              date: action.payload.date,
-              text: action.payload.text,
-              unreadMessageCount: item.unreadMessageCount + 1 
+              date: action.payload.chat.date,
+              text: action.payload.chat.text,
+              unreadMessageCount: item.unreadMessageCount ? item.unreadMessageCount + 1 : 1
             } :
             item
         });

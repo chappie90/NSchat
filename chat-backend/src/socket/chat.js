@@ -145,6 +145,9 @@ module.exports = function(io) {
       for (let p of groupParticipants) {
         if (p.user.username !== from && users[p.user.username]) {
           activeGroupParticipants.push(users[p.user.username].id);
+
+          const badgeCount = p.user.badgeCount + 1;
+
           if (!Expo.isExpoPushToken(p.user.expoToken)) {
             console.log(`Push token ${p.user.expoToken} is not a valid Expo push token`);
           }
@@ -153,9 +156,15 @@ module.exports = function(io) {
             sound: 'default',
             title: from,
             ttl: 2419200,
+            badge: badgeCount,
             body: text,
-            data: { text },
-            _displayInForeground: true
+            data: {
+             sender: group[0].name,
+             message: `${from}: ${text}`,
+             img: group[0].avatar.imagePath,
+             type: type,
+             chatId: chatId 
+           },
           });
 
           let chunks = expo.chunkPushNotifications(notifications);
@@ -396,8 +405,8 @@ module.exports = function(io) {
           message: text,
           img: recipientImage, 
           type: type, 
-          chatId: chatId },
-        // _displayInForeground: true
+          chatId: chatId 
+        }
       });
 
       let chunks = expo.chunkPushNotifications(notifications);

@@ -187,6 +187,13 @@ module.exports = function(io) {
           replyAuthor: messageAuthor
         };
 
+        const updatePreviousChatsRecipient = {
+          chatId,
+          contact: from,
+          date: createdAt,
+          text
+        };
+
       const returnGroupMsgUser = 
        {
           _id: groupMessage.message.giftedChatId,
@@ -202,13 +209,20 @@ module.exports = function(io) {
           replyAuthor: messageAuthor
         };
 
+      const updatePreviousChatsUser = {
+        chatId,
+        contact: to,
+        date: createdAt,
+        text,
+      };
+
       for (let p of activeGroupParticipants) {
-         io.to(p).emit('message', returnGroupMsgRecipient);
+        io.to(p).emit('message', { message: returnGroupMsgRecipient, chat: updatePreviousChatsRecipient });
       }
-      io.to(socketId).emit('message', returnGroupMsgUser);
+      io.to(socketId).emit('message', { message: returnGroupMsgUser, chat: updatePreviousChatsUser });
 
     }
-
+    
     if (type === 'private') {
 
       const tempUserId = await User.find({ username: from });

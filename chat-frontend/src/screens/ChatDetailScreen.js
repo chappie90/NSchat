@@ -28,6 +28,8 @@ import { WebView } from 'react-native-webview';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import Modal from "react-native-modal";
+import { v4 as uuidv4 } from 'uuid'
+import * as Random from 'expo-random'
 
 import Colors from '../constants/colors';
 import BodyText from '../components/BodyText';
@@ -74,6 +76,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const isVisibleYoutube = useRef(false);
   const isBackgroundYoutube = useRef(false);
   const socket = useRef(null);
+  const [uuid, setUuid] = useState('');
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
@@ -288,6 +291,35 @@ const ChatDetailScreen = ({ navigation }) => {
     setGroupSettingsModal(false);
   };
 
+  const sendImage = async (image) => {
+
+    let messageId = uuidv4( { random: await Random.getRandomBytesAsync( 16 ) } );
+
+    const message = {
+      _id: messageId,
+      text: '',
+      createdAt: new Date(),
+      user: {
+        _id: 1,
+        name: username,
+      },
+      image: image,
+    };
+
+    const msgObj = {
+      type: chatType,
+      chatId: chatId,
+      from: username,
+      to: recipient,
+      message,
+      replyTo: {}
+    };
+
+    socket.current.emit('message', msgObj);
+
+    setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
+  };
+
   // const willFocusHandler = () => {
   //   const getRecipientParam = navigation.getParam('username');
   //   setCurrentPage(1);
@@ -428,7 +460,6 @@ const ChatDetailScreen = ({ navigation }) => {
     setPreviewImage(cameraImage.uri);
     setPreviewImageMode(true);
 
-    // setModalVisible(false);
     // saveImage(username, cameraImage.uri);
   };
 
@@ -444,18 +475,6 @@ const ChatDetailScreen = ({ navigation }) => {
       return;
     }
 
-    // const ms = {
-    //     _id: 1,
-    //     text: 'My message',
-    //     createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-    //     user: {
-    //       _id: 2,
-    //       name: 'React Native',
-    //       avatar: 'https://facebook.github.io/react/img/logo_og.png',
-    //     },
-    //     image: libraryImage.uri,
-    // };
-
     Image.getSize(libraryImage.uri, (width, height) => {
       const screenWidth = Dimensions.get('window').width;
       const scaleFactor = width / screenWidth;
@@ -466,10 +485,15 @@ const ChatDetailScreen = ({ navigation }) => {
     setPreviewImage(libraryImage.uri);
     setPreviewImageMode(true);
 
-    // setIncomingMsgs(prevState => GiftedChat.append(prevState, ms));
-    console.log(libraryImage.uri);
-    // setModalVisible(false);
     // saveImage(username, libraryImage.uri);
+  };
+
+  const sendImageHandler = (image) => {
+    sendImage(image);
+    setPreviewImageMode(false);
+    if (giftedChatRef) {
+      giftedChatRef.scrollToBottom();
+    }
   };
 
   const deleteMessageHandler = () => {
@@ -766,7 +790,7 @@ const ChatDetailScreen = ({ navigation }) => {
                     value={previewImageInput}
                     onChangeText={setPreviewImageInput}
                    />
-                  <TouchableOpacity onPress={modalPreviewImageCloseHandler}>
+                  <TouchableOpacity onPress={() => sendImageHandler(previewImage)}>
                     <View style={{ paddingLeft: 13, paddingRight: 9, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, height: 36}}>
                       <MaterialIcons name="send" size={26} color="#fff" />
                     </View>

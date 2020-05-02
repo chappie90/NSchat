@@ -27,6 +27,7 @@ import Modal from "react-native-modal";
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
+import { NavigationEvents } from 'react-navigation';
 
 import chatApi from '../api/chat';
 import { connectToSocket } from '../socket/chat';
@@ -113,7 +114,7 @@ const ChatsListScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() =>{
-    console.log(onlineContacts)
+    // console.log(onlineContacts)
   }, [onlineContacts])
 
   useEffect(() => {
@@ -146,6 +147,7 @@ const ChatsListScreen = ({ navigation }) => {
 
     if (nextAppState === 'inactive' || nextAppState === 'background') {
       if (socket.current) {
+        socket.current.removeAllListeners();
         socket.current.disconnect();
         updateSocketState(null);
       }
@@ -164,20 +166,12 @@ const ChatsListScreen = ({ navigation }) => {
         userIsOffline(user);
       });
       socket.current.on('message', message => {
-        // console.log(mounted)
-        // console.log(username)
-        // console.log(message.user.name)
+         console.log(username)
         if (mounted) {
-        console.log('every time')
-        console.log(mounted)
-        console.log(username)
-          // console.log(username)
           if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
-            console.log('why')
             updateChatState(message.chat);
             updateMessages({ user: message.message.user.name, message: message.message });
           }       
-          // getChats({ username });
         }
       });
       socket.current.on('is_typing', username => {
@@ -195,9 +189,6 @@ const ChatsListScreen = ({ navigation }) => {
 
     return () => {
       mounted = false;
-      if (socket.current) {
-        socket.current.removeAllListeners();
-      }
     };
   }, [socketState])
 
@@ -301,6 +292,35 @@ const ChatsListScreen = ({ navigation }) => {
     }  
 
   }
+
+  const didFocusHandler = () => {
+    if (socketState) {
+      socket.current = socketState;  
+      socket.current.on('online', users => {
+        getActiveStatus(users);
+      });
+      socket.current.on('offline', user => {
+        userIsOffline(user);
+      });
+      socket.current.on('message', message => {
+        if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
+          updateChatState(message.chat);
+          updateMessages({ user: message.message.user.name, message: message.message });
+        }       
+      });
+      socket.current.on('is_typing', username => {
+        setIsTyping(true);
+        setTypingUser(username);
+      });
+      socket.current.on('is_not_typing', () => {
+        setIsTyping(false);
+        setTypingUser(null);
+      });
+      socket.current.on('new_group', () => {
+        getChats({ username });
+      });
+    }
+  };
 
   const closeModal = () => {
     setNewGroupMode(false);
@@ -566,6 +586,7 @@ const ChatsListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+     <NavigationEvents onDidFocus={didFocusHandler} />
     <StatusBar backgroundColor="blue" barStyle="light-content" />
       <Modal
         style={{ alignItems: "center", justifyContent: "center" }}

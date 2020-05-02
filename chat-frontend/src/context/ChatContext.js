@@ -39,14 +39,30 @@ const chatReducer = (state, action) => {
     case 'get_chats':
       return { ...state, previousChats: action.payload };
     case 'update_chat_state':
-      let updatedChat = state.previousChats.map(item => {
-        return item.chatId === action.payload.chatId ?
-          { ...item,
-            date: action.payload.date,
-            text: action.payload.text 
-          } :
-          item
-      });
+      // console.log('state chat')
+      // console.log(action.payload)
+      let updatedChat;
+      if (action.payload.unreadMessageCount) {
+        updatedChat = state.previousChats.map(item => {
+          return item.chatId === action.payload.chatId ?
+            { ...item,
+              date: action.payload.date,
+              text: action.payload.text,
+              unreadMessageCount: item.unreadMessageCount + 1 
+            } :
+            item
+        });
+      } else {
+        updatedChat = state.previousChats.map(item => {
+          return item.chatId === action.payload.chatId ?
+            { ...item,
+              date: action.payload.date,
+              text: action.payload.text 
+            } :
+            item
+        });
+      }
+      
       updatedChat = updatedChat.sort((a, b) => new Date(b.date) - new Date(a.date));
       updatedChat.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
       return { ...state, previousChats: updatedChat };

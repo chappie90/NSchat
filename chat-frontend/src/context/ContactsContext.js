@@ -21,9 +21,6 @@ const contactsReducer = (state, action) => {
       }
       return { ...state, onlineContacts: [ ...state.onlineContacts, ...onlineUsers ] };
     case 'user_is_offline':
-      console.log('offline reducer')
-      console.log(state.onlineContacts)
-      console.log(action.payload)
       return { ...state, onlineContacts: state.onlineContacts.filter(item => item !== action.payload) };
     default:
       return state;  

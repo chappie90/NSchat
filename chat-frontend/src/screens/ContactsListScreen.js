@@ -40,18 +40,6 @@ const ContactsListScreen = ({ navigation }) => {
     });
   }, []);
 
-  useEffect(() => {
-    if (socketState) {
-      socket.current = socketState;
-      socket.current.on('online', users => {
-        getActiveStatus(users);
-      });
-      socket.current.on('offline', user => {
-        userIsOffline
-      });
-    }
-  }, [socketState]);
-
   const closeModal = () => {
     setNewContactMode(false);
   };

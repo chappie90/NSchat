@@ -13,7 +13,8 @@ import {
   Image,
   PanResponder,
   Animated,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
 import Constants from 'expo-constants';
 import { Overlay } from 'react-native-elements';
@@ -22,7 +23,9 @@ import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { MaterialIcons, MaterialCommunityIcons, FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
-import BottomSheet from 'reanimated-bottom-sheet';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import Modal from "react-native-modal";
 
 import Colors from '../constants/colors';
 import BodyText from '../components/BodyText';
@@ -59,6 +62,11 @@ const ChatDetailScreen = ({ navigation }) => {
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
   const [chatType, setChatType] = useState('');
   const [chatId, setChatId] = useState('');
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewImageWidth, setPreviewImageWidth] = useState(null);
+  const [previewImageHeight, setPreviewImageHeight] = useState(null);
+  const [previewImageMode, setPreviewImageMode] = useState(false);
+  const [previewImageInput, setPreviewImageInput] = useState('');
   const deviceHeight = Dimensions.get('window').height;
   const bottomNavHeight = getTabBarHeight();
   const isVisibleYoutube = useRef(false);
@@ -260,6 +268,10 @@ const ChatDetailScreen = ({ navigation }) => {
     setGroupSettingsModal(true);
   };
 
+  const modalPreviewImageCloseHandler = () => {
+    setPreviewImageMode(false);
+  };
+
   const openYoutubeHandler = (params) => {
       isVisibleYoutube.current = !params;
       navigation.setParams({ isVisibleYou: !params });
@@ -364,23 +376,99 @@ const ChatDetailScreen = ({ navigation }) => {
   const renderActions = props => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', height: '100%', paddingLeft: 6 }}>
-        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={() => {}}>
+        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={takePhotoHandler}>
           <MaterialIcons color="#C8C8C8" name="camera-alt" size={29} />
         </TouchableOpacity>
-        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={() => {}}>
+        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={choosePhotoHandler}>
           <Ionicons color="#C8C8C8" name="md-images" size={29} />
         </TouchableOpacity>
       </View>
     );
   };
 
-  const renderAccessory = props => {
-    return (
-      <View style={{backgroundColor: 'green'}}>
-        <Text>Some</Text>
-      </View>
-    );
-  }
+  const getCameraPermissions = async () => {
+    const response = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
+    if (response.status !== 'granted') {
+      Alert.alert('You don\'t have the required permissions to access the camera', [{text: 'Okay'}]);
+      return false;
+    }
+    return true;
+  };
+
+  const getImageLibraryPermissions = async () => {
+    const response = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (response.status !== 'granted') {
+      Alert.alert('You don\'t have the required permissions to access the image library', [{text: 'Okay'}]);
+      return false;
+    }
+    return true;
+  };
+
+  const takePhotoHandler = async () => {
+    const hasCameraPermissions = await getCameraPermissions();
+    if (!hasCameraPermissions) {
+      return;
+    }
+    const cameraImage = await ImagePicker.launchCameraAsync({
+      allowsEditing: true
+    });
+    if (!cameraImage.uri) {
+      return;
+    }
+
+    Image.getSize(cameraImage.uri, (width, height) => {
+      const screenWidth = Dimensions.get('window').width;
+      const scaleFactor = width / screenWidth;
+      const imageHeight = height / scaleFactor;
+      setPreviewImageWidth(screenWidth);
+      setPreviewImageHeight(imageHeight);
+    });
+    setPreviewImage(cameraImage.uri);
+    setPreviewImageMode(true);
+
+    // setModalVisible(false);
+    // saveImage(username, cameraImage.uri);
+  };
+
+  const choosePhotoHandler = async () => {
+    const hasImageLibraryPermissions = await getImageLibraryPermissions();
+    if (!hasImageLibraryPermissions) {
+      return;
+    }
+    const libraryImage = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true
+    });
+    if (!libraryImage.uri) {
+      return;
+    }
+
+    // const ms = {
+    //     _id: 1,
+    //     text: 'My message',
+    //     createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
+    //     user: {
+    //       _id: 2,
+    //       name: 'React Native',
+    //       avatar: 'https://facebook.github.io/react/img/logo_og.png',
+    //     },
+    //     image: libraryImage.uri,
+    // };
+
+    Image.getSize(libraryImage.uri, (width, height) => {
+      const screenWidth = Dimensions.get('window').width;
+      const scaleFactor = width / screenWidth;
+      const imageHeight = height / scaleFactor;
+      setPreviewImageWidth(screenWidth);
+      setPreviewImageHeight(imageHeight);
+    });
+    setPreviewImage(libraryImage.uri);
+    setPreviewImageMode(true);
+
+    // setIncomingMsgs(prevState => GiftedChat.append(prevState, ms));
+    console.log(libraryImage.uri);
+    // setModalVisible(false);
+    // saveImage(username, libraryImage.uri);
+  };
 
   const deleteMessageHandler = () => {
     deleteMessage({ user: recipient, messageId: selectedMessage._id })
@@ -645,6 +733,42 @@ const ChatDetailScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>}
       </Animated.View>}
+           <Modal
+              style={{ alignItems: "center", justifyContent: "center" }}
+              isVisible={previewImageMode}
+              onBackdropPress={modalPreviewImageCloseHandler}
+              animationIn="fadeIn"
+              animationOut="fadeOut"
+              animationInTiming={200}
+              backdropTransitionOutTiming={0}
+            >
+            <View style={{flex: 1, justifyContent: 'center'}}>
+              <TouchableOpacity style={{ position: 'absolute', top: 15, right: 15 }} onPress={modalPreviewImageCloseHandler}>
+                <MaterialIcons name="close" size={34} color="white" />
+              </TouchableOpacity>
+              <Image
+                style={{
+                  width: previewImageWidth, 
+                  height: previewImageHeight, 
+                  }} 
+                source={{ uri: previewImage }} />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                <TextInput
+                  style={styles.previewImageInput}
+                  placeholder="Add caption"
+                  placeholderTextColor='#202020'
+                  autoCorrect={false}
+                  value={previewImageInput}
+                  onChangeText={setPreviewImageInput}
+                 />
+                <TouchableOpacity onPress={modalPreviewImageCloseHandler}>
+                  <View style={{ paddingLeft: 13, paddingRight: 9, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, height: 36}}>
+                    <MaterialIcons name="send" size={26} color="#fff" />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+         </Modal>
         <GroupSettingsScreen navigation={navigation} visible={groupSettingsModal} closeModal={closeModalHandler} />
           <GiftedChat
               renderUsernameOnMessage 
@@ -671,7 +795,6 @@ const ChatDetailScreen = ({ navigation }) => {
               ref={ref => giftedChatRef = ref}
               renderSend={renderSend}
               renderActions={renderActions}
-              // onPressActionButton
               renderChatFooter={renderChatFooter}
               renderCustomView={false ? null : renderCustomView}
               isCustomViewBottom={true}
@@ -975,6 +1098,15 @@ const styles = StyleSheet.create({
     left: 0, 
     bottom: 0, 
     right: 0 
+  },
+  previewImageInput: {
+    backgroundColor: "#fff",
+    color: "#202020",
+    paddingHorizontal: 15,
+    height: 36,
+    fontSize: 18,
+    fontFamily: "open-sans",
+    flex: 1
   }
 });
 

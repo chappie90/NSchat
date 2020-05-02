@@ -736,11 +736,13 @@ const ChatDetailScreen = ({ navigation }) => {
            <Modal
               style={{ alignItems: "center", justifyContent: "center" }}
               isVisible={previewImageMode}
-              onBackdropPress={modalPreviewImageCloseHandler}
               animationIn="fadeIn"
               animationOut="fadeOut"
               animationInTiming={200}
               backdropTransitionOutTiming={0}
+              onSwipeComplete={modalPreviewImageCloseHandler}
+              swipeThreshold={60}
+              swipeDirection={["down","up"]}
             >
             <View style={{flex: 1, justifyContent: 'center'}}>
               <TouchableOpacity style={{ position: 'absolute', top: 15, right: 15 }} onPress={modalPreviewImageCloseHandler}>
@@ -1104,7 +1106,7 @@ const styles = StyleSheet.create({
     color: "#202020",
     paddingHorizontal: 15,
     height: 36,
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: "open-sans",
     flex: 1
   }

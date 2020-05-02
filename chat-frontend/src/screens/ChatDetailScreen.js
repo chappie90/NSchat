@@ -8,11 +8,13 @@ import {
   SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   ActivityIndicator,
   Image,
   PanResponder,
   Animated,
+  Keyboard,
   Dimensions,
   Alert
 } from 'react-native';
@@ -742,34 +744,36 @@ const ChatDetailScreen = ({ navigation }) => {
               backdropTransitionOutTiming={0}
               onSwipeComplete={modalPreviewImageCloseHandler}
               swipeThreshold={60}
-              swipeDirection={["down","up"]}
+              swipeDirection={["down","up"]}  
             >
-            <View style={{flex: 1, justifyContent: 'center'}}>
-              <TouchableOpacity style={{ position: 'absolute', top: 15, right: 15 }} onPress={modalPreviewImageCloseHandler}>
-                <MaterialIcons name="close" size={34} color="white" />
-              </TouchableOpacity>
-              <Image
-                style={{
-                  width: previewImageWidth, 
-                  height: previewImageHeight, 
-                  }} 
-                source={{ uri: previewImage }} />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-                <TextInput
-                  style={styles.previewImageInput}
-                  placeholder="Add caption"
-                  placeholderTextColor='#202020'
-                  autoCorrect={false}
-                  value={previewImageInput}
-                  onChangeText={setPreviewImageInput}
-                 />
-                <TouchableOpacity onPress={modalPreviewImageCloseHandler}>
-                  <View style={{ paddingLeft: 13, paddingRight: 9, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, height: 36}}>
-                    <MaterialIcons name="send" size={26} color="#fff" />
-                  </View>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <KeyboardAvoidingView keyboardVerticalOffset={Platform.OS === 'android' ? -80 : null} behavior="padding" style={{flex: 1, justifyContent: 'center'}}>
+                <TouchableOpacity style={{ position: 'absolute', zIndex: 2, top: 15, right: 15 }} onPress={modalPreviewImageCloseHandler}>
+                  <MaterialIcons name="close" size={34} color="white" />
                 </TouchableOpacity>
-              </View>
-            </View>
+                <Image
+                  style={{
+                    width: previewImageWidth, 
+                    height: previewImageHeight, 
+                    }} 
+                  source={{ uri: previewImage }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                  <TextInput
+                    style={styles.previewImageInput}
+                    placeholder="Add caption"
+                    placeholderTextColor='#202020'
+                    autoCorrect={false}
+                    value={previewImageInput}
+                    onChangeText={setPreviewImageInput}
+                   />
+                  <TouchableOpacity onPress={modalPreviewImageCloseHandler}>
+                    <View style={{ paddingLeft: 13, paddingRight: 9, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, height: 36}}>
+                      <MaterialIcons name="send" size={26} color="#fff" />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
          </Modal>
         <GroupSettingsScreen navigation={navigation} visible={groupSettingsModal} closeModal={closeModalHandler} />
           <GiftedChat

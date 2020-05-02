@@ -17,6 +17,10 @@ const privateMessageSchema = new mongoose.Schema({
     messageId: String,
     messageText: String,
     messageAuthor: String
+  },
+  image: {
+    imgPath: String,
+    imgName: String
   }
 });
 

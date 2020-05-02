@@ -14,6 +14,10 @@ const groupMessageSchema = new mongoose.Schema({
     originalMsgId: String,
     originalMsgText: String,
     originalMsgAuthor: String
+  },
+  image: {
+    imgPath: String,
+    imgName: String
   }
 });
 

@@ -404,8 +404,31 @@ module.exports = function(io) {
     }
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     console.log('User disconnected');
+    // console.log(io.sockets.adapter.rooms);
+    const user = await User.findOne({ username }).populate('contacts.user');
+
+    if (!user) {
+      return;
+      // ? exit socket ?
+      // return res.status(422).send({ error: 'Something went wrong with your request' });
+    }
+    const contacts = user.contacts.map(c => c.user.username);
+
+    for (const c of contacts) {
+      for (let [key, value] of Object.entries(users)) {
+        if (c === key) {
+          if (!onlineContacts.includes(key)) {
+            onlineContacts.push(key);
+          }
+          users[key].join(username); 
+        } else {
+          onlineContacts = onlineContacts.filter(item => item !== key);
+        }
+      }
+    }
+
     socket.broadcast.to(username).emit('offline', username);
     io.of('/').in(username).clients((error, socketIds) => {
       if (error) throw error;

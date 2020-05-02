@@ -405,6 +405,7 @@ router.post(
             to: token,
             sound: 'default',
             title: username,
+            ttl: 2419200,
             body: 'You were added to a group',
             data: {
               sender: group.name,

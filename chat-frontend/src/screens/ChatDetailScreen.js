@@ -16,7 +16,8 @@ import {
   Animated,
   Keyboard,
   Dimensions,
-  Alert
+  Alert,
+  Button
 } from 'react-native';
 import Constants from 'expo-constants';
 import { Overlay } from 'react-native-elements';
@@ -32,6 +33,8 @@ import { v4 as uuidv4 } from 'uuid'
 import * as Random from 'expo-random'
 
 import Colors from '../constants/colors';
+import youtubeApi from '../api/youtube';
+import YoutubeComponent from '../components/YoutubeComponent';
 import BodyText from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -162,18 +165,8 @@ const ChatDetailScreen = ({ navigation }) => {
         
         if (message.message.user.name === recipient) {
           updateChatState(message.chat);
-          // if (mounted) {
-          //   setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
-          // }    
           socket.current.emit('join_chat', { username, recipient });
         }
-        
-        // // let chatType =  chatType || navigation.getParam('type');
-        // // let chatId = chatId || navigation.getParam('chatId');
-
-        // // if (message.user.name === recipient) {
-        // //   markMessageAsRead({ username, recipient });
-        // } 
       });
       socket.current.on('is_typing', () => {
         navigation.setParams({ isTyping: 'is typing...' });
@@ -185,10 +178,6 @@ const ChatDetailScreen = ({ navigation }) => {
         if (username === data.recipient) {
           deleteMessageState({ user: recipient, messageId: data.selectedMessage._id })
         }
-        //   const deletedMessage = chat.map(item => {
-        //   return item._id === message._id ? { ...item, text: 'Message deleted', deleted: true } : item;
-        // });
-        // setIncomingMsgs(deletedMessage);
       });
       socket.current.on('has_joined_chat', user => {
         let chatType =  chatType || navigation.getParam('type');
@@ -196,11 +185,6 @@ const ChatDetailScreen = ({ navigation }) => {
 
         if (user === recipient) {
           markMessageAsRead({ user:recipient });
-          // getMessages({ chatType, chatId, username, recipient, page: 1 })
-          //   .then((chat) => {
-          //     console.log(chat)
-          //     // setIncomingMsgs(chat);
-          // });
         } 
       });
     }
@@ -217,6 +201,7 @@ const ChatDetailScreen = ({ navigation }) => {
     let mounted = true;
 
     if (chat.hasOwnProperty(recipient)) {
+      console.log(chat[recipient].length)
       if (chat[recipient].length > 50) {
         resetChatState(recipient);
         setIncomingMsgs(chat[recipient].slice(0, 50));
@@ -239,12 +224,6 @@ const ChatDetailScreen = ({ navigation }) => {
             setIncomingMsgs(messages); 
           }         
       });
-      // getMessages({ chatType, chatId, username, recipient, page })
-      // .then((chat) => {
-      //   if (mounted) {
-      //     setIncomingMsgs(chat); 
-      //   }         
-      // });
     }
 
     return () => {
@@ -329,15 +308,6 @@ const ChatDetailScreen = ({ navigation }) => {
 
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
   };
-
-  // const willFocusHandler = () => {
-  //   const getRecipientParam = navigation.getParam('username');
-  //   setCurrentPage(1);
-  //   setRecipient(getRecipientParam);
-  //   console.log(username);
-  //   console.log(getRecipientParam);
-  //   getMessages({ username, recipient: getRecipientParam, page: 1 });
-  // };
 
   const loadMoreMessages = () => {
     setLoadMoreHelper(true);
@@ -756,12 +726,13 @@ const ChatDetailScreen = ({ navigation }) => {
           {height: isBackgroundYoutube.current ? '100%' : height, maxHeight: deviceHeight - 70 - bottomNavHeight},
           isVisibleYoutube.current && isBackgroundYoutube.current ? styles.youtubeBackground : styles.youtubePane
         ]}>
-        <WebView
+      <YoutubeComponent />
+       {/* <WebView
           mediaPlaybackRequiresUserAction={true}
           allowsFullscreenVideo={true} 
           allowsInlineMediaPlayback={true} 
            automaticallyAdjustContentInsets={false}
-          style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} />
+          style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} /> */}
         {!isBackgroundYoutube.current && <View
           { ...panResponder.panHandlers }
           style={[
@@ -920,9 +891,9 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         {params.isBackgroundYou && <TouchableOpacity onPress={() => params.setAsBackgroundYoutube(params.isBackgroundYou)}>
           <MaterialCommunityIcons name="flip-to-back" style={{ paddingHorizontal: 8, paddingTop: 3}} size={30} color={Colors.tertiary} />
         </TouchableOpacity>}
-       {/* <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
+        <TouchableOpacity onPress={() => params.openYoutube(params.isVisibleYou)}>
           <FontAwesome name="youtube" size={32} style={{ paddingRight: 6, paddingTop: 1}} color={params.isVisibleYou ? Colors.tertiary : "#D0D0D0"} />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
        {params.type === 'group' && (
          <TouchableOpacity onPress={() => params.openModal()}>
           <MaterialIcons
@@ -1166,6 +1137,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     backgroundColor: '#E8E8E8',
     borderRadius: 18
+  },
+  youtubeSearchInput: {
+    width: '80%',
+    height: '100%'
   }
 });
 

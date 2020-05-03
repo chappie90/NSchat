@@ -42,7 +42,6 @@ import { Context as ChatContext } from '../context/ChatContext';
 import chatApi from '../api/chat';
 import FadeViewAnim from '../components/animations/FadeViewAnim';
 import GroupSettingsScreen from './GroupSettingsScreen';
-import { getTabBarHeight } from '../components/TabBarComponent';
 
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username, socketState } } = useContext(AuthContext);
@@ -76,8 +75,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const [previewImageHeight, setPreviewImageHeight] = useState(null);
   const [previewImageMode, setPreviewImageMode] = useState(false);
   const [previewImageInput, setPreviewImageInput] = useState('');
-  const deviceHeight = Dimensions.get('window').height;
-  const bottomNavHeight = getTabBarHeight();
   const isVisibleYoutube = useRef(false);
   const isBackgroundYoutube = useRef(false);
   const socket = useRef(null);
@@ -87,42 +84,6 @@ const ChatDetailScreen = ({ navigation }) => {
   let giftedChatRef;
   let mounted = true;
 
-  const height = useRef(new Animated.Value(0)).current;
-
-  const panResponder = React.useMemo(() => PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetResponderCapture: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
-      onPanResponderGrant: (e, gestureState) => {
-      },
-      onPanResponderStart: (e, gestureState) => {   
-      },
-      onPanResponderMove: (e, gestureState) => {
-        // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
-        // offset.setValue(100);
-        height.setValue(e.nativeEvent.pageY - 50);
-      },
-      onPanResponderRelease: (e, gestureState) => {
-        if (e.nativeEvent.pageY > (deviceHeight - 30 - bottomNavHeight) / 2) {
-          Animated.spring(
-            height,
-            {
-              toValue: deviceHeight - 70 - bottomNavHeight
-            },
-          ).start();
-        }
-        if (e.nativeEvent.pageY < (deviceHeight - 30 - bottomNavHeight) / 2) {
-          Animated.spring(
-            height,
-            {
-              toValue: 0
-            },
-          ).start();
-        }
-        height.flattenOffset();
-      },
-    }), []);
-
   useEffect(() => {
     setChatType(navigation.getParam('type'));
     setChatId(navigation.getParam('chatId'));
@@ -130,7 +91,7 @@ const ChatDetailScreen = ({ navigation }) => {
       openModal: openModalHandler,
       openYoutube: openYoutubeHandler,
       isVisibleYou: isVisibleYoutube.current,
-      setAsBackgroundYoutube: setYoutubeAsBackgroundHandler,
+      setAsBackgroundYoutube: youtubeBackgroundHandler,
       isBackgroundYou: isBackgroundYoutube.current 
     });
   }, []);
@@ -263,10 +224,10 @@ const ChatDetailScreen = ({ navigation }) => {
       navigation.setParams({ isVisibleYou: !params });
   };
 
-  const setYoutubeAsBackgroundHandler = (val) => {
+  const youtubeBackgroundHandler = (val) => {
     isBackgroundYoutube.current = !val;
     navigation.setParams({ isBackgroundYou: !val });
-  };
+  }
 
   const closeModalHandler = () => {
     setGroupSettingsModal(false);
@@ -721,28 +682,19 @@ const ChatDetailScreen = ({ navigation }) => {
         // onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
-      {isVisibleYoutube.current && <Animated.View
-        style={[
-          {height: isBackgroundYoutube.current ? '100%' : height, maxHeight: deviceHeight - 70 - bottomNavHeight},
-          isVisibleYoutube.current && isBackgroundYoutube.current ? styles.youtubeBackground : styles.youtubePane
-        ]}>
-      <YoutubeComponent />
+      {isVisibleYoutube.current && (
+        <YoutubeComponent
+          isBackground={isBackgroundYoutube.current}
+          isVisible={isVisibleYoutube.current}
+          youtubeBackgroundHandler={youtubeBackgroundHandler}
+        /> 
+      )}
        {/* <WebView
           mediaPlaybackRequiresUserAction={true}
           allowsFullscreenVideo={true} 
           allowsInlineMediaPlayback={true} 
            automaticallyAdjustContentInsets={false}
           style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} /> */}
-        {!isBackgroundYoutube.current && <View
-          { ...panResponder.panHandlers }
-          style={[
-            styles.youtubeNav
-          ]}>
-          <TouchableOpacity onPress={() => setYoutubeAsBackgroundHandler(isBackgroundYoutube.current)}>
-            <MaterialCommunityIcons name="flip-to-back" size={30} color={isBackgroundYoutube.current ? Colors.tertiary : "#989898"}/>
-          </TouchableOpacity>
-        </View>}
-      </Animated.View>}
            <Modal
               style={{ alignItems: "center", justifyContent: "center" }}
               isVisible={previewImageMode}
@@ -1049,73 +1001,9 @@ const styles = StyleSheet.create({
     right: -24, 
     bottom: -20
   },
-    panelContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  panel: {
-    height: '100%'
-  },
   header: {
     width: '100%',
     height: 50,
-  },
-  panelHeader: {
-    alignItems: 'center',
-  },
-  panelHandle: {
-    width: 40,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#00000040',
-    marginBottom: 10,
-  },
-  panelTitle: {
-    fontSize: 27,
-    height: 35,
-  },
-  panelSubtitle: {
-    fontSize: 14,
-    color: 'gray',
-    height: 30,
-    marginBottom: 10,
-  },
-  panelButton: {
-    padding: 20,
-    borderRadius: 10,
-    backgroundColor: '#292929',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  panelButtonTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  youtubeNav: {
-    width: '100%',
-    height: 40,
-    backgroundColor: '#F5F5F5',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10
-  },
-  youtubePane: {
-    backgroundColor: Colors.primary,
-    width: '100%',
-    position: 'absolute',
-    left: 0,
-    zIndex: 2
-  },
-  youtubeBackground: {
-    position: 'absolute', 
-    top: 0, 
-    left: 0, 
-    bottom: 0, 
-    right: 0 
   },
   previewImageInput: {
     backgroundColor: "#fff",
@@ -1137,10 +1025,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     backgroundColor: '#E8E8E8',
     borderRadius: 18
-  },
-  youtubeSearchInput: {
-    width: '80%',
-    height: '100%'
   }
 });
 

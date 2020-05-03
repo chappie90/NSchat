@@ -2,6 +2,8 @@ import createDataContext from './createDataContext';
 import youtubeApi from '../api/youtube';
 import axios from 'axios';
 
+const youtubeApiKey = 'AIzaSyAlGNuBDZvq0M4LCK3S2Joly3JGwRObMcc';
+
 const youtubeReducer = (state, action) => {
   switch (action.type) {
     case 'get_youtube_results':
@@ -27,6 +29,8 @@ const getYoutubeResults = dispatch => async (term) => {
       if (!response.data) {
         return;
       }
+
+      console.log(response.data)
 
       dispatch({ type: 'get_youtube_results', payload: response.data.items });
 

@@ -101,14 +101,18 @@ module.exports = function(io) {
   });
 
   socket.on('message', async msgObj => {
+
+    console.log(msgObj)
+
     const {
       type,
       chatId,
       from, 
       to, 
-      message: [{ text, createdAt, _id }],
+      message: [{ text, createdAt, _id, imgPath, imgName }],
       replyTo: { messageId, messageText, messageAuthor }
     } = msgObj;
+
 
     try {
 
@@ -132,6 +136,10 @@ module.exports = function(io) {
           originalMsgId: messageId,
           originalMsgText: messageText,
           originalMsgAuthor: messageAuthor
+        },
+        image: {
+          imgPath: imgPath ? imgPath : null,
+          imgName: imgName ? imgName : ''
         }
       });
 
@@ -193,7 +201,8 @@ module.exports = function(io) {
           read: false,
           deleted: false,
           reply: messageText,
-          replyAuthor: messageAuthor
+          replyAuthor: messageAuthor,
+          image: imgPath ? imgPath : '',
         };
 
         const updatePreviousChatsRecipient = {
@@ -215,7 +224,8 @@ module.exports = function(io) {
           read: false,
           deleted: false,
           reply: messageText,
-          replyAuthor: messageAuthor
+          replyAuthor: messageAuthor,
+          image: imgPath ? imgPath : '',
         };
 
       const updatePreviousChatsUser = {
@@ -332,6 +342,10 @@ module.exports = function(io) {
           messageId,
           messageText,
           messageAuthor
+        },
+        image: {
+          imgPath: imgPath ? imgPath : null,
+          imgName: imgName ? imgName : ''
         }
       });
       
@@ -354,7 +368,8 @@ module.exports = function(io) {
           read: false,
           deleted: false,
           reply: messageText,
-          replyAuthor: messageAuthor
+          replyAuthor: messageAuthor,
+          image: imgPath ? imgPath : '',
         };
 
       const updatePreviousChatsRecipient = {
@@ -376,7 +391,8 @@ module.exports = function(io) {
           read: false,
           deleted: false,
           reply: messageText,
-          replyAuthor: messageAuthor
+          replyAuthor: messageAuthor,
+          image: imgPath ? imgPath : '',
         };
 
       const updatePreviousChatsUser = {

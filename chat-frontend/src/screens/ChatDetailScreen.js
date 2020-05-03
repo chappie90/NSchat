@@ -314,11 +314,14 @@ const ChatDetailScreen = ({ navigation }) => {
       chatId,
       from: username,
       to: recipient,
-      message
+      message: [message],
+      replyTo: {}
     };
 
     saveMessageImage(msgObj).then(res => {
-      if (res.imgPath) {
+      if (res.imgPath && res.imgName) {
+        msgObj.message[0].imgPath = res.imgPath;
+        msgObj.message[0].imgName = res.imgName;
         socket.current.emit('message', msgObj);
       }
     }); 

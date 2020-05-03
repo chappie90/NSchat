@@ -487,13 +487,15 @@ router.post(
   async (req, res) => {
 
   try {
-    let imgPath;
-    if (req.file) {
-      const url = req.protocol + '://' + req.get('host');
-      imgPath = url + '/public/uploads/' + req.file.filename;
+    if (!req.file) {
+      return res.status(422).send({ error: 'Could not save image' });
     }
 
-    res.status(200).send({ imgPath })
+    const url = req.protocol + '://' + req.get('host');
+    let imgName = req.file.filename;
+    let imgPath = url + '/public/uploads/' + req.file.filename;
+
+    res.status(200).send({ imgPath, imgName });
   } catch (err) {
     console.log(err)
     res.status(422).send({ error: 'Could not save image' });

@@ -413,15 +413,15 @@ const getCurrentScreen = dispatch => screen => {
 const saveMessageImage = dispatch => async (data) => {
 
   try {
-    const fileName = data.message.image.split('/').pop();
+    const fileName = data.message[0].image.split('/').pop();
     const newPath = FileSystem.documentDirectory + fileName;
 
-    let uriParts = data.message.image.split('.');
+    let uriParts = data.message[0].image.split('.');
     let fileType = uriParts[uriParts.length - 1];
     let formData = new FormData();
 
     formData.append('imageMessage', {
-      uri: data.message.image,
+      uri: data.message[0].image,
       name: `${data.chatId}`,
       type: `image/${fileType}` 
     });

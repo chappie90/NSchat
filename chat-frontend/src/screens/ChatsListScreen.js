@@ -169,7 +169,7 @@ const ChatsListScreen = ({ navigation }) => {
         if (mounted) {
           if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
             updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
-            updateMessages({ user: message.message.user.name, message: message.message });
+            // updateMessages({ user: message.message.user.name, message: message.message });
           }       
         }
       });

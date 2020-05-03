@@ -53,7 +53,8 @@ const ChatDetailScreen = ({ navigation }) => {
     markMessageAsRead,
     deleteMessageState,
     getCurrentScreen,
-    updateChatState
+    updateChatState,
+    saveMessageImage
  } = useContext(ChatContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
@@ -291,13 +292,13 @@ const ChatDetailScreen = ({ navigation }) => {
     setGroupSettingsModal(false);
   };
 
-  const sendImage = async (image) => {
+  const sendImage = async (image, caption) => {
 
     let messageId = uuidv4( { random: await Random.getRandomBytesAsync( 16 ) } );
 
     const message = {
       _id: messageId,
-      text: '',
+      text: caption,
       createdAt: new Date(),
       user: {
         _id: 1,
@@ -306,16 +307,21 @@ const ChatDetailScreen = ({ navigation }) => {
       image: image,
     };
 
+    let chatId = chatId || navigation.getParam('chatId');
+
     const msgObj = {
       type: chatType,
-      chatId: chatId,
+      chatId,
       from: username,
       to: recipient,
-      message,
-      replyTo: {}
+      message
     };
 
-    socket.current.emit('message', msgObj);
+    saveMessageImage(msgObj).then(res => {
+      if (res.imgPath) {
+        socket.current.emit('message', msgObj);
+      }
+    }); 
 
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
   };
@@ -488,8 +494,8 @@ const ChatDetailScreen = ({ navigation }) => {
     // saveImage(username, libraryImage.uri);
   };
 
-  const sendImageHandler = (image) => {
-    sendImage(image);
+  const sendImageHandler = () => {
+    sendImage(previewImage, previewImageInput);
     setPreviewImageMode(false);
     if (giftedChatRef) {
       giftedChatRef.scrollToBottom();
@@ -790,7 +796,7 @@ const ChatDetailScreen = ({ navigation }) => {
                     value={previewImageInput}
                     onChangeText={setPreviewImageInput}
                    />
-                  <TouchableOpacity onPress={() => sendImageHandler(previewImage)}>
+                  <TouchableOpacity onPress={sendImageHandler}>
                     <View style={{ paddingLeft: 13, paddingRight: 9, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, height: 36}}>
                       <MaterialIcons name="send" size={26} color="#fff" />
                     </View>

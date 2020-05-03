@@ -82,7 +82,9 @@ const GroupSettingsScreen = (props) => {
   };
 
   const saveNameHandler = () => {
-    updateGroupName(group._id, name, username);
+    if (group.name !== name) {
+      updateGroupName(group._id, name, username);
+    }
     setEditName(false);
   };
 

@@ -203,7 +203,8 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
           read: message.read,
           deleted: message.deleted,
           reply: message.replyTo ? message.replyTo.messageText : null,
-          replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
+          replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null,
+          image: message.image ? message.image.imgPath : ''
         });
       });
     }
@@ -221,7 +222,8 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
           read: message.read,
           deleted: message.deleted,
           reply: message.reply ? message.reply.originalMsgText : null,
-          replyAuthor: message.reply ? message.reply.originalMsgAuthor : null
+          replyAuthor: message.reply ? message.reply.originalMsgAuthor : null,
+          image: message.image ? message.image.imgPath : ''
         });
       });
     }

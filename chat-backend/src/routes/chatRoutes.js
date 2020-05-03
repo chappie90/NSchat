@@ -161,19 +161,13 @@ router.post('/chats', checkAuth, async (req, res) => {
 router.post('/messages', checkAuth, async (req, res) => {
   const { chatType, chatId, username, recipient, page } = req.body;
 
-  // console.log(chatType)
-  // console.log(chatId)
-  // console.log(username)
-  // console.log(recipient)
-  // console.log(page)
-
   const skip = 50 * (page - 1);
   let messages;
 
   try {
 
     if (chatType === 'private') {
-      messages = await PrivateMessage.find({ between: { $all: [username, recipient] } }, { from: 1, to: 1, message: 1, read: 1, deleted: 1, replyTo: 1 })
+      messages = await PrivateMessage.find({ between: { $all: [username, recipient] } })
                                      .skip(skip)
                                      .sort({ 'message.createdAt': -1 })
                                      .limit(50);

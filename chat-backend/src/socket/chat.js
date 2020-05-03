@@ -102,8 +102,6 @@ module.exports = function(io) {
 
   socket.on('message', async msgObj => {
 
-    console.log(msgObj)
-
     const {
       type,
       chatId,

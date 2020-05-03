@@ -163,10 +163,10 @@ module.exports = function(io) {
             title: from,
             ttl: 2419200,
             badge: badgeCount,
-            body: text,
+            body: text ? `${from}: ${text}` : `${from} sent a photo`,
             data: {
              sender: group[0].name,
-             message: `${from}: ${text}`,
+             message: text ? `${from}: ${text}` : `${from} sent a photo`,
              img: group[0].avatar.imagePath,
              type: type,
              chatId: chatId 
@@ -415,10 +415,10 @@ module.exports = function(io) {
         title: from,
         ttl: 2419200,
         badge: badgeCount,
-        body: text,
+        body: text ? text : `${from} sent a photo`,
         data: {
           sender: from, 
-          message: text,
+          message: text ? text : `${from} sent a photo`,
           img: recipientImage, 
           type: type, 
           chatId: chatId 

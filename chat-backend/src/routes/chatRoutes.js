@@ -480,4 +480,24 @@ router.post('/badge/clear', checkAuth, async (req, res) => {
   }
 });
 
+router.post(
+  '/message/image/save', 
+  checkAuth,
+  multer({ storage: storage }).single('imageMessage'),
+  async (req, res) => {
+
+  try {
+    let imgPath;
+    if (req.file) {
+      const url = req.protocol + '://' + req.get('host');
+      imgPath = url + '/public/uploads/' + req.file.filename;
+    }
+
+    res.status(200).send({ imgPath })
+  } catch (err) {
+    console.log(err)
+    res.status(422).send({ error: 'Could not save image' });
+  }
+});
+
 module.exports = router;

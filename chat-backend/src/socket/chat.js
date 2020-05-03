@@ -207,7 +207,8 @@ module.exports = function(io) {
           chatId,
           contact: from,
           date: createdAt,
-          text
+          text,
+          from
         };
 
       const returnGroupMsgUser = 
@@ -231,6 +232,7 @@ module.exports = function(io) {
         contact: to,
         date: createdAt,
         text,
+        from
       };
 
       for (let p of activeGroupParticipants) {

@@ -429,6 +429,12 @@ const ChatsListScreen = ({ navigation }) => {
       return 'is typing...';
     } else if (item.groupOwner && item.groupOwner === username) {
       return item.text.replace(username, 'You');
+    } else if (!item.text) {
+        if (item.from === username) {
+          return 'You sent a photo'; 
+        } else {
+          return `${item.from} sent a photo`; 
+        }  
     } else {
       return item.text
     }

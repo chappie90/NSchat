@@ -84,6 +84,7 @@ router.post('/chats', checkAuth, async (req, res) => {
         },
         chatId: p.privateChat._id, 
         pinned: p.pinned,
+        from: lastprivateChatMessage[0].from,
         unreadMessageCount
       });
     }
@@ -127,6 +128,7 @@ router.post('/chats', checkAuth, async (req, res) => {
         groupOwner: g.group.owner,
         chatId: g.group._id,
         pinned: g.pinned,
+        from: lastGroupMessage[0].from,
         unreadMessageCount: 0
       });
     }

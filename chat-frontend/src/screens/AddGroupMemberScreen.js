@@ -262,13 +262,16 @@ const AddGroupScreen = props => {
               })}
             </ScrollView>
           </TranslateViewAnim>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, backgroundColor: "#fff" }}>
             {contacts.length > 0 ? (
               <FlatList
                 data={groupContacts}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => {
+                  if (group.participants.find(p => p.user.username === item.user.username)) {
+                    return;
+                  }
                   return (
                     <TouchableWithoutFeedback
                       style={{ borderRadius: 5, overflow: "hidden" }}
@@ -370,7 +373,6 @@ const AddGroupScreen = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     marginTop: 90
   },
   header: {

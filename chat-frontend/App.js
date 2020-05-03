@@ -9,6 +9,7 @@ import { Provider as ChatProvider } from './src/context/ChatContext';
 import { Provider as ProfileProvider } from './src/context/ProfileContext'; 
 import { Provider as ContactsProvider } from './src/context/ContactsContext';
 import { Provider as GroupsProvider } from './src/context/GroupsContext';
+import { Provider as YoutubeProvider } from './src/context/YoutubeContext';
 import { setNavigator } from './src/components/navigationRef';
 import { init } from './src/database/db';
 
@@ -39,16 +40,18 @@ export default () => {
   }
 
   return (
-    <GroupsProvider>
-      <ContactsProvider>
-        <ProfileProvider>
-          <ChatProvider>
-            <AuthProvider>
-              <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
-            </AuthProvider>
-          </ChatProvider>
-        </ProfileProvider>
-      </ContactsProvider>
-    </GroupsProvider>
+    <YoutubeProvider>
+      <GroupsProvider>
+        <ContactsProvider>
+          <ProfileProvider>
+            <ChatProvider>
+              <AuthProvider>
+                <ChatNavigator ref={(navigator) => { setNavigator(navigator) }} />
+              </AuthProvider>
+            </ChatProvider>
+          </ProfileProvider>
+        </ContactsProvider>
+      </GroupsProvider>
+    </YoutubeProvider>
   );
 };

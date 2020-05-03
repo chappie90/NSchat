@@ -68,6 +68,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [chatType, setChatType] = useState('');
   const [chatId, setChatId] = useState('');
   const [previewImage, setPreviewImage] = useState('');
+  const [markSendAsActive, setMarkSendAsActive] = useState(false);
   const [previewImageWidth, setPreviewImageWidth] = useState(null);
   const [previewImageHeight, setPreviewImageHeight] = useState(null);
   const [previewImageMode, setPreviewImageMode] = useState(false);
@@ -419,10 +420,10 @@ const ChatDetailScreen = ({ navigation }) => {
   const renderActions = props => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', height: '100%', paddingLeft: 6 }}>
-        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={takePhotoHandler}>
+        <TouchableOpacity style={{paddingHorizontal: 5}} onPress={takePhotoHandler}>
           <MaterialIcons color="#C8C8C8" name="camera-alt" size={29} />
         </TouchableOpacity>
-        <TouchableOpacity style={{paddingHorizontal: 6}} onPress={choosePhotoHandler}>
+        <TouchableOpacity style={{paddingHorizontal: 5}} onPress={choosePhotoHandler}>
           <Ionicons color="#C8C8C8" name="md-images" size={29} />
         </TouchableOpacity>
       </View>
@@ -520,7 +521,10 @@ const ChatDetailScreen = ({ navigation }) => {
  
   const startTypingHandler = (text) => {
     if (text) {
+      setMarkSendAsActive(true);
       socket.current.emit('start_typing', { username, recipient });
+    } else {
+      setMarkSendAsActive(false);
     }
 
     if (stopTypingTimeout) {
@@ -566,8 +570,8 @@ const ChatDetailScreen = ({ navigation }) => {
   const renderSend = (props) => {
     return (
       <Send {...props}>
-        <View style={{marginRight: 10, marginBottom: 8}}>
-          <MaterialIcons name="send" size={26} color={Colors.primary} />
+        <View style={{marginRight: 10, marginBottom: 9}}>
+          <MaterialIcons name="send" size={26} color={markSendAsActive ? Colors.primary : '#C8C8C8'} />
         </View>
       </Send>
     );
@@ -834,11 +838,15 @@ const ChatDetailScreen = ({ navigation }) => {
               ref={ref => giftedChatRef = ref}
               renderSend={renderSend}
               renderActions={renderActions}
+              // renderComposer={renderComposer}
+              textInputProps={styles.messageInputContainer}
+              textInputStyle={styles.messageInput}
               renderChatFooter={renderChatFooter}
               renderCustomView={false ? null : renderCustomView}
               isCustomViewBottom={true}
               renderMessage={renderMessage}
               renderMessageText={renderMessageText}
+              alwaysShowSend={true}
               // renderLoading={() => {}}
               renderLoadEarlier={renderLoadEarlier}
               keyboardShouldPersistTaps={'handled'}
@@ -1146,6 +1154,18 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: "open-sans",
     flex: 1
+  },
+  messageInputContainer: {
+    height: 32,
+    marginTop: 4,
+    alignSelf: 'center',
+    marginRight: 13
+  },
+  messageInput: {
+    paddingTop: Platform.OS === 'ios' ? 9 : 0,
+    paddingLeft: 10,
+    backgroundColor: '#E8E8E8',
+    borderRadius: 18
   }
 });
 

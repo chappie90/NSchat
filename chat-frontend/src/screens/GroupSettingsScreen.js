@@ -224,7 +224,8 @@ const GroupSettingsScreen = (props) => {
         </View>
       </Modal>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.container}>
+        <KeyboardAvoidingView  
+        behavior={Platform.OS === 'ios' ? "padding" : null} style={styles.container}>
           {isLoading && <View style={styles.spinnerContainer}>
             <ActivityIndicator size="large" color={Colors.primary} />
           </View>}
@@ -315,9 +316,8 @@ const GroupSettingsScreen = (props) => {
           <HeadingText style={{ color: Colors.tertiary, fontSize: 17, marginTop: 15, marginBottom: 20, textAlign: 'center' }}>Leave Group</HeadingText>
         </TouchableOpacity>
         </TouchableOpacity>
-        {Platform.OS === 'ios' && <KeyboardAvoidingView behaviour="padding" />} 
        </Animated.ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </ScreenModal>
   );

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as FileSystem from 'expo-file-system';
 
 import createDataContext from './createDataContext';
 import chatApi from '../api/chat';
@@ -409,6 +410,39 @@ const getCurrentScreen = dispatch => screen => {
   dispatch({ type: 'get_current_screen', payload: screen });
 };
 
+const saveMessageImage = dispatch => async (data) => {
+
+  try {
+    const fileName = data.message.image.split('/').pop();
+    const newPath = FileSystem.documentDirectory + fileName;
+
+    let uriParts = data.message.image.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+    let formData = new FormData();
+
+    formData.append('imageMessage', {
+      uri: data.message.image,
+      name: `${data.chatId}`,
+      type: `image/${fileType}` 
+    });
+
+    const response = await chatApi.post(
+      '/message/image/save', 
+      formData , 
+      { headers: { 'Content-Type': 'multipart/form-data' }}
+    );
+
+    if (!response.data) {
+      return;
+    }
+
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export const { Context, Provider } = createDataContext(
   chatReducer,
   { 
@@ -426,7 +460,8 @@ export const { Context, Provider } = createDataContext(
     deleteMessageState,
     resetBadgeCount,
     getCurrentScreen,
-    updateChatState
+    updateChatState,
+    saveMessageImage
   },
   {  
     previousChats: [], 

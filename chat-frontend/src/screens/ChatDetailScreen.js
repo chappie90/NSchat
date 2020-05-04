@@ -227,7 +227,12 @@ const ChatDetailScreen = ({ navigation }) => {
   const youtubeBackgroundHandler = (val) => {
     isBackgroundYoutube.current = !val;
     navigation.setParams({ isBackgroundYou: !val });
-  }
+  };
+
+  const isVisibleHandler = (val) => {
+    isVisibleYoutube.current = val;
+    navigation.setParams({ isVisibleYou: val });
+  };
 
   const closeModalHandler = () => {
     setGroupSettingsModal(false);
@@ -687,6 +692,7 @@ const ChatDetailScreen = ({ navigation }) => {
           isBackground={isBackgroundYoutube.current}
           isVisible={isVisibleYoutube.current}
           youtubeBackgroundHandler={youtubeBackgroundHandler}
+          isVisibleHandler={isVisibleHandler}
         /> 
       )}
        {/* <WebView

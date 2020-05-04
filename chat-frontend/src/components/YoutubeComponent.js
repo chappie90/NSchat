@@ -14,9 +14,10 @@ import {
   KeyboardAvoidingView,
   Dimensions
 } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import YoutubePlayer from 'react-native-youtube-iframe';
+import Modal from "react-native-modal";
 
 import Colors from '../constants/colors';
 import youtubeApi from '../api/youtube';
@@ -26,8 +27,14 @@ import { Context as YoutubeContext } from '../context/YoutubeContext';
 import { getTabBarHeight } from '../components/TabBarComponent';
 
 const YoutubeComponent = (props) => {
-  const { state: { youtubeResults }, getYoutubeResults } = useContext(YoutubeContext);
+  const {
+    state: { youtubeResults, currentVideo }, 
+    getYoutubeResults, 
+    getCurrentVideo 
+  } = useContext(YoutubeContext);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchMode, setSearchMode] = useState(false);
+  const [activeVideo, setActiveVideo] = useState(null);
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
   const height = useRef(new Animated.Value(0)).current;
@@ -68,8 +75,24 @@ const YoutubeComponent = (props) => {
     },
   }), []);
 
+  useEffect(() => {
+    if (currentVideo === null) {
+      setSearchMode(true);
+    }
+  }, []);
+
   const youtubeSearchHander = (term) => {
     getYoutubeResults(term);
+    Keyboard.dismiss();
+  };
+
+  const playerOnChangeState = event => {
+    console.log(event)
+    if (event === 'playing') {
+      setPlaying(true)
+    } else if (event === 'paused') {
+      setPlaying(false);
+    }
   };
 
   return (
@@ -78,67 +101,136 @@ const YoutubeComponent = (props) => {
           {height: props.isBackground ? '100%' : height, maxHeight: deviceHeight - 70 - bottomNavHeight},
           props.isVisible && props.isBackground ? styles.youtubeBackground : styles.youtubePane
         ]}>
+        <Modal
+          style={{ alignItems: "center", justifyContent: "center" }}
+          isVisible={searchMode}
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          animationInTiming={200}
+          backdropTransitionOutTiming={0}
+          onSwipeComplete={() => setSearchMode(false)}
+          swipeThreshold={60}
+          // swipeDirection={["left","right"]}  
+        >
+          <View style={{ backgroundColor: 'white', flex: 1 }}>
+            <View style={{ flexDirection: 'row', width: '100%', padding: 15, alignItems: 'center' }}>
+              <TouchableOpacity style={{ marginRight: 12 }} onPress={() => {
+                setSearchMode(false);
+                if (currentVideo === null) {
+                  props.isVisibleHandler(false);
+                }
+              }}>
+                <Ionicons name="ios-close" size={46} color="#989898" />
+              </TouchableOpacity>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search YouTube"
+                placeholderTextColor='#202020'
+                autoCorrect={false}
+                value={searchTerm}
+                onChangeText={setSearchTerm}
+               />  
+              <TouchableOpacity onPress={() => youtubeSearchHander(searchTerm)}>
+                <AntDesign name="arrowright" size={30} color="#989898" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView>
+              {youtubeResults && youtubeResults.map(item => (
+                <TouchableOpacity key={item.etag} onPress={() => {
+                  setActiveVideo(item);
+                  setSearchMode(false);
+                  getCurrentVideo(item.id.videoId);
+                }}>
+                  <View style={styles.item}>
+                    <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
+                    <View style={styles.itemInfo}>
+                      <HeadingText>{item.snippet.title}</HeadingText>
+                      <View style={styles.itemMeta}>
+                        <BodyText style={styles.channelTitle}>{item.snippet.channelTitle}</BodyText>
+                        <BodyText>{item.snippet.publishedAt.split('T')[0]}</BodyText>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </Modal>
        {/* <WebView
           mediaPlaybackRequiresUserAction={true}
           allowsFullscreenVideo={true} 
           allowsInlineMediaPlayback={true} 
            automaticallyAdjustContentInsets={false}
           style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} /> */}
-        {/*} <YoutubePlayer
-            ref={playerRef}
-            height={Dimensions.get('window').width / 1.7778}
-            width={'100%'}
-            videoId={item.id.videoId}
-            play={playing}
-            onChangeState={event => console.log(event)}   
-            onReady={() => console.log("ready")}
-            onError={e => console.log(e)}
-            onPlaybackQualityChange={q => console.log(q)}
-            volume={50}
-            playbackRate={1}
-            playerParams={{
-              cc_lang_pref: "us",
-              showClosedCaptions: true
-            }}
-          />*/}
-      <ScrollView>
-        {youtubeResults && youtubeResults.map(item => (
-          <View style={styles.item} key={item.etag}>
-            <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
-            <View style={styles.itemInfo}>
-              <HeadingText>{item.snippet.title}</HeadingText>
-              <View style={styles.itemMeta}>
-                <BodyText style={styles.channelTitle}>{item.snippet.channelTitle}</BodyText>
-                <BodyText>{item.snippet.publishedAt.split('T')[0]}</BodyText>
+      {activeVideo && ( 
+        <YoutubePlayer
+          ref={playerRef}
+          height={Dimensions.get('window').width / 1.7778}
+          width={'100%'}
+          videoId={activeVideo.id.videoId}
+          play={playing}
+          onChangeState={playerOnChangeState}   
+          onReady={() => console.log("ready")}
+          onError={e => console.log(e)}
+          onPlaybackQualityChange={q => console.log(q)}
+          volume={50}
+          playbackRate={1}
+          playerParams={{
+            cc_lang_pref: "us",
+            showClosedCaptions: true
+          }}
+        />
+      )}  
+      {searchMode && (
+        <ScrollView>
+          {youtubeResults && youtubeResults.map(item => (
+            <TouchableOpacity key={item.etag} onPress={() => {
+              // console.log(item)
+              setActiveVideo(item);
+            }}>
+              <View style={styles.item}>
+                <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
+                <View style={styles.itemInfo}>
+                  <HeadingText>{item.snippet.title}</HeadingText>
+                  <View style={styles.itemMeta}>
+                    <BodyText style={styles.channelTitle}>{item.snippet.channelTitle}</BodyText>
+                    <BodyText>{item.snippet.publishedAt.split('T')[0]}</BodyText>
+                  </View>
+                </View>
               </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-      {!props.isBackground && <View
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+      {!props.isBackground && currentVideo !== null && <View
           { ...panResponder.panHandlers }
           style={[
             styles.youtubeNav
           ]}>
-          <View style={{ flexDirection: 'row', width: '90%' }}>
-            <TouchableOpacity onPress={() => youtubeSearchHander(searchTerm)}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 }}>
+            {!searchMode && <TouchableOpacity style={{ marginRight: 8 }} onPress={() => setSearchMode(true)}>
               <Ionicons name="ios-search" size={30} color="#989898" />
             </TouchableOpacity>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search videos"
-              placeholderTextColor='#202020'
-              autoCorrect={false}
-              value={searchTerm}
-              onChangeText={setSearchTerm}
-             />  
-            <TouchableOpacity onPress={() => youtubeSearchHander(searchTerm)}>
-              <BodyText>Submit</BodyText>
+            }
+            {searchMode && (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity style={{ marginRight: 12 }} onPress={() => setSearchMode(false)}>
+                  <Ionicons name="ios-close" size={46} color="#989898" />
+                </TouchableOpacity>
+              </View>
+            )}
+            {!searchMode && (
+              <TouchableOpacity onPress={() => props.youtubeBackgroundHandler(props.isBackground)}>
+                <MaterialCommunityIcons name="flip-to-back" size={30} color={props.isBackground ? Colors.tertiary : "#989898"}/>
+              </TouchableOpacity>
+            )}
+             <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => setPlaying(true)}>
+              <Ionicons name="ios-play" size={30} color="#989898" />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => setPlaying(false)}>
+              <Ionicons name="ios-pause" size={30} color="#989898" />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => props.youtubeBackgroundHandler(props.isBackground)}>
-            <MaterialCommunityIcons name="flip-to-back" size={30} color={props.isBackground ? Colors.tertiary : "#989898"}/>
-          </TouchableOpacity>
         </View>}
       </Animated.View>
   );
@@ -150,7 +242,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   searchInput: {
-    width: '80%'
+    flex: 1,
+    fontSize: 18
   },
   item: {
     // alignItems: 'center'

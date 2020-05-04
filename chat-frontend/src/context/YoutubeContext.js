@@ -31,7 +31,7 @@ const getYoutubeResults = dispatch => async (term) => {
       return;
     }
 
-    console.log(response.data)
+    // console.log(response.data)
 
     dispatch({ type: 'get_youtube_results', payload: response.data.items });
 
@@ -41,18 +41,8 @@ const getYoutubeResults = dispatch => async (term) => {
 };
 
 const getCurrentVideo = dispatch => async (videoId) => {
-  try {
-    const response = await chatApi.patch('/youtube/currentVideo', { videoId });
-
-    if (!response.data) {
-      return;
-    }
-
-    dispatch({ type: 'update_current_video', payload: videoId });
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
+  console.log('updated')
+  dispatch({ type: 'update_current_video', payload: videoId });
 };
 
 export const { Context, Provider } = createDataContext(

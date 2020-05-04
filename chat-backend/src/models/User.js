@@ -35,7 +35,11 @@ const userSchema = new mongoose.Schema({
       group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' },
       pinned: { type: Boolean, default: false }
     }
-  ]
+  ],
+  youtube: {
+    lastVideoId: String,
+    lastVideoCurrentTime: String
+  }
 });
 
 userSchema.pre('save', function(next) {

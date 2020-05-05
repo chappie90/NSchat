@@ -32,7 +32,8 @@ const ContactsListScreen = ({ navigation }) => {
   const { state: { username, socketState } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [showActiveUsers, setShowActiveUsers] = useState(true);
+  const [showActiveUsers, setShowActiveUsers] = useState(false);
+  const [activeUsers, setActiveUsers] = useState([]);
   const socket = useRef(null);
     
   useEffect(() => {
@@ -40,6 +41,10 @@ const ContactsListScreen = ({ navigation }) => {
       setIsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    setActiveUsers(contacts);
+  }, [contacts]);
 
   const closeModal = () => {
     setNewContactMode(false);
@@ -65,7 +70,7 @@ const ContactsListScreen = ({ navigation }) => {
         </View>
       ) : 
         contacts.length > 0 ? (
-          <View>
+          <View style={{flex: 1}}>
             <View style={{
               flexDirection: 'row', justifyContent: 'space-between',
                paddingHorizontal: '15%', paddingVertical: 10 }}>
@@ -76,7 +81,7 @@ const ContactsListScreen = ({ navigation }) => {
                   backgroundColor: showActiveUsers ? '#fff' : '#E8E8E8', borderRadius: 20 }}>
                   <HeadingText style={{
                    color: showActiveUsers ? '#A9A9A9' : '#202020', 
-                   textAlign: 'center' }}>All (61)</HeadingText>
+                   textAlign: 'center' }}>All ({contacts.length})</HeadingText>
                 </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback onPress={() => setShowActiveUsers(true)}>
@@ -86,11 +91,11 @@ const ContactsListScreen = ({ navigation }) => {
                 borderRadius: 20 }}>
                 <HeadingText style={{ 
                   color: showActiveUsers ? '#202020' : '#A9A9A9', 
-                  textAlign: 'center' }}>Active (15)</HeadingText>
+                  textAlign: 'center' }}>Active ({onlineContacts.length})</HeadingText>
               </View>
               </TouchableWithoutFeedback>
             </View>
-            <SwipeListView
+            {!showActiveUsers && <SwipeListView
               refreshControl={
                 <RefreshControl
                   onRefresh={() => getContacts({ username })}
@@ -175,7 +180,93 @@ const ContactsListScreen = ({ navigation }) => {
               leftOpenValue={65}
               rightOpenValue={-65}
               onSwipeValueChange={onSwipeValueChange}
-               />
+               />}
+            {showActiveUsers && <SwipeListView
+              refreshControl={
+                <RefreshControl
+                  onRefresh={() => getContacts({ username })}
+                  refreshing={isLoading}
+                  tintColor={Colors.primary} />
+              }
+              data={activeUsers}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={ (rowData, rowMap) => {
+                  return (
+                    <TouchableWithoutFeedback 
+                      style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
+                      onPress={() => {
+                        navigation.navigate('ChatDetail', {
+                          username: rowData.item.user.username,
+                          image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
+                          type: 'private'
+                        })
+                      }}>
+                      <View 
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center', 
+                          paddingVertical: 2, 
+                          paddingHorizontal: 15,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#F0F0F0',
+                          marginHorizontal: 20
+                        }}
+                      >
+                        <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
+                          {rowData.item.user.profile ?
+                            <Image 
+                              style={{ width: 48, height: 48 }} 
+                              placeholderStyle={styles.placeholder}
+                              source={{ uri: rowData.item.user.profile.imgPath }}
+                              /> : 
+                            <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar-small.png')} />
+                          }
+                        </View>                  
+                        <View style={styles.itemContainer}>
+                          <HeadingText style={styles.name}>{rowData.item.user.username}</HeadingText>
+                        </View>
+                        {onlineContacts.includes(rowData.item.user.username) && (
+                          <Badge
+                            badgeStyle={styles.badge}
+                            containerStyle={styles.badgeContainer}
+                          />
+                        )}  
+                      </View>
+                    </TouchableWithoutFeedback>
+                  );
+                }}
+                renderHiddenItem={ (rowData, rowMap) => {
+                  <View style={styles.rowBack}>
+                   <TouchableOpacity style={{ }} onPress={() => {}}>
+                      <View style={{
+                        backgroundColor: Colors.secondary,
+                        width: 44,
+                        height: 44,
+                        borderRadius: 22,
+                        marginHorizontal: 10,
+                        alignItems: 'center',
+                        justifyContent: 'center' }}>
+                          <AntDesign name="pushpin" size={24} color="#fff" />
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ }} onPress={() => {}}>
+                      <View style={{
+                        backgroundColor: Colors.tertiary,
+                        width: 44,
+                        height: 44,
+                        borderRadius: 22,
+                        marginHorizontal: 10,
+                        alignItems: 'center',
+                        justifyContent: 'center' }}>
+                          <Entypo name="trash" size={24} color="#fff" />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                }}
+                leftOpenValue={65}
+                rightOpenValue={-65}
+                onSwipeValueChange={onSwipeValueChange}
+                 />}
             </View>
         ) : (
         <View style={styles.imageContainer}>

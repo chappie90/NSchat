@@ -43,7 +43,8 @@ const ContactsListScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    setActiveUsers(contacts);
+    const onlineUsers = contacts.filter(item => onlineContacts.includes(item.user.username)); 
+    setActiveUsers(onlineUsers);
   }, [contacts]);
 
   const closeModal = () => {

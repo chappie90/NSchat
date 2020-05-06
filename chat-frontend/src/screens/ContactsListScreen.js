@@ -16,6 +16,7 @@ import {
 import { MaterialIcons, FontAwesome5, Ionicons, AntDesign, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { ListItem, Badge } from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { NavigationEvents } from 'react-navigation';
  
 import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
@@ -28,8 +29,11 @@ import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 
 const ContactsListScreen = ({ navigation }) => {
+  const {
+    state: { username, socketState }, 
+    setStatusBarColor 
+  } = useContext(AuthContext);
   const { state: { contacts, onlineContacts }, getContacts, getActiveStatus, userIsOffline } = useContext(ContactsContext);
-  const { state: { username, socketState } } = useContext(AuthContext);
   const [newContactMode, setNewContactMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showActiveUsers, setShowActiveUsers] = useState(false);
@@ -45,7 +49,7 @@ const ContactsListScreen = ({ navigation }) => {
   useEffect(() => {
     const onlineUsers = contacts.filter(item => onlineContacts.includes(item.user.username)); 
     setActiveUsers(onlineUsers);
-  }, [contacts]);
+  }, [contacts, onlineContacts]);
 
   const closeModal = () => {
     setNewContactMode(false);
@@ -55,8 +59,13 @@ const ContactsListScreen = ({ navigation }) => {
     console.log(swipeData);
   }
 
+  const willFocusHandler = () => {
+    setStatusBarColor(1);
+  }
+
   return (
     <View style={styles.container}>
+    <NavigationEvents onWillFocus={willFocusHandler} />
       <AddContactScreen visible={newContactMode} closeModal={closeModal} />
       <View style={styles.background} />
       <View style={styles.headerContainer}>

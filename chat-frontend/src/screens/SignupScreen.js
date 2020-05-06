@@ -17,7 +17,7 @@ import AuthForm from '../components/AuthForm';
 import Colors from '../constants/colors';
 
 const SignupScreen = (props) => {
-  const { state: { errorMessageSignup }, signup, clearErrorMessage } = useContext(AuthContext);
+  const { state: { errorMessageSignup }, signup, clearErrorMessage, setStatusBarColor } = useContext(AuthContext);
 
   return (
     <Modal visible={props.visible} animationType="slide">
@@ -27,6 +27,7 @@ const SignupScreen = (props) => {
             <TouchableOpacity onPress={() => {
               clearErrorMessage();
               props.closeModal();
+              setStatusBarColor(1);
             }}>
               <MaterialIcons name="close" size={35} color={Colors.tertiary} />
             </TouchableOpacity>

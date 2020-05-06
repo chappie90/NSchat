@@ -25,6 +25,9 @@ const authReducer = (state, action) => {
       return { ...state, errorMessageSignup: '', errorMessageSignin: '' };
     case 'update_socket':
       return { ...state, socketState: action.payload };
+    case 'set_statusbar_color':
+      console.log(action.payload)
+      return { ...state, statusBarColor: action.payload };
     default: 
       return state;
   }
@@ -108,6 +111,10 @@ const updateSocketState = dispatch => (socketState) => {
   dispatch({ type: 'update_socket', payload: socketState });
 };
 
+const setStatusBarColor = dispatch => value => {
+  dispatch({ type: 'set_statusbar_color', payload: value });
+};
+
 export const { Context, Provider } = createDataContext(
   authReducer,
   { signup,
@@ -115,13 +122,15 @@ export const { Context, Provider } = createDataContext(
     autoLogin, 
     clearErrorMessage, 
     signout,
-    updateSocketState 
+    updateSocketState,
+    setStatusBarColor
   },
   { token: null, 
     userId: null, 
     username: null, 
     errorMessageSignin: '', 
     errorMessageSignup: '',
-    socketState: null   
+    socketState: null,
+    statusBarColor: 1   
   }
 );

@@ -44,7 +44,7 @@ import FadeViewAnim from '../components/animations/FadeViewAnim';
 import GroupSettingsScreen from './GroupSettingsScreen';
 
 const ChatDetailScreen = ({ navigation }) => {
-  const { state: { username, socketState } } = useContext(AuthContext);
+  const { state: { username, socketState, statusBarColor }, setStatusBarColor } = useContext(AuthContext);
   const {
     state: { chat, currentScreen }, 
     getChats, 
@@ -211,8 +211,13 @@ const ChatDetailScreen = ({ navigation }) => {
     // resetChatState();
   };
 
+  const willFocusHandler = () => {
+    setStatusBarColor(2);
+  }
+
   const openModalHandler = () => {
     setGroupSettingsModal(true);
+    setStatusBarColor(1);
   };
 
   const modalPreviewImageCloseHandler = () => {
@@ -684,7 +689,7 @@ const ChatDetailScreen = ({ navigation }) => {
     <View style={styles.container}>
       <NavigationEvents
         onWillBlur={willBlurHandler}
-        // onWillFocus={willFocusHandler}
+        onWillFocus={willFocusHandler}
         onDidFocus={didFocusHandler}
         />
       {isVisibleYoutube.current && (

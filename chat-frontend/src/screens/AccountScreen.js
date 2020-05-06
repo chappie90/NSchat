@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { AsyncStorage } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { NavigationEvents } from 'react-navigation';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -10,10 +11,19 @@ import HeadingText from '../components/HeadingText';
 import ImagePicker from '../components/ImagePicker';
 
 const AccountScreen = ({ navigation }) => {
-  const { state: { username }, signout } = useContext(AuthContext);
+  const {
+    state: { username }, 
+    signout,
+    setStatusBarColor 
+  } = useContext(AuthContext);
+
+  const willFocusHandler = () => {
+    setStatusBarColor(1);
+  }
 
   return (
     <View style={styles.container}>
+      <NavigationEvents onWillFocus={willFocusHandler} />
       <View style={styles.background} />
       <View style={styles.innerContainer}>
         <View style={styles.signout}>

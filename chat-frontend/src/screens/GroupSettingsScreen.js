@@ -20,6 +20,7 @@ import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign } from "@exp
 import Modal from "react-native-modal";
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
+import { NavigationEvents } from 'react-navigation';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
@@ -31,7 +32,7 @@ import BodyText from "../components/BodyText";
 import AddGroupMemberScreen from './AddGroupMemberScreen';
 
 const GroupSettingsScreen = (props) => {
-  const { state: { username, userId } } = useContext(AuthContext);
+  const { state: { username, userId }, setStatusBarColor } = useContext(AuthContext);
   const { state: { previousChats }, getChats } = useContext(ChatContext);
   const {
     state: { 
@@ -91,7 +92,6 @@ const GroupSettingsScreen = (props) => {
   const closeAddMemberModal = () => {
     setAddGroupMemberMode(false);
   };
-
 
   const getCameraPermissions = async () => {
     const response = await Permissions.askAsync(
@@ -173,7 +173,7 @@ const GroupSettingsScreen = (props) => {
   });
 
   return (
-    <ScreenModal visible={props.visible} animationType="slide">
+    <ScreenModal  visible={props.visible} animationType="slide">
       <AddGroupMemberScreen visible={addGroupMemberMode} closeModal={closeAddMemberModal} />
       <Modal
         style={{ alignItems: "center", justifyContent: "center" }}
@@ -234,6 +234,7 @@ const GroupSettingsScreen = (props) => {
           <View style={styles.header}>
             <HeadingText style={styles.heading}>Group Info</HeadingText>
               <TouchableOpacity style={styles.closeModalContainer} onPress={() => {
+                setStatusBarColor(2);
                 props.closeModal();
               }}>
                 <MaterialIcons name="close" size={28} color="#fff" />

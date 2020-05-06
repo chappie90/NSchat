@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
- View, 
- Text, 
- StyleSheet, 
- Image, 
- TouchableOpacity,
- Animated
+  View, 
+  Text, 
+  StyleSheet, 
+  Image, 
+  TouchableOpacity,
+  Animated,
+  StatusBar
 } from 'react-native';
 import ViewPager from '@react-native-community/viewpager';
+import { NavigationEvents } from 'react-navigation';
 
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
+import { Context as AuthContext } from '../context/AuthContext';
 import BodyText from '../components/BodyText';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
 import Colors from '../constants/colors';
@@ -20,8 +23,13 @@ import SigninScreen from '../screens/SigninScreen';
 import FadeViewAnim from '../components/animations/FadeViewAnim';
 
 const StarterScreen = ({ navigation }) => {
+  const { state: { statusBarColor }, setStatusBarColor } = useContext(AuthContext);
   const [signupMode, setSignupMode] = useState(false);
   const [signinMode, setSigninMode] = useState(false);
+
+  const willFocusHandler = () => {
+    setStatusBarColor(1);
+  }
 
   const closeModal = () => {
     setSignupMode(false);
@@ -41,6 +49,8 @@ const StarterScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <NavigationEvents onWillFocus={willFocusHandler} />
+      <StatusBar barStyle={statusBarColor === 1 ? 'light-content' : 'dark-content'} />
       <ViewPager showPageIndicator={true} style={styles.viewPager} initialPage={0}>
         <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
         <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
@@ -80,10 +90,16 @@ const StarterScreen = ({ navigation }) => {
       <View style={{ alignItems: 'center' }}>
         <PrimaryButton
           style={styles.signupButton} 
-          onPress={() => setSignupMode(true)}>
+          onPress={() => {
+            setSignupMode(true);
+            setStatusBarColor(2);
+          }}>
           Get Started
         </PrimaryButton>
-        <TouchableOpacity style={styles.signinButton} onPress={() => setSigninMode(true)}>
+        <TouchableOpacity style={styles.signinButton} onPress={() => {
+            setSigninMode(true);
+            setStatusBarColor(2);
+          }}>
           <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
         </TouchableOpacity>
       </View>

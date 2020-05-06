@@ -44,7 +44,11 @@ import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAni
 import AddGroupScreen from './AddGroupScreen';
 
 const ChatsListScreen = ({ navigation }) => {
-  const { state: { username, socketState }, updateSocketState } = useContext(AuthContext);
+  const {
+    state: { username, socketState, statusBarColor },
+    updateSocketState, 
+    setStatusBarColor 
+  } = useContext(AuthContext);
   const { 
     state: { previousChats, currentScreen },
     getChats, 
@@ -290,6 +294,10 @@ const ChatsListScreen = ({ navigation }) => {
       resetBadgeCount(username); 
     }  
 
+  }
+
+  const willFocusHandler = () => {
+    setStatusBarColor(1);
   }
 
   const didFocusHandler = () => {
@@ -591,8 +599,8 @@ const ChatsListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-     <NavigationEvents onDidFocus={didFocusHandler} />
-    <StatusBar backgroundColor="blue" barStyle="light-content" />
+     <StatusBar barStyle={statusBarColor === 1 ? 'light-content' : 'dark-content'} />
+     <NavigationEvents onDidFocus={didFocusHandler} onWillFocus={willFocusHandler} />
       <Modal
         style={{ alignItems: "center", justifyContent: "center" }}
         isVisible={modalVisible}

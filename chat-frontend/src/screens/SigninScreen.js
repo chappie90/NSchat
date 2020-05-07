@@ -35,7 +35,8 @@ const SigninScreen = (props) => {
           <AuthForm
             header="Welcome back"
             submitBtn="Sign In"
-            navLink="Don't have an account yet? Sign up here"
+            navLinkFirst="Don't have an account yet?"
+            navLinkSecond="Sign up here"
             routeName="Signup"
             onSubmit={signin}
             toggleModal={props.toggleModal}
@@ -58,9 +59,9 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   closeModalContainer: {
-    width: '100%',
-    alignItems: 'flex-end',
-    padding: 20
+    position: 'absolute',
+    top: 30,
+    right: 15
   }
 });
 

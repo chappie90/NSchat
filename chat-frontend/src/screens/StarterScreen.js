@@ -51,9 +51,9 @@ const StarterScreen = ({ navigation }) => {
     <View style={styles.container}>
       <NavigationEvents onWillFocus={willFocusHandler} />
       <StatusBar barStyle={statusBarColor === 1 ? 'light-content' : 'dark-content'} />
+      <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
+      <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
       <ViewPager showPageIndicator={true} style={styles.viewPager} initialPage={0}>
-        <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
-        <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
         <View style={styles.page} key="1">
           <View style={styles.imageContainer}>
           <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_chat.png')} />

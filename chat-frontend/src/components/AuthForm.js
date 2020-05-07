@@ -12,7 +12,17 @@ import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import PrimaryButton from '../components/PrimaryButton';
 
-const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation, resetForm, toggleModal }) => {
+const AuthForm = ({ 
+  header, 
+  submitBtn, 
+  navLinkFirst, 
+  navLinkSecond,
+  routeName, 
+  onSubmit, 
+  navigation, 
+  resetForm, 
+  toggleModal 
+}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [usernameIsValid, setUsernameIsValid] = useState(null);
@@ -88,8 +98,9 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
       }}>
         {submitBtn}
       </PrimaryButton>
-      <TouchableOpacity onPress={() => toggleModal()}>
-        <Text style={styles.navLink}>{navLink}</Text>
+      <TouchableOpacity style={{ marginTop: 15 }} onPress={() => toggleModal()}>
+        <Text style={styles.navLink}>{navLinkFirst}</Text>
+        <Text style={styles.navLink}>{navLinkSecond}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -97,6 +108,8 @@ const AuthForm = ({ header, submitBtn, navLink, routeName, onSubmit, navigation,
 
 const styles = StyleSheet.create({ 
   container: {
+    width: '95%',
+    paddingTop: '10%',
     paddingHorizontal: 30
   },
   header: {
@@ -123,7 +136,8 @@ const styles = StyleSheet.create({
   },
   navLink: {
     fontSize: 17,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: '#202020'
   }
 });
 

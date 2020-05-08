@@ -18,6 +18,7 @@ import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign } from '@exp
 import { WebView } from 'react-native-webview';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Modal from "react-native-modal";
+import Constants from 'expo-constants';
 
 import Colors from '../constants/colors';
 import youtubeApi from '../api/youtube';
@@ -34,12 +35,26 @@ const YoutubeComponent = (props) => {
   } = useContext(YoutubeContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchMode, setSearchMode] = useState(false);
-  const [activeVideo, setActiveVideo] = useState(null);
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
   const height = useRef(new Animated.Value(0)).current;
-  const deviceHeight = Dimensions.get('window').height;
+  const playerHeight = useRef(new Animated.Value(0)).current;
+  const playerWidth = useRef(new Animated.Value(0)).current;
+  const smallPlayerWidth = useRef(new Animated.Value(0)).current;
+  // const showSmallPlayer = useRef(false);
+  const [showSmallPlayer, setShowSmallPlayer] = useState(false);
+
+
+
+  const topNavHeight = 50;
   const bottomNavHeight = getTabBarHeight();
+  const deviceWidth = Dimensions.get('window').width;
+  const deviceHeight = Dimensions.get('window').height;
+  const playerRatio = 1.78;
+  const statusBarHeight = Constants.statusBarHeight;
+  const scrollPos = useRef(new Animated.Value(0)).current;
+  // const playerControlsPos = useRef(0);
+  let initalScrollPos;
 
   const panResponder = React.useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -48,36 +63,63 @@ const YoutubeComponent = (props) => {
     onPanResponderGrant: (e, gestureState) => {
     },
     onPanResponderStart: (e, gestureState) => {   
+
     },
     onPanResponderMove: (e, gestureState) => {
+      console.log(e.nativeEvent.pageY + '- native event page Y')
+      console.log(bottomNavHeight + ' - bottomNavHeight')
+      console.log(deviceHeight + ' - deviceHeight');
+      
       // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
       // offset.setValue(100);
-      height.setValue(e.nativeEvent.pageY - 50);
+      if (e.nativeEvent.pageY >= 130 && e.nativeEvent.pageY <= deviceHeight - topNavHeight - bottomNavHeight) {
+        scrollPos.setValue(e.nativeEvent.pageY);
+      }
     },
     onPanResponderRelease: (e, gestureState) => {
-      if (e.nativeEvent.pageY > (deviceHeight - 30 - bottomNavHeight) / 2) {
+      if (e.nativeEvent.pageY < deviceHeight * 1 / 3) {
         Animated.spring(
-          height,
+          scrollPos,
           {
-            toValue: deviceHeight - 70 - bottomNavHeight
+            toValue: topNavHeight + 80
           },
         ).start();
       }
-      if (e.nativeEvent.pageY < (deviceHeight - 30 - bottomNavHeight) / 2) {
+       if (e.nativeEvent.pageY > deviceHeight * 1 / 3 && e.nativeEvent.pageY < deviceHeight * 2 / 3 ) {
         Animated.spring(
-          height,
+          scrollPos,
           {
-            toValue: 0
+            toValue: topNavHeight + deviceWidth / playerRatio + 50
           },
         ).start();
       }
-      height.flattenOffset();
+      if (e.nativeEvent.pageY > deviceHeight * 2 / 3) {
+        Animated.spring(
+          scrollPos,
+          {
+            toValue: deviceHeight - topNavHeight - bottomNavHeight
+          },
+        ).start();
+        setShowSmallPlayer(false);
+      }
+      scrollPos.flattenOffset();
     },
   }), []);
 
   useEffect(() => {
     if (currentVideo === null) {
+      initalScrollPos = topNavHeight + deviceWidth / playerRatio + 50;
+      scrollPos.setValue(initalScrollPos);
+    } else {
+      initalScrollPos = topNavHeight + 80;
+      scrollPos.setValue(initalScrollPos);
+    }
+
+    getYoutubeResults('');
+    if (currentVideo === null) {
       setSearchMode(true);
+    } else {
+      setShowSmallPlayer(true);
     }
   }, []);
 
@@ -87,7 +129,7 @@ const YoutubeComponent = (props) => {
   };
 
   const playerOnChangeState = event => {
-    console.log(event)
+    // console.log(event)
     if (event === 'playing') {
       setPlaying(true)
     } else if (event === 'paused') {
@@ -98,11 +140,26 @@ const YoutubeComponent = (props) => {
   return (
      <Animated.View
         style={[
-          {height: props.isBackground ? '100%' : height, maxHeight: deviceHeight - 70 - bottomNavHeight},
+          // {height: props.isBackground ?
+          //   '100%' : 
+          {
+            height: scrollPos.interpolate({
+              inputRange: [
+                130, 
+                topNavHeight + deviceWidth / playerRatio + 50,
+                deviceHeight - topNavHeight - bottomNavHeight
+              ],
+              outputRange: [
+                80, 
+                topNavHeight + deviceWidth / playerRatio,
+                deviceHeight - topNavHeight - bottomNavHeight - statusBarHeight
+              ]
+            }),
+          },
           props.isVisible && props.isBackground ? styles.youtubeBackground : styles.youtubePane
         ]}>
         <Modal
-          style={{ alignItems: "center", justifyContent: "center" }}
+          style={{ alignItems: "center", justifyContent: "center", marginHorizontal: 15, marginVertical: 35 }}
           isVisible={searchMode}
           animationIn="fadeIn"
           animationOut="fadeOut"
@@ -136,10 +193,12 @@ const YoutubeComponent = (props) => {
             </View>
             <ScrollView>
               {youtubeResults && youtubeResults.map(item => (
-                <TouchableOpacity key={item.etag} onPress={() => {
-                  setActiveVideo(item);
+                <TouchableWithoutFeedback key={item.etag} onPress={() => {
+                  getCurrentVideo(item);
                   setSearchMode(false);
-                  getCurrentVideo(item.id.videoId);
+                  playerWidth.setValue(deviceWidth);
+                  playerHeight.setValue(deviceWidth / 1.7778);
+                  height.setValue(deviceWidth / 1.7778 + 50);
                 }}>
                   <View style={styles.item}>
                     <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
@@ -151,42 +210,72 @@ const YoutubeComponent = (props) => {
                       </View>
                     </View>
                   </View>
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ))}
             </ScrollView>
           </View>
         </Modal>
-       {/* <WebView
-          mediaPlaybackRequiresUserAction={true}
-          allowsFullscreenVideo={true} 
-          allowsInlineMediaPlayback={true} 
-           automaticallyAdjustContentInsets={false}
-          style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} /> */}
-      {activeVideo && ( 
-        <YoutubePlayer
-          ref={playerRef}
-          height={Dimensions.get('window').width / 1.7778}
-          width={'100%'}
-          videoId={activeVideo.id.videoId}
-          play={playing}
-          onChangeState={playerOnChangeState}   
-          onReady={() => console.log("ready")}
-          onError={e => console.log(e)}
-          onPlaybackQualityChange={q => console.log(q)}
-          volume={50}
-          playbackRate={1}
-          playerParams={{
-            cc_lang_pref: "us",
-            showClosedCaptions: true
-          }}
-        />
+      {currentVideo && ( 
+        <Animated.View
+          style={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            flex: 1,
+            zIndex: 2, 
+            width: scrollPos.interpolate({
+              inputRange: [
+                130, 
+                topNavHeight + deviceWidth / playerRatio + 50,
+                deviceHeight - topNavHeight - bottomNavHeight
+              ],
+              outputRange: [
+                80 * playerRatio, 
+                deviceWidth,
+                deviceWidth
+              ]
+            }),  
+            height: scrollPos.interpolate({
+              inputRange: [
+                130, 
+                topNavHeight + deviceWidth / playerRatio + 50,
+                deviceHeight - topNavHeight - bottomNavHeight
+              ],
+              outputRange: [
+                80, 
+                deviceWidth / 1.778,
+                deviceWidth / 1.778
+              ]
+            }),
+            opacity: scrollPos.interpolate({
+              inputRange: [ 130, deviceWidth / playerRatio - 20, deviceWidth / playerRatio + 50, topNavHeight + deviceWidth / playerRatio + 50 ],
+              outputRange: [ 1, 0.5, 0.7, 1 ]
+            }) 
+        }}>
+          <YoutubePlayer
+            ref={playerRef}
+            height='100%'
+            width='100%'
+            videoId={currentVideo.id.videoId}
+            play={playing}
+            onChangeState={playerOnChangeState}   
+            onReady={() => console.log("ready")}
+            onError={e => console.log(e)}
+            onPlaybackQualityChange={q => console.log(q)}
+            volume={50}
+            playbackRate={1}
+            playerParams={{
+              cc_lang_pref: "us",
+              showClosedCaptions: true,
+            }}
+          />
+        </Animated.View>
       )}  
       {searchMode && (
         <ScrollView>
           {youtubeResults && youtubeResults.map(item => (
             <TouchableOpacity key={item.etag} onPress={() => {
-              // console.log(item)
-              setActiveVideo(item);
+              getCurrentVideo(item);
             }}>
               <View style={styles.item}>
                 <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
@@ -202,36 +291,56 @@ const YoutubeComponent = (props) => {
           ))}
         </ScrollView>
       )}
-      {!props.isBackground && currentVideo !== null && <View
+      {!props.isBackground && currentVideo !== null && <Animated.View
           { ...panResponder.panHandlers }
           style={[
-            styles.youtubeNav
-          ]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 }}>
-            {!searchMode && <TouchableOpacity style={{ marginRight: 8 }} onPress={() => setSearchMode(true)}>
-              <Ionicons name="ios-search" size={30} color="#989898" />
-            </TouchableOpacity>
+            styles.youtubeNav,
+            {
+              height: scrollPos.interpolate({
+                inputRange: [
+                  130, 
+                  topNavHeight + deviceWidth / playerRatio + 50,
+                  deviceHeight - topNavHeight - bottomNavHeight
+                ],
+                outputRange: [
+                  80, 
+                  50,
+                  50
+                ]
+              })
             }
-            {searchMode && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity style={{ marginRight: 12 }} onPress={() => setSearchMode(false)}>
-                  <Ionicons name="ios-close" size={46} color="#989898" />
-                </TouchableOpacity>
-              </View>
-            )}
-            {!searchMode && (
-              <TouchableOpacity onPress={() => props.youtubeBackgroundHandler(props.isBackground)}>
-                <MaterialCommunityIcons name="flip-to-back" size={30} color={props.isBackground ? Colors.tertiary : "#989898"}/>
+          ]}>
+            <Animated.View
+             style={{
+               flexDirection: 'row', paddingHorizontal: 8, justifyContent: 'space-between',
+               alignItems: 'center',
+              width: scrollPos.interpolate({
+                inputRange: [
+                  130, 
+                  topNavHeight + deviceWidth / playerRatio + 50,
+                  deviceHeight - topNavHeight - bottomNavHeight
+                ],
+                outputRange: [
+                  deviceWidth - 80 * playerRatio, 
+                  deviceWidth,
+                  deviceWidth
+                ]
+              })
+            }}>
+               <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(true)}>
+                <Ionicons name="ios-play" size={34} color="#989898" />
               </TouchableOpacity>
-            )}
-             <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => setPlaying(true)}>
-              <Ionicons name="ios-play" size={30} color="#989898" />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => setPlaying(false)}>
-              <Ionicons name="ios-pause" size={30} color="#989898" />
-            </TouchableOpacity>
-          </View>
-        </View>}
+              <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(false)}>
+                <Ionicons name="ios-pause" size={34} color="#989898" />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setSearchMode(true)}>
+                <Ionicons name="ios-search" size={34} color="#989898" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => props.youtubeBackgroundHandler(props.isBackground)}>
+                <MaterialCommunityIcons name="flip-to-back" size={34} style={{ marginHorizontal: 8 }} color={props.isBackground ? Colors.tertiary : "#989898"}/>
+              </TouchableOpacity>
+            </Animated.View>
+        </Animated.View>}
       </Animated.View>
   );
 };
@@ -261,13 +370,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
-    youtubeNav: {
+  youtubeNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
     width: '100%',
-    height: 40,
     backgroundColor: '#F5F5F5',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10
+    justifyContent: 'flex-end'
+    // paddingHorizontal: 10
   },
   youtubePane: {
     backgroundColor: '#fff',

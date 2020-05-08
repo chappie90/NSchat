@@ -3,7 +3,7 @@ import youtubeApi from '../api/youtube';
 import axios from 'axios';
 import chatApi from '../api/chat';
 
-const youtubeApiKey = 'AIzaSyAlGNuBDZvq0M4LCK3S2Joly3JGwRObMcc';
+const youtubeApiKey = 'AIzaSyDNRHm0hJryOCP87lfEhOuKPX9OFEXPeRY';
 
 const youtubeReducer = (state, action) => {
   switch (action.type) {
@@ -22,7 +22,7 @@ const getYoutubeResults = dispatch => async (term) => {
       params: {
         q: term,
         part: 'snippet',
-        maxResults: 10,
+        maxResults: 1,
         key: youtubeApiKey
       }
     });
@@ -31,8 +31,6 @@ const getYoutubeResults = dispatch => async (term) => {
       return;
     }
 
-    // console.log(response.data)
-
     dispatch({ type: 'get_youtube_results', payload: response.data.items });
 
   } catch (error) {
@@ -40,9 +38,8 @@ const getYoutubeResults = dispatch => async (term) => {
   }
 };
 
-const getCurrentVideo = dispatch => async (videoId) => {
-  console.log('updated')
-  dispatch({ type: 'update_current_video', payload: videoId });
+const getCurrentVideo = dispatch => async (video) => {
+    dispatch({ type: 'update_current_video', payload: video });
 };
 
 export const { Context, Provider } = createDataContext(

@@ -37,14 +37,8 @@ const YoutubeComponent = (props) => {
   const [searchMode, setSearchMode] = useState(false);
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
-  const height = useRef(new Animated.Value(0)).current;
-  const playerHeight = useRef(new Animated.Value(0)).current;
-  const playerWidth = useRef(new Animated.Value(0)).current;
-  const smallPlayerWidth = useRef(new Animated.Value(0)).current;
   // const showSmallPlayer = useRef(false);
   const [showSmallPlayer, setShowSmallPlayer] = useState(false);
-
-
 
   const topNavHeight = 50;
   const bottomNavHeight = getTabBarHeight();
@@ -53,7 +47,7 @@ const YoutubeComponent = (props) => {
   const playerRatio = 1.78;
   const statusBarHeight = Constants.statusBarHeight;
   const scrollPos = useRef(new Animated.Value(0)).current;
-  // const playerControlsPos = useRef(0);
+  const showResults = useRef(false);
   let initalScrollPos;
 
   const panResponder = React.useMemo(() => PanResponder.create({
@@ -65,13 +59,8 @@ const YoutubeComponent = (props) => {
     onPanResponderStart: (e, gestureState) => {   
 
     },
-    onPanResponderMove: (e, gestureState) => {
-      console.log(e.nativeEvent.pageY + '- native event page Y')
-      console.log(bottomNavHeight + ' - bottomNavHeight')
-      console.log(deviceHeight + ' - deviceHeight');
-      
+    onPanResponderMove: (e, gestureState) => {      
       // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
-      // offset.setValue(100);
       if (e.nativeEvent.pageY >= 130 && e.nativeEvent.pageY <= deviceHeight - topNavHeight - bottomNavHeight) {
         scrollPos.setValue(e.nativeEvent.pageY);
       }
@@ -92,6 +81,7 @@ const YoutubeComponent = (props) => {
             toValue: topNavHeight + deviceWidth / playerRatio + 50
           },
         ).start();
+         showResults.current = true;
       }
       if (e.nativeEvent.pageY > deviceHeight * 2 / 3) {
         Animated.spring(
@@ -101,6 +91,7 @@ const YoutubeComponent = (props) => {
           },
         ).start();
         setShowSmallPlayer(false);
+        showResults.current = true;
       }
       scrollPos.flattenOffset();
     },
@@ -196,9 +187,6 @@ const YoutubeComponent = (props) => {
                 <TouchableWithoutFeedback key={item.etag} onPress={() => {
                   getCurrentVideo(item);
                   setSearchMode(false);
-                  playerWidth.setValue(deviceWidth);
-                  playerHeight.setValue(deviceWidth / 1.7778);
-                  height.setValue(deviceWidth / 1.7778 + 50);
                 }}>
                   <View style={styles.item}>
                     <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
@@ -222,7 +210,7 @@ const YoutubeComponent = (props) => {
             top: 0,
             left: 0,
             flex: 1,
-            zIndex: 2, 
+            zIndex: 3, 
             width: scrollPos.interpolate({
               inputRange: [
                 130, 
@@ -271,26 +259,6 @@ const YoutubeComponent = (props) => {
           />
         </Animated.View>
       )}  
-      {searchMode && (
-        <ScrollView>
-          {youtubeResults && youtubeResults.map(item => (
-            <TouchableOpacity key={item.etag} onPress={() => {
-              getCurrentVideo(item);
-            }}>
-              <View style={styles.item}>
-                <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
-                <View style={styles.itemInfo}>
-                  <HeadingText>{item.snippet.title}</HeadingText>
-                  <View style={styles.itemMeta}>
-                    <BodyText style={styles.channelTitle}>{item.snippet.channelTitle}</BodyText>
-                    <BodyText>{item.snippet.publishedAt.split('T')[0]}</BodyText>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
       {!props.isBackground && currentVideo !== null && <Animated.View
           { ...panResponder.panHandlers }
           style={[
@@ -341,6 +309,29 @@ const YoutubeComponent = (props) => {
               </TouchableOpacity>
             </Animated.View>
         </Animated.View>}
+        {showResults.current && <ScrollView
+           style={{
+              marginTop: deviceWidth / playerRatio + 15,
+              flex: 1,
+              marginBottom: 50
+          }}>
+          {youtubeResults && youtubeResults.map(item => (
+            <View style={{ marginBottom: 15 }}  key={item.etag}>
+              <TouchableWithoutFeedback onPress={() => {
+                getCurrentVideo(item);
+              }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, }}>
+                  <Image source={{ uri: item.snippet.thumbnails.high.url }} style={{
+                      width: deviceWidth / 3,
+                      height: ( deviceWidth / 3 ) / playerRatio,
+                      marginRight: 15
+                  }} />
+                  <HeadingText numberOfLines={2} style={{ flexShrink: 1 }}>{item.snippet.title}</HeadingText>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          ))}
+        </ScrollView>}
       </Animated.View>
   );
 };
@@ -372,14 +363,14 @@ const styles = StyleSheet.create({
   },
   youtubeNav: {
     position: 'absolute',
-    bottom: 0,
     left: 0,
+    bottom: 0,
     width: '100%',
     backgroundColor: '#F5F5F5',
     flexDirection: 'row',
     alignItems: 'center',
+    zIndex: 2,
     justifyContent: 'flex-end'
-    // paddingHorizontal: 10
   },
   youtubePane: {
     backgroundColor: '#fff',

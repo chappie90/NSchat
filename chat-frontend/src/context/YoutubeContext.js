@@ -3,7 +3,7 @@ import youtubeApi from '../api/youtube';
 import axios from 'axios';
 import chatApi from '../api/chat';
 
-const youtubeApiKey = 'AIzaSyDNRHm0hJryOCP87lfEhOuKPX9OFEXPeRY';
+const youtubeApiKey = 'AIzaSyCJopZMyUa6qsPBsfvnxElNobJkTBTxkdQ';
 
 const youtubeReducer = (state, action) => {
   switch (action.type) {
@@ -22,7 +22,7 @@ const getYoutubeResults = dispatch => async (term) => {
       params: {
         q: term,
         part: 'snippet',
-        maxResults: 1,
+        maxResults: 5,
         key: youtubeApiKey
       }
     });

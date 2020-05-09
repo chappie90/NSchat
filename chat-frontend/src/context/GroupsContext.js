@@ -70,7 +70,11 @@ const updateGroupName = dispatch => async (chatId, groupName, username) => {
   try {
     const response = await chatApi.patch('/group/name/update', { chatId, groupName, username });
 
+    console.log(response.data)
+
     dispatch({ type: 'get_group', payload: response.data.group });
+
+    return response.data.group;
   } catch (err) {
     console.log(err);
     throw err;

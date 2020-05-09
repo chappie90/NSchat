@@ -39,6 +39,7 @@ import BodyText from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ChatContext } from '../context/ChatContext';
+import { Context as GroupsContext } from '../context/GroupsContext';
 import chatApi from '../api/chat';
 import FadeViewAnim from '../components/animations/FadeViewAnim';
 import GroupSettingsScreen from './GroupSettingsScreen';
@@ -58,6 +59,7 @@ const ChatDetailScreen = ({ navigation }) => {
     updateChatState,
     saveMessageImage
  } = useContext(ChatContext);
+  const { state: { group } } = useContext(GroupsContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
@@ -95,6 +97,12 @@ const ChatDetailScreen = ({ navigation }) => {
       isBackgroundYou: isBackgroundYoutube.current 
     });
   }, []);
+
+  useEffect(() => {
+    navigation.setParams({
+      username: group.name
+    });
+  }, [group]);
 
   useEffect(() => {
     getCurrentScreen(navigation.state.routeName);

@@ -111,6 +111,14 @@ const chatReducer = (state, action) => {
         [action.payload.user]: deletedMessage } };
     case 'create_group':
       return { ...state, previousChats: [action.payload].concat(state.previousChats) }; // [action.payload, ...state.previousChats]
+    case 'update_group':
+      let updatedGroup;
+      if (action.payload.updatedProperty === 'name') {
+        updatedGroup = state.previousChats.map(item => {
+          return item._id === action.payload._id ? { ...item, contact: action.payload.updatedGroup.name } : item;
+        });
+      }
+      return { ...state, previousChats: updatedGroup };
     case 'save_expo_token':
       return { ...state, expoToken: action.payload };
     case 'get_current_screen':
@@ -122,13 +130,9 @@ const chatReducer = (state, action) => {
 
 const getChats = dispatch => async ({ username }) => {
 
-  // console.log('get chats called')
-
   try {
     const response = await chatApi.post('/chats', { username });
 
-    // console.log(response.data)
-    
     const chats = response.data.chats.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     chats.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
@@ -380,6 +384,10 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
   }
 };
 
+const updateGroup = dispatch => (updatedGroup, updatedProperty) => {
+  dispatch({ type: 'update_group', payload: { updatedGroup, updatedProperty } });
+};
+
 const resetBadgeCount = dispatch => async (username) => {
   try {
     const response = await chatApi.post('/badge/clear', { username });
@@ -463,7 +471,8 @@ export const { Context, Provider } = createDataContext(
     resetBadgeCount,
     getCurrentScreen,
     updateChatState,
-    saveMessageImage
+    saveMessageImage,
+    updateGroup
   },
   {  
     previousChats: [], 

@@ -99,11 +99,12 @@ const ChatDetailScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    console.log(group);
-    navigation.setParams({
-      username: group.name,
-      image: group.avatar ? group.avatar.imagePath : null
-    });
+    if (!Object.keys(group).length === 0 && group.constructor === Object) {
+      navigation.setParams({
+        username: group.name,
+        image: group.avatar ? group.avatar.imagePath : null
+      });
+    }
   }, [group]);
 
   useEffect(() => {

@@ -312,7 +312,7 @@ const ChatsListScreen = ({ navigation }) => {
       socket.current.on('message', message => {
         if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
           updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
-          updateMessages({ user: message.message.user.name, message: message.message });
+          updateMessages({ chatId: message.message.chatId, message: message.message });
         }       
       });
       socket.current.on('is_typing', username => {

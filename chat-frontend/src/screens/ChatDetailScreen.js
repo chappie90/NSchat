@@ -123,7 +123,7 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current.on('message', message => {
         socket.current.emit('stop_typing', recipient); 
         if (mounted) {
-          updateMessages({ user: recipient, message: message.message });
+          updateMessages({ chatId: message.chat.chatId, message: message.message });
         }
         if (message.message.user.name === username) {
           setIncomingMsgs(prevState => prevState.map(msg => {
@@ -168,15 +168,16 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     let mounted = true;
+    let chatId = chatId || navigation.getParam('chatId');
 
-    if (chat.hasOwnProperty(recipient)) {
-      console.log(chat[recipient].length)
-      if (chat[recipient].length > 50) {
-        resetChatState(recipient);
-        setIncomingMsgs(chat[recipient].slice(0, 50));
+    if (chat.hasOwnProperty(chatId)) {
+      console.log(chat[chatId].length)
+      if (chat[chatId].length > 50) {
+        resetChatState(chatId);
+        setIncomingMsgs(chat[chatId].slice(0, 50));
         return;
       }
-      setIncomingMsgs(chat[recipient]);
+      setIncomingMsgs(chat[chatId]);
       return;
     }
 
@@ -186,7 +187,7 @@ const ChatDetailScreen = ({ navigation }) => {
     if (recipient && currentPage) {
       page = currentPage;
       let chatType =  chatType || navigation.getParam('type');
-      let chatId = chatId || navigation.getParam('chatId');
+      // let chatId = chatId || navigation.getParam('chatId');
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
           if (mounted) {
@@ -201,10 +202,13 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
-    let recipient = recipient || navigation.getParam('username');
+    // let recipient = recipient || navigation.getParam('username');
+    console.log('chat')
+    console.log(chat)
+    let chatId = chatId || navigation.getParam('chatId');
 
     if (!loadMoreHelper) {
-      setIncomingMsgs(chat[recipient]);
+      setIncomingMsgs(chat[chatId]);
     }   
     setLoadMoreHelper(false);
   }, [chat]);
@@ -675,8 +679,9 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderLoadEarlier = (props) => {
-    let recipient = recipient || navigation.getParam('username');
-    if (chat.hasOwnProperty(recipient) && (chat[recipient].length < 50 || allMessagesLoaded)) {
+    // let recipient = recipient || navigation.getParam('username');
+    let chatId = chatId || navigation.getParam('chatId');
+    if (chat.hasOwnProperty(chatId) && (chat[chatId].length < 50 || allMessagesLoaded)) {
       return;
     }
 

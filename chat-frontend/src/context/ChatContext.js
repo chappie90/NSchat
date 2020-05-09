@@ -8,33 +8,26 @@ import { navigate } from '../components/navigationRef';
 const chatReducer = (state, action) => {
   switch (action.type) {
     case 'get_messages':
-      return state.chat[action.payload.user] ?
+      return state.chat[action.payload.chatId] ?
         { ...state, chat: 
           { ...state.chat, 
-          [action.payload.user]:
-            [ ...state.chat[action.payload.user], ...action.payload.messages ] } } :
+          [action.payload.chatId]:
+            [ ...state.chat[action.payload.chatId], ...action.payload.messages ] } } :
          { ...state, chat: 
           { ...state.chat, 
-          [action.payload.user]: action.payload.messages } };
-    case 'get_messages_old':
-      return { ...state, chat: [ ...action.payload ] }; // change to chat: [ ...chat, action.payload ]
+          [action.payload.chatId]: action.payload.messages } };
     case 'reset_chat_state':
       return { ...state, chat: { [action.payload]: state.chat[action.payload].slice(0, 50) } };
     case 'update_messages':
-      // return { ...state, chat: [action.payload].concat(state.chat) };
-      return state.chat[action.payload.user] ?
+      return state.chat[action.payload.chatId] ?
        { ...state, chat: {
         ...state.chat, 
-          [action.payload.user]: 
-            [ action.payload.message, ...state.chat[action.payload.user] ] } } :
+          [action.payload.chatId]: 
+            [ action.payload.message, ...state.chat[action.payload.chatId] ] } } :
        { ...state, chat: {
         ...state.chat, 
-          [action.payload.user]: 
+          [action.payload.chatId]: 
             [ action.payload.message ] } };
-        // return { ...state, chat: {
-        //   ...state.chat, 
-        //     [action.payload.user]: 
-        //       [ action.payload.message, ...state.chat[action.payload.user] ] } }; 
     case 'load_more_messages':
       return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':
@@ -117,8 +110,8 @@ const chatReducer = (state, action) => {
         updatedGroup = state.previousChats.map(item => {
           return item._id === action.payload._id ? { ...item, contact: action.payload.updatedGroup.name } : item;
         });
-      }
       return { ...state, previousChats: updatedGroup };
+    }
     case 'save_expo_token':
       return { ...state, expoToken: action.payload };
     case 'get_current_screen':
@@ -159,8 +152,8 @@ const deleteChat = dispatch => async (username, chatId, type) => {
   }
 };
 
-const updateMessages = dispatch => ({ user, message }) => {
-  dispatch({ type: 'update_messages', payload: { user, message } });
+const updateMessages = dispatch => ({ chatId, message }) => {
+  dispatch({ type: 'update_messages', payload: { chatId, message } });
 };
 
 const updateChatState = dispatch => (chat) => {
@@ -232,7 +225,7 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
       });
     }
 
-    dispatch({ type: 'get_messages', payload: { user: recipient, messages: chatArr } });
+    dispatch({ type: 'get_messages', payload: { chatId: chatId, messages: chatArr } });
   
     return chatArr;
 
@@ -241,64 +234,6 @@ const getMessages = dispatch => async ({ chatType, chatId, username, recipient, 
     throw err;
   } 
 };
-
-// const getMessages = dispatch => async ({ chatType, chatId, username, recipient, page }) => {
-
-//   try {
-
-//     const response = await chatApi.post('/messages', { chatType, chatId, username, recipient, page });
-
-//     const chatArr = [];
-
-//     if (chatType === 'private') {
-//       response.data.messages.map(message => {
-//         chatArr.push({
-//           _id: message.message.id,
-//           text: message.message.text,
-//           createdAt: message.message.createdAt,
-//           user: {
-//             _id: message.from === username ? 1 : 2,
-//             name: message.from === username ? username : recipient
-//           },
-//           read: message.read,
-//           deleted: message.deleted,
-//           reply: message.replyTo ? message.replyTo.messageText : null,
-//           replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null
-//         });
-//       });
-//     }
-
-//     if (chatType === 'group') {
-//       response.data.messages.map(message => {
-//         chatArr.push({
-//           _id: message.message.giftedChatId ? message.message.giftedChatId : message._id,
-//           text: message.message.text,
-//           createdAt: message.message.created,
-//           user: {
-//             _id: message.from === username ? 1 : 2,
-//             name: message.from
-//           },
-//           read: message.read,
-//           deleted: message.deleted,
-//           reply: message.reply ? message.reply.originalMsgText : null,
-//           replyAuthor: message.reply ? message.reply.originalMsgAuthor : null
-//         });
-//       });
-//     }
-
-//     if (page === 1) {
-//       dispatch({ type: 'get_messages', payload: chatArr });
-//     } else {
-//       dispatch({ type: 'load_more_messages', payload: chatArr });
-//     } 
-
-//     return chatArr;
-
-//   } catch (err) {
-//     console.log(err);
-//     throw err;
-//   } 
-// };
 
 const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
 
@@ -384,8 +319,8 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
   }
 };
 
-const updateGroup = dispatch => (updatedGroup, updatedProperty) => {
-  dispatch({ type: 'update_group', payload: { updatedGroup, updatedProperty } });
+const updateGroup = dispatch => (updatedGroup, updatedProperty, oldName) => {
+  dispatch({ type: 'update_group', payload: { updatedGroup, updatedProperty, oldName } });
 };
 
 const resetBadgeCount = dispatch => async (username) => {

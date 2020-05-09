@@ -60,6 +60,8 @@ const updateGroupImage = dispatch => async (username, chatId, groupName, groupIm
     const response = await chatApi.post('/group/image/update', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     
     dispatch({ type: 'get_group', payload: response.data.group });
+
+    return response.data;
   } catch (err) {
     console.log(err);
     throw err;
@@ -69,8 +71,6 @@ const updateGroupImage = dispatch => async (username, chatId, groupName, groupIm
 const updateGroupName = dispatch => async (chatId, groupName, username) => {
   try {
     const response = await chatApi.patch('/group/name/update', { chatId, groupName, username });
-
-    console.log(response.data)
 
     dispatch({ type: 'get_group', payload: response.data.group });
 
@@ -89,6 +89,8 @@ const deleteGroupImage = dispatch => async (chatId, username) => {
       return;
     }
     dispatch({ type: 'get_group', payload: response.data.group });
+
+    return response.data;
   } catch (err) {
     console.log(err);
     throw err;

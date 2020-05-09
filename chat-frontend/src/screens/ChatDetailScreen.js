@@ -99,8 +99,10 @@ const ChatDetailScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    console.log(group);
     navigation.setParams({
-      username: group.name
+      username: group.name,
+      image: group.avatar ? group.avatar.imagePath : null
     });
   }, [group]);
 

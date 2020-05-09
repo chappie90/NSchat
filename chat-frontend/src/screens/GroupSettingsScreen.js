@@ -136,7 +136,11 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     setModalVisible(false);
-    updateGroupImage(username, group._id, group.name, cameraImage.uri);
+    updateGroupImage(username, group._id, group.name, cameraImage.uri)
+      .then(data => {
+        updateGroup(data.group, 'image', data.adminMessage);
+        updateMessages({ chatId: group._id, message: data.adminMessage });
+      });
   };
 
   const choosePhotoHandler = async () => {
@@ -151,12 +155,22 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     setModalVisible(false);
-    updateGroupImage(username, group._id, group.name, libraryImage.uri);
+    updateGroupImage(username, group._id, group.name, libraryImage.uri)
+      .then(data => {
+        updateGroup(data.group, 'image', data.adminMessage);
+        updateMessages({ chatId: group._id, message: data.adminMessage });
+      });;
   };
 
   const deletePhotoHandler = () => {
     if (group.avatar) {
-      deleteGroupImage(group._id, username);
+      deleteGroupImage(group._id, username)
+        .then(data => {
+          console.log('response handler')
+          console.log(data)
+          updateGroup(data.group, 'image', data.adminMessage);
+          updateMessages({ chatId: group._id, message: data.adminMessage });
+        });;
     }
     setModalVisible(false);
   };

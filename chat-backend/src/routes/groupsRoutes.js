@@ -130,8 +130,18 @@ router.post(
         }
       });
       await updatedGroupImageMessage.save();
-      
-      res.status(200).send({ group });
+
+      const adminMessage = {
+        _id: updatedGroupImageMessage._id,
+        text: updatedGroupImageMessage.message.text,
+        createdAt:  updatedGroupImageMessage.message.created,
+        user: {
+          _id: 1,
+          name: 'admin'
+        }
+      };
+    
+      res.status(200).send({ group, adminMessage });
     } catch (err) {
       console.log(err);
       res.status(422).send({ error: 'Could not update image' });
@@ -163,7 +173,17 @@ router.patch('/group/image/delete', checkAuth, async (req, res) => {
     });
     await deletedGroupImageMessage.save();
 
-    res.status(200).send({ group });
+    const adminMessage = {
+      _id: deletedGroupImageMessage._id,
+      text: deletedGroupImageMessage.message.text,
+      createdAt:  deletedGroupImageMessage.message.created,
+      user: {
+        _id: 1,
+        name: 'admin'
+      }
+    };
+  
+    res.status(200).send({ group, adminMessage });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not delete image' });
@@ -204,14 +224,7 @@ router.patch('/group/name/update', checkAuth, async (req, res) => {
         _id: 1,
         name: 'admin'
       }
-      // read: message.read,
-      // deleted: message.deleted,
-      // reply: message.replyTo ? message.replyTo.messageText : null,
-      // replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null,
-      // image: message.image ? message.image.imgPath : ''
     };
-
-
 
     res.status(200).send({ group, adminMessage });
   } catch (err) {

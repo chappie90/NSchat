@@ -114,8 +114,21 @@ const chatReducer = (state, action) => {
             text: action.payload.adminMessage.text
            } : item;
         });
+      }
+      if (action.payload.updatedProperty === 'image') {
+        updatedGroup = state.previousChats.map(item => {
+          return item.chatId === action.payload.updatedGroup._id ?
+           { ...item, 
+            profile: {
+              imgPath: action.payload.updatedGroup.avatar ?
+                action.payload.updatedGroup.avatar.imagePath :
+                null
+            },
+            text: action.payload.adminMessage.text
+           } : item;
+        });
+      }
       return { ...state, previousChats: updatedGroup };
-    }
     case 'save_expo_token':
       return { ...state, expoToken: action.payload };
     case 'get_current_screen':

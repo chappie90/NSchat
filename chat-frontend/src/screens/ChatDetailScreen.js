@@ -171,7 +171,6 @@ const ChatDetailScreen = ({ navigation }) => {
     let chatId = chatId || navigation.getParam('chatId');
 
     if (chat.hasOwnProperty(chatId)) {
-      console.log(chat[chatId].length)
       if (chat[chatId].length > 50) {
         resetChatState(chatId);
         setIncomingMsgs(chat[chatId].slice(0, 50));
@@ -202,9 +201,6 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
-    // let recipient = recipient || navigation.getParam('username');
-    console.log('chat')
-    console.log(chat)
     let chatId = chatId || navigation.getParam('chatId');
 
     if (!loadMoreHelper) {

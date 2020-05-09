@@ -196,7 +196,24 @@ router.patch('/group/name/update', checkAuth, async (req, res) => {
     });
     await updatedGroupNameMessage.save();
 
-    res.status(200).send({ group });
+    const adminMessage = {
+      _id: updatedGroupNameMessage._id,
+      text: updatedGroupNameMessage.message.text,
+      createdAt:  updatedGroupNameMessage.message.created,
+      user: {
+        _id: 1,
+        name: 'admin'
+      }
+      // read: message.read,
+      // deleted: message.deleted,
+      // reply: message.replyTo ? message.replyTo.messageText : null,
+      // replyAuthor: message.replyTo ? message.replyTo.messageAuthor : null,
+      // image: message.image ? message.image.imgPath : ''
+    };
+
+
+
+    res.status(200).send({ group, adminMessage });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not update group name' });

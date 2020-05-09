@@ -33,7 +33,7 @@ import AddGroupMemberScreen from './AddGroupMemberScreen';
 
 const GroupSettingsScreen = (props) => {
   const { state: { username, userId }, setStatusBarColor } = useContext(AuthContext);
-  const { state: { previousChats }, getChats, updateGroup } = useContext(ChatContext);
+  const { state: { previousChats }, getChats, updateGroup, updateMessages } = useContext(ChatContext);
   const {
     state: { 
       currentGroupId,
@@ -85,8 +85,9 @@ const GroupSettingsScreen = (props) => {
   const saveNameHandler = () => {
     if (group.name !== name) {
       updateGroupName(group._id, name, username)
-        .then(group => {
-          updateGroup(group, 'name');
+        .then(data => {
+          updateGroup(data.group, 'name', data.adminMessage);
+          updateMessages({ chatId: group._id, message: data.adminMessage });
         });
     }
     setEditName(false);

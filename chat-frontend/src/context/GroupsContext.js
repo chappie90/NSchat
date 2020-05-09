@@ -74,7 +74,7 @@ const updateGroupName = dispatch => async (chatId, groupName, username) => {
 
     dispatch({ type: 'get_group', payload: response.data.group });
 
-    return response.data.group;
+    return response.data;
   } catch (err) {
     console.log(err);
     throw err;

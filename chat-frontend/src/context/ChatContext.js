@@ -108,7 +108,11 @@ const chatReducer = (state, action) => {
       let updatedGroup;
       if (action.payload.updatedProperty === 'name') {
         updatedGroup = state.previousChats.map(item => {
-          return item._id === action.payload._id ? { ...item, contact: action.payload.updatedGroup.name } : item;
+          return item.chatId === action.payload.updatedGroup._id ?
+           { ...item, 
+            contact: action.payload.updatedGroup.name,
+            text: action.payload.adminMessage.text
+           } : item;
         });
       return { ...state, previousChats: updatedGroup };
     }
@@ -319,8 +323,8 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
   }
 };
 
-const updateGroup = dispatch => (updatedGroup, updatedProperty, oldName) => {
-  dispatch({ type: 'update_group', payload: { updatedGroup, updatedProperty, oldName } });
+const updateGroup = dispatch => (updatedGroup, updatedProperty, adminMessage) => {
+  dispatch({ type: 'update_group', payload: { updatedGroup, updatedProperty, adminMessage } });
 };
 
 const resetBadgeCount = dispatch => async (username) => {

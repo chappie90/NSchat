@@ -479,11 +479,11 @@ const ChatsListScreen = ({ navigation }) => {
             <View>
               <View style={{
                flexDirection: 'row', 
-               alignItems: 'flex-start', 
+               alignItems: 'center', 
                paddingHorizontal: 10, 
                paddingVertical: 5,
                backgroundColor: '#fff' }}>
-                <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4, backgroundColor: '#F0F0F0' }}>
+                <View style={{ overflow: 'hidden', width: 56, height: 56, borderRadius: 4, backgroundColor: '#F0F0F0' }}>
                   { rowData.item.profile && rowData.item.profile.imgPath ? (
                     <Image source={{ uri: rowData.item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
                   ) : (
@@ -492,7 +492,7 @@ const ChatsListScreen = ({ navigation }) => {
                       style={{ width: '100%', height: '100%' }} />
                   )}
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, height: 70 }}>
+                <View style={{ flex: 1, marginLeft: 10, height: 70, justifyContent: 'center' }}>
                   <View style={styles.itemContainer}>
                     <HeadingText numberOfLines={1} style={rowData.item.groupOwner ? styles.groupName : styles.name}>{rowData.item.contact}</HeadingText>
                     <View style={{ flexDirection: 'row', alignItems: 'center'}}>  
@@ -518,6 +518,14 @@ const ChatsListScreen = ({ navigation }) => {
                     )}
                   </View>
                 </View>
+                 <View style={{
+                  position: 'absolute',
+                  bottom: 0,
+                   marginHorizontal: 10, 
+                   width: '100%',
+                   height: 1,
+                   backgroundColor: '#F0F0F0'}}>
+                  </View>
               </View>
               {onlineContacts.includes(rowData.item.contact) && (
                 <Badge

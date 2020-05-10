@@ -539,56 +539,72 @@ const ChatsListScreen = ({ navigation }) => {
         renderHiddenItem={ (data, rowMap) => {
          return (
             <View style={styles.rowBack}>
-             <TouchableOpacity style={{ }} onPress={() => pinChatHandler(data.index, rowMap, data.item)}>
-                <Animated.View style={{
-                  backgroundColor: data.item.pinned ? 'grey' : Colors.secondary,
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
-                  marginHorizontal: 6,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transform: [
-                    { translateX: rowTranslateAnimatedValues[`${data.index}`] ? (rowTranslateAnimatedValues[`${data.index}`].left.interpolate({
-                      inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
-                      outputRange: [0, 15, 24, 27, 29, screenWidth / 2 + 70],
-                      extrapolate: 'clamp'
-                    })) : (new Animated.Value(0)) 
-                    }
-                  ] }}>
-                   {data.item.pinned ? 
-                      <MaterialCommunityIcons name="pin-off" size={30} color="#fff" /> :
-                      <MaterialCommunityIcons name="pin" size={30} color="#fff" />}
-                </Animated.View>
-              </TouchableOpacity>
+              <View style={{
+                backgroundColor: data.item.pinned ? 'grey' : Colors.secondary, 
+                width: '50%', 
+                height: '100%',
+                justifyContent: 'center'
+              }}>
+               <TouchableOpacity style={{ }} onPress={() => pinChatHandler(data.index, rowMap, data.item)}>
+                  <Animated.View style={{
+                    width: 44,
+                    height: 44,
+                    marginHorizontal: 6,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transform: [
+                      { translateX: rowTranslateAnimatedValues[`${data.index}`] ? (rowTranslateAnimatedValues[`${data.index}`].left.interpolate({
+                        inputRange: [0, 25, 50, 75, 100, 150, 200, screenWidth / 2 + 70],
+                        outputRange: [-20, -10, 0, 8, 19, 27, 29, screenWidth / 2 + 70],
+                        extrapolate: 'clamp'
+                      })) : (new Animated.Value(0)) 
+                      }
+                    ] }}>
+                    {data.item.pinned ? 
+                      <MaterialCommunityIcons name="pin-off" size={32} color="#fff" /> :
+                      <MaterialCommunityIcons name="pin" size={32} color="#fff" />}
+                    {data.item.pinned ? 
+                      <HeadingText style={{ color: '#fff' }}>Unpin</HeadingText> :
+                      <HeadingText style={{ color: '#fff' }}>Pin</HeadingText>}
+                  </Animated.View>
+                </TouchableOpacity>
+              </View>
+              <View style={{
+                backgroundColor: Colors.tertiary, 
+                width: '50%', 
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'flex-end'
+              }}>
               <TouchableOpacity style={{ }} onPress={() => {deleteRow(data.index, rowMap, data.item)}}>
                 <Animated.View style={{
-                  backgroundColor: Colors.tertiary,
                   width: 44,
                   height: 44,
-                  borderRadius: 22,
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
                     { translateX: rowTranslateAnimatedValues[`${data.index}`] ? (rowTranslateAnimatedValues[`${data.index}`].right.interpolate({
-                        inputRange: [50, 75, 100, 150, 200, screenWidth / 2 + 70],
-                        outputRange: [0, -15, -24, -27, -29, -screenWidth / 2 - 60],
+                        inputRange: [0, 25, 50, 75, 100, 150, 200, screenWidth / 2 + 70],
+                        outputRange: [20, 10, 0, -15, -24, -27, -29, -screenWidth / 2 - 60],
                         extrapolate: 'clamp'
                     })) : (new Animated.Value(0)) 
                     }
                   ] }}>
-                    <Entypo name="trash" size={24} color="#fff" />
+                    <Entypo name="trash" size={26} color="#fff" />
+                    <HeadingText style={{ color: '#fff' }}>Delete</HeadingText>
                 </Animated.View>
               </TouchableOpacity>
+              </View>
             </View>
         )}}
-        leftOpenValue={65}
-        rightOpenValue={-65}
-        stopLeftSwipe={screenWidth - 100}
-        stopRightSwipe={-screenWidth + 100}
+        leftOpenValue={66}
+        rightOpenValue={-66}
+        stopLeftSwipe={screenWidth / 2}
+        stopRightSwipe={-screenWidth / 2}
         onSwipeValueChange={onSwipeValueChange}
         onRowOpen={onRowOpen}
         tension={30}  
+        // recalculateHiddenLayout={true}
         />
     );
   };

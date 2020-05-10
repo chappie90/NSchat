@@ -203,20 +203,20 @@ const AddGroupScreen = props => {
                           top: -3,
                           right: -3,
                           zIndex: 1,
-                          backgroundColor: "#fff",
-                          borderRadius: 20
+                          borderRadius: 20,
+                          backgroundColor: "#D3D3D3",
+                          borderWidth: 1,
+                          borderColor: '#fff'
                         }}
                       >
-                        <MaterialIcons
-                          name="close"
-                          size={18}
-                          color="indianred"
+                        <MaterialIcons name="close" size={18} color="#fff" />
+                      </View>
+                       <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff'}}>
+                        <Image
+                          style={{ width: '100%', height: '100%' }}
+                          source={{ uri: contact.user.profile.imgPath }}
                         />
                       </View>
-                      <Image
-                        style={{ width: 48, height: 48, borderRadius: 24 }}
-                        source={{ uri: contact.user.profile.imgPath }}
-                      />
                       <Text style={{ marginTop: 4, color: "#fff" }} key={item.contactId}>
                         {item.contactName}
                       </Text>
@@ -244,15 +244,19 @@ const AddGroupScreen = props => {
                           top: -3,
                           right: -3,
                           zIndex: 1,
-                          backgroundColor: "#fff",
-                          borderRadius: 20
+                          backgroundColor: "#D3D3D3",
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          borderColor: '#fff'
                         }}>
-                        <MaterialIcons name="close" size={18} color="indianred" />
+                        <MaterialIcons name="close" size={18} color="#fff" />
                       </View>
-                      <Image
-                        style={{ width: 48, height: 48, borderRadius: 24 }}
-                        source={require("../../assets/avatar-small.png")}
-                      />
+                      <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff'}}>
+                        <Image
+                          style={{ width: '100%', height: '100%' }}
+                          source={require("../../assets/avatar-small.png")}
+                        />
+                      </View>
                       <Text style={{ marginTop: 4, color: "#fff" }} key={item.contactId}>
                         {item.contactName}
                       </Text>
@@ -262,7 +266,7 @@ const AddGroupScreen = props => {
               })}
             </ScrollView>
           </TranslateViewAnim>
-          <View style={{ flex: 1, backgroundColor: "#fff" }}>
+          <View style={{ flex: 1, backgroundColor: "#fff", paddingVertical: 10 }}>
             {contacts.length > 0 ? (
               <FlatList
                 data={groupContacts}
@@ -290,24 +294,17 @@ const AddGroupScreen = props => {
                           paddingHorizontal: 15
                         }}
                       >
-                        <View
-                          style={{
-                            overflow: "hidden",
-                            width: 48,
-                            height: 48,
-                            borderRadius: 24
-                          }}
-                        >
+                        <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
                           {item.user.profile ? (
                             <Image
-                              style={{ width: 48, height: 48 }}
+                              style={{ width: '100%', height: '100%' }}
                               placeholderStyle={styles.placeholder}
                               source={{ uri: item.user.profile.imgPath }}
                             />
                           ) : (
                             <Image
-                              style={{ width: 48, height: 48 }}
-                              source={require("../../assets/avatar2.png")}
+                              style={{ width: '100%', height: '100%' }}
+                              source={require("../../assets/avatar-small.png")}
                             />
                           )}
                         </View>

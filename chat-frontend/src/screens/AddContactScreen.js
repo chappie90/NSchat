@@ -50,19 +50,19 @@ const AddContactScreen = (props) => {
     return (
       <ScrollView>
         {searchResults.map((item, index) => (
-          <TouchableOpacity
+          <TouchableWithoutFeedback
             key={item.username}
             style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
-            onPress={() => navigation.navigate('ChatDetail', { username: item.user.username })}>
+            onPress={() => {}}>
             <View key={index} style={styles.listItemContainer}>
-              <View style={{ overflow: 'hidden', borderRadius: 24}}>
+              <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
                 {item.profile ?
                   <Image 
-                    style={{ width: 48, height: 48 }} 
+                    style={{ width: '100%', height: '100%' }} 
                     placeholderStyle={styles.placeholder}
                     source={{ uri: item.profile.imgPath }}
                     /> : 
-                  <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar-small.png')} />
+                  <Image style={{ width: '100%', height: '100%' }} source={require('../../assets/avatar-small.png')} />
                 }
               </View>                  
                <View style={styles.itemContainer}>
@@ -83,7 +83,7 @@ const AddContactScreen = (props) => {
                 )}
               </View>
             </View>
-          </TouchableOpacity>
+          </TouchableWithoutFeedback>
         ))}
       </ScrollView>
     );
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   listItemContainer: {
      flexDirection: 'row', 
      alignItems: 'center', 
-     paddingVertical: 2, 
+     paddingVertical: 6, 
      paddingHorizontal: 15
   },
   itemContainer: {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25
   },
   name: {
-    fontSize: 17
+    fontSize: 16
   },
   input: {
     fontSize: 24,

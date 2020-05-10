@@ -111,7 +111,6 @@ module.exports = function(io) {
       replyTo: { messageId, messageText, messageAuthor }
     } = msgObj;
 
-
     try {
 
     // messageHandler.handleMessage(socket, users); 
@@ -244,12 +243,14 @@ module.exports = function(io) {
     
     if (type === 'private') {
 
+
       const tempUserId = await User.find({ username: from });
       const tempUserId2 = await User.find({ username: to });
 
       const updateBadge = await User.updateOne(
         { username: to }, 
-        { $inc: { badgeCount: 1 } }
+        { $inc: { badgeCount: 1 } },
+        { new: true }
       );
 
       const badgeCount = tempUserId2[0].badgeCount + 1;

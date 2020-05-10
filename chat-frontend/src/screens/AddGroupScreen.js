@@ -343,20 +343,19 @@ const AddGroupScreen = props => {
                           top: -3,
                           right: -3,
                           zIndex: 1,
-                          backgroundColor: "#fff",
-                          borderRadius: 20
-                        }}
-                      >
-                        <MaterialIcons
-                          name="close"
-                          size={18}
-                          color="indianred"
+                          backgroundColor: "#D3D3D3",
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          borderColor: '#fff'
+                        }}>
+                        <MaterialIcons name="close" size={18} color="#fff" />
+                      </View>
+                      <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff' }}>
+                        <Image
+                          style={{ width: '100%', height: '100%' }}
+                          source={{ uri: contact.user.profile.imgPath }}
                         />
                       </View>
-                      <Image
-                        style={{ width: 48, height: 48, borderRadius: 24 }}
-                        source={{ uri: contact.user.profile.imgPath }}
-                      />
                       <Text style={{ marginTop: 4, color: "#fff" }} key={item}>
                         {item}
                       </Text>
@@ -384,15 +383,19 @@ const AddGroupScreen = props => {
                           top: -3,
                           right: -3,
                           zIndex: 1,
-                          backgroundColor: "#fff",
-                          borderRadius: 20
+                          backgroundColor: "#D3D3D3",
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          borderColor: '#fff'
                         }}>
-                        <MaterialIcons name="close" size={18} color="indianred" />
+                        <MaterialIcons name="close" size={18} color='#fff' />
                       </View>
-                      <Image
-                        style={{ width: 48, height: 48, borderRadius: 24 }}
-                        source={require("../../assets/avatar-small.png")}
-                      />
+                      <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff' }}>
+                        <Image
+                          style={{ width: '100%', height: '100%', }}
+                          source={require("../../assets/avatar-small.png")}
+                        />
+                      </View>
                       <Text style={{ marginTop: 4, color: "#fff" }} key={item}>
                         {item}
                       </Text>
@@ -472,22 +475,26 @@ const AddGroupScreen = props => {
                         <View
                           style={{
                             overflow: "hidden",
-                            width: 48,
-                            height: 48,
-                            borderRadius: 24
+                            width: 44,
+                            height: 44,
+                            borderRadius: 22
                           }}
                         >
                           {item.user.profile ? (
+                          <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
                             <Image
-                              style={{ width: 48, height: 48 }}
+                              style={{ width: '100%', height: '100%' }}
                               placeholderStyle={styles.placeholder}
                               source={{ uri: item.user.profile.imgPath }}
                             />
+                          </View>
                           ) : (
+                          <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
                             <Image
-                              style={{ width: 48, height: 48 }}
+                              style={{ width: '100%', height: '100%' }}
                               source={require("../../assets/avatar-small.png")}
                             />
+                          </View>
                           )}
                         </View>
                         <View style={styles.itemContainer}>
@@ -534,7 +541,7 @@ const AddGroupScreen = props => {
               <View style={styles.imageContainer}>
                 <ScaleImageAnim
                   style={styles.image}
-                  source={require("../../assets/icons_256_contact.png")}
+                  source={require("../../assets/icons_256_new_group.png")}
                 />
                 <TranslateFadeViewAnim>
                   <BodyText style={styles.imageCaption}>
@@ -604,7 +611,7 @@ const styles = StyleSheet.create({
     height: 100
   },
   imageContainer: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 80

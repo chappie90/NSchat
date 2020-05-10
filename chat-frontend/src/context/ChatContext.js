@@ -32,6 +32,8 @@ const chatReducer = (state, action) => {
       return { ...state, chat: [ ...state.chat, ...action.payload ] };
     case 'get_chats':
       return { ...state, previousChats: action.payload };
+    case 'add_new_chat':
+      return { ...state, previousChats: [ ...state.previousChats, action.payload ] };
     case 'update_chat_state':
       let updatedChat;
       if (action.payload.updateUnreadMessageCount) {
@@ -147,6 +149,8 @@ const getChats = dispatch => async ({ username }) => {
 
     chats.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
 
+    console.log(chats)
+
     dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);
@@ -175,6 +179,10 @@ const updateMessages = dispatch => ({ chatId, message }) => {
 
 const updateChatState = dispatch => (chat) => {
   dispatch({ type: 'update_chat_state', payload: chat });
+};
+
+const addNewChat = dispatch => chat => {
+  dispatch({ type: 'add_new_chat', payload: chat });
 };
 
 const resetChatState = dispatch => (user) => {
@@ -424,7 +432,8 @@ export const { Context, Provider } = createDataContext(
     getCurrentScreen,
     updateChatState,
     saveMessageImage,
-    updateGroup
+    updateGroup,
+    addNewChat
   },
   {  
     previousChats: [], 

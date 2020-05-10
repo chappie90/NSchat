@@ -22,6 +22,7 @@ import AddContactScreen from './AddContactScreen';
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ContactsContext } from '../context/ContactsContext';
+import { Context as ChatContext } from '../context/ChatContext';
 import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
@@ -33,6 +34,7 @@ const ContactsListScreen = ({ navigation }) => {
     state: { username, socketState }, 
     setStatusBarColor 
   } = useContext(AuthContext);
+  const { state: { previousChats } } = useContext(ChatContext);
   const { state: { contacts, onlineContacts }, getContacts, getActiveStatus, userIsOffline } = useContext(ContactsContext);
   const [newContactMode, setNewContactMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -115,6 +117,7 @@ const ContactsListScreen = ({ navigation }) => {
               data={contacts}
               keyExtractor={(item, index) => index.toString()}
               renderItem={ (rowData, rowMap) => {
+                const chat = previousChats.filter(c => c.contact === rowData.item.user.username);
                 return (
                   <TouchableWithoutFeedback 
                     style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
@@ -122,28 +125,29 @@ const ContactsListScreen = ({ navigation }) => {
                       navigation.navigate('ChatDetail', {
                         username: rowData.item.user.username,
                         image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
-                        type: 'private'
+                        type: 'private',
+                        chatId: chat.length > 0 ? chat[0].chatId : null
                       })
                     }}>
                     <View 
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center', 
-                        paddingVertical: 2, 
+                        paddingVertical: 6, 
                         paddingHorizontal: 15,
                         borderBottomWidth: 1,
                         borderBottomColor: '#F0F0F0',
                         marginHorizontal: 20
                       }}
                     >
-                      <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
+                      <View style={{ overflow: 'hidden', backgroundColor: '#F0F0F0', width: 44, height: 44, borderRadius: 22}}>
                         {rowData.item.user.profile ?
                           <Image 
-                            style={{ width: 48, height: 48 }} 
+                            style={{ width: '100%', height: '100%' }} 
                             placeholderStyle={styles.placeholder}
                             source={{ uri: rowData.item.user.profile.imgPath }}
                             /> : 
-                          <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar-small.png')} />
+                          <Image style={{ width: '100%', height: '100%' }} source={require('../../assets/avatar-small.png')} />
                         }
                       </View>                  
                       <View style={styles.itemContainer}>
@@ -201,6 +205,7 @@ const ContactsListScreen = ({ navigation }) => {
               data={activeUsers}
               keyExtractor={(item, index) => index.toString()}
               renderItem={ (rowData, rowMap) => {
+                const chat = previousChats.filter(c => c.contact === rowData.item.user.username);
                   return (
                     <TouchableWithoutFeedback 
                       style={{ marginTop: 10, borderRadius: 5, overflow: 'hidden' }} 
@@ -208,28 +213,29 @@ const ContactsListScreen = ({ navigation }) => {
                         navigation.navigate('ChatDetail', {
                           username: rowData.item.user.username,
                           image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
-                          type: 'private'
+                          type: 'private',
+                          chatId: chat.length > 0 ? chat[0].chatId : null
                         })
                       }}>
                       <View 
                         style={{
                           flexDirection: 'row',
                           alignItems: 'center', 
-                          paddingVertical: 2, 
+                          paddingVertical: 6, 
                           paddingHorizontal: 15,
                           borderBottomWidth: 1,
                           borderBottomColor: '#F0F0F0',
                           marginHorizontal: 20
                         }}
                       >
-                        <View style={{ overflow: 'hidden', width: 48, height: 48, borderRadius: 24}}>
+                        <View style={{ overflow: 'hidden', backgroundColor: '#F0F0F0', width: 44, height: 44, borderRadius: 22}}>
                           {rowData.item.user.profile ?
                             <Image 
-                              style={{ width: 48, height: 48 }} 
+                              style={{ width: '100%', height: '100%' }} 
                               placeholderStyle={styles.placeholder}
                               source={{ uri: rowData.item.user.profile.imgPath }}
                               /> : 
-                            <Image style={{ width: 48, height: 48 }} source={require('../../assets/avatar-small.png')} />
+                            <Image style={{ width: '100%', height: '100%' }} source={require('../../assets/avatar-small.png')} />
                           }
                         </View>                  
                         <View style={styles.itemContainer}>

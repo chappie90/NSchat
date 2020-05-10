@@ -196,7 +196,6 @@ const ChatsListScreen = ({ navigation }) => {
   }, [socketState])
 
   useEffect(() => {
-    // console.log(previousChats);
     // if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
     //     rowTranslateAnimatedValues.constructor === Object) {
     // if (previousChats.length > 0) {
@@ -484,8 +483,8 @@ const ChatsListScreen = ({ navigation }) => {
                paddingHorizontal: 10, 
                paddingVertical: 5,
                backgroundColor: '#fff' }}>
-                <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4 }}>
-                  { rowData.item.profile.imgPath ? (
+                <View style={{ overflow: 'hidden', width: 52, height: 52, borderRadius: 4, backgroundColor: '#F0F0F0' }}>
+                  { rowData.item.profile && rowData.item.profile.imgPath ? (
                     <Image source={{ uri: rowData.item.profile.imgPath }} style={{ width: '100%', height: '100%' }} />
                   ) : (
                     <Image

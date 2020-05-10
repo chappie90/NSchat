@@ -47,7 +47,7 @@ import GroupSettingsScreen from './GroupSettingsScreen';
 const ChatDetailScreen = ({ navigation }) => {
   const { state: { username, socketState, statusBarColor }, setStatusBarColor } = useContext(AuthContext);
   const {
-    state: { chat, currentScreen }, 
+    state: { chat, currentScreen, previousChats }, 
     getChats, 
     getMessages, 
     updateMessages, 
@@ -57,7 +57,8 @@ const ChatDetailScreen = ({ navigation }) => {
     deleteMessageState,
     getCurrentScreen,
     updateChatState,
-    saveMessageImage
+    saveMessageImage,
+    addNewChat
  } = useContext(ChatContext);
   const { state: { group } } = useContext(GroupsContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
@@ -80,6 +81,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const isVisibleYoutube = useRef(false);
   const isBackgroundYoutube = useRef(false);
   const socket = useRef(null);
+  const chatIdRef = useRef(null);
   const [uuid, setUuid] = useState('');
   let page;
   let stopTypingTimeout;
@@ -89,6 +91,7 @@ const ChatDetailScreen = ({ navigation }) => {
   useEffect(() => {
     setChatType(navigation.getParam('type'));
     setChatId(navigation.getParam('chatId'));
+    chatIdRef.current = navigation.getParam('chatId');
     navigation.setParams({ 
       openModal: openModalHandler,
       openYoutube: openYoutubeHandler,
@@ -124,15 +127,43 @@ const ChatDetailScreen = ({ navigation }) => {
       let recipient = recipient || navigation.getParam('username');
 
       socket.current.on('message', message => {
+        let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+        // console.log('message ' + chatId)
         socket.current.emit('stop_typing', recipient); 
         if (mounted) {
           updateMessages({ chatId: message.chat.chatId, message: message.message });
         }
         if (message.message.user.name === username) {
-          setIncomingMsgs(prevState => prevState.map(msg => {
-            return msg._id === message.message._id ? { ...msg, read: false } : msg;
-          }));
-          updateChatState(message.chat);
+          // console.log('previousChats')
+          // console.log(previousChats)
+          if (chatId) {
+            setIncomingMsgs(prevState => prevState.map(msg => {
+              return msg._id === message.message._id ? { ...msg, read: false } : msg;
+            }));
+
+            updateChatState(message.chat);
+          } else {
+            chatIdRef.current = message.chat.chatId;
+            let msgArr = [];
+            msgArr.push(message.message);
+            setIncomingMsgs(msgArr);
+            message.chat.type = 'private';
+            message.chat.pinned = false;
+            message.chat.unreadMessageCount = 0;
+            message.chat.from = username;
+            if (navigation.getParam('image')) {
+              message.chat = {
+                profile: {
+                  imgPath: navigation.getParam('image')
+                }
+              }
+            }    
+            addNewChat(message.chat);
+            // setChatId(message.chat.chatId);
+            // navigation.setParams({ 
+            //   chatId: message.chat.chatId
+            // });
+          }
         }
         
         if (message.message.user.name === recipient) {
@@ -153,7 +184,7 @@ const ChatDetailScreen = ({ navigation }) => {
       });
       socket.current.on('has_joined_chat', user => {
         let chatType =  chatType || navigation.getParam('type');
-        let chatId = chatId || navigation.getParam('chatId');
+        let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
 
         if (user === recipient) {
           markMessageAsRead({ user:recipient });
@@ -171,7 +202,13 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     let mounted = true;
-    let chatId = chatId || navigation.getParam('chatId');
+    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+    setCurrentPage(1);
+    setRecipient(navigation.getParam('username'));
+
+    if (!chatId) {
+      return;
+    }
 
     if (chat.hasOwnProperty(chatId)) {
       if (chat[chatId].length > 50) {
@@ -183,13 +220,10 @@ const ChatDetailScreen = ({ navigation }) => {
       return;
     }
 
-    setCurrentPage(1);
-    setRecipient(navigation.getParam('username'));
-
     if (recipient && currentPage) {
       page = currentPage;
       let chatType =  chatType || navigation.getParam('type');
-      // let chatId = chatId || navigation.getParam('chatId');
+      let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
           if (mounted) {
@@ -204,7 +238,12 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
-    let chatId = chatId || navigation.getParam('chatId');
+
+    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+    
+    if (!chatId) {
+      return;
+    }
 
     if (!loadMoreHelper) {
       setIncomingMsgs(chat[chatId]);
@@ -269,7 +308,7 @@ const ChatDetailScreen = ({ navigation }) => {
       image: image,
     };
 
-    let chatId = chatId || navigation.getParam('chatId');
+    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
 
     const msgObj = {
       type: chatType,
@@ -295,7 +334,7 @@ const ChatDetailScreen = ({ navigation }) => {
     setLoadMoreHelper(true);
     let page = currentPage + 1; 
     let chatType =  chatType || navigation.getParam('type');
-    let chatId = chatId || navigation.getParam('chatId');
+    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
     getMessages({ chatType, chatId, username, recipient, page })
       .then((messages) => {
         if (mounted) {
@@ -317,6 +356,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const sendMessage = async (message) => {
+
     const msgObj = {
       type: chatType,
       chatId: chatId,
@@ -679,7 +719,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const renderLoadEarlier = (props) => {
     // let recipient = recipient || navigation.getParam('username');
-    let chatId = chatId || navigation.getParam('chatId');
+    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
     if (chat.hasOwnProperty(chatId) && (chat[chatId].length < 50 || allMessagesLoaded)) {
       return;
     }
@@ -886,7 +926,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         alignItems: 'center',
         paddingLeft: 45,
         paddingTop: 20 }}>
-        <FadeViewAnim style={{ overflow: 'hidden', width: 40, height: 40, borderRadius: 20 }}>
+        <FadeViewAnim style={{ overflow: 'hidden',  backgroundColor: '#F0F0F0', width: 40, height: 40, borderRadius: 20 }}>
           {params.image ? (
             <Image source={{ uri: params.image }} style={{ width: '100%', height: '100%' }} />
           ) : (

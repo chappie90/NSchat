@@ -301,9 +301,11 @@ const GroupSettingsScreen = (props) => {
         <View style={{backgroundColor: '#fff'}}>
           <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Creator</BodyText> 
           <View style={styles.participant}>
-            <Image
-              style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
-              source={require("../../assets/avatar-small.png")} />
+            <View style={{ overflow: 'hidden', marginBottom: 2, width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
+              <Image
+                style={{ width: '100%', height: '100%'}}
+                source={require("../../assets/avatar-small.png")} />
+            </View>
             <BodyText>{group.owner}</BodyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 8, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
@@ -317,9 +319,11 @@ const GroupSettingsScreen = (props) => {
           <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingBottom: 15}}>
             {group.participants && group.participants.map((item, index) => (
               <View key={index} style={styles.participant}>
-                <Image
-                  style={{ width: 48, height: 48, borderRadius: 24, marginBottom: 2 }}
-                  source={require("../../assets/avatar-small.png")} />
+                 <View style={{ overflow: 'hidden', marginBottom: 2, width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
+                  <Image
+                    style={{ width: '100%', height: '100%' }}
+                    source={require("../../assets/avatar-small.png")} />
+                  </View>
                 <BodyText>{item.user.username}</BodyText>
               </View>
             ))}      

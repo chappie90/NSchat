@@ -74,6 +74,11 @@ const chatReducer = (state, action) => {
         newChats.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
       }
       return { ...state, previousChats: newChats };
+    case 'mute_chat':
+      const mutedChat = state.previousChats.map(item => {
+        return item.chatId === action.payload.chatId ? { ...item, muted: !action.payload.currentValue } : item;
+      });
+      return { ...state, previousChats: mutedChat };
     case 'mark_messages_read':
       const markedMessages = state.previousChats.map(item => {
         return item.contact === action.payload ? { ...item, unreadMessageCount: 0 } : item;
@@ -187,6 +192,21 @@ const addNewChat = dispatch => chat => {
 
 const resetChatState = dispatch => (user) => {
   dispatch({ type: 'reset_chat_state', payload: user });
+};
+
+const toggleMuteChat = dispatch => async (username, chatId, type, currentValue) => {
+  try {
+    const response = await chatApi.patch('/chat/mute', { username, chatId, type, currentValue });
+
+    if (!response.data) {
+      return;
+    }
+
+    dispatch({ type: 'mute_chat', payload: { chatId, currentValue } });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 };
 
 const togglePinChat = dispatch => async (username, chatId, type, currentValue) => {
@@ -425,6 +445,7 @@ export const { Context, Provider } = createDataContext(
     createGroup,
     resetChatState,
     togglePinChat,
+    toggleMuteChat,
     saveExpoToken,
     markMessageAsRead,
     deleteMessageState,

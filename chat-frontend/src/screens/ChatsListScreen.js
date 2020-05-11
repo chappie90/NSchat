@@ -19,7 +19,7 @@ import {
   Dimensions,
   Vibration
 } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign, Octicons } from '@expo/vector-icons';
 import { Badge } from 'react-native-elements';
 import { formatDate } from '../helpers/formatDate';
 import { SwipeListView } from 'react-native-swipe-list-view';;
@@ -540,32 +540,31 @@ const ChatsListScreen = ({ navigation }) => {
          return (
             <View style={styles.rowBack}>
               <View style={{
-                backgroundColor: data.item.pinned ? 'grey' : Colors.secondary, 
+                backgroundColor: data.item.pinned ? Colors.secondary : 'grey', 
                 width: '50%', 
                 height: '100%',
                 justifyContent: 'center'
               }}>
                <TouchableOpacity style={{ }} onPress={() => pinChatHandler(data.index, rowMap, data.item)}>
                   <Animated.View style={{
-                    width: 44,
-                    height: 44,
-                    marginHorizontal: 6,
+                    width: 54,
+                    height: 54,
                     alignItems: 'center',
                     justifyContent: 'center',
                     transform: [
                       { translateX: rowTranslateAnimatedValues[`${data.index}`] ? (rowTranslateAnimatedValues[`${data.index}`].left.interpolate({
                         inputRange: [0, 25, 50, 75, 100, 150, 200, screenWidth / 2 + 70],
-                        outputRange: [-20, -10, 0, 8, 19, 27, 29, screenWidth / 2 + 70],
+                        outputRange: [-20, -10, 0, 8.5, 19, 27, 29, screenWidth / 2 + 70],
                         extrapolate: 'clamp'
                       })) : (new Animated.Value(0)) 
                       }
                     ] }}>
                     {data.item.pinned ? 
-                      <MaterialCommunityIcons name="pin-off" size={32} color="#fff" /> :
-                      <MaterialCommunityIcons name="pin" size={32} color="#fff" />}
+                      <Octicons name="unmute" size={30} color='#fff' />:
+                      <Octicons name="mute" size={30} color='#fff' />}
                     {data.item.pinned ? 
-                      <HeadingText style={{ color: '#fff' }}>Unpin</HeadingText> :
-                      <HeadingText style={{ color: '#fff' }}>Pin</HeadingText>}
+                      <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Unmute</HeadingText> :
+                      <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Mute</HeadingText>}
                   </Animated.View>
                 </TouchableOpacity>
               </View>
@@ -578,20 +577,20 @@ const ChatsListScreen = ({ navigation }) => {
               }}>
               <TouchableOpacity style={{ }} onPress={() => {deleteRow(data.index, rowMap, data.item)}}>
                 <Animated.View style={{
-                  width: 44,
-                  height: 44,
+                  width: 54,
+                  height: 54,
                   alignItems: 'center',
                   justifyContent: 'center',
                   transform: [
                     { translateX: rowTranslateAnimatedValues[`${data.index}`] ? (rowTranslateAnimatedValues[`${data.index}`].right.interpolate({
                         inputRange: [0, 25, 50, 75, 100, 150, 200, screenWidth / 2 + 70],
-                        outputRange: [20, 10, 0, -15, -24, -27, -29, -screenWidth / 2 - 60],
+                        outputRange: [20, 10, 0, -8.5, -19, -27, -29, -screenWidth / 2 - 60],
                         extrapolate: 'clamp'
                     })) : (new Animated.Value(0)) 
                     }
                   ] }}>
                     <Entypo name="trash" size={26} color="#fff" />
-                    <HeadingText style={{ color: '#fff' }}>Delete</HeadingText>
+                    <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Delete</HeadingText>
                 </Animated.View>
               </TouchableOpacity>
               </View>

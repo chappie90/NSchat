@@ -53,7 +53,7 @@ const ChatsListScreen = ({ navigation }) => {
     state: { previousChats, currentScreen },
     getChats, 
     deleteChat,
-    togglePinChat,
+    toggleMuteChat,
     markMessagesAsRead,
     saveExpoToken,
     resetBadgeCount,
@@ -66,7 +66,6 @@ const ChatsListScreen = ({ navigation }) => {
   const socket = useRef(null);
   const openRowRefs = [];
   const [isTyping, setIsTyping] = useState(false);
-  const [pinAnimate, setPinAnimate] = useState(false);
   const screen = useRef(null);
   const notificationState = useRef(null);
   const [typingUser, setTypingUser] = useState(null);
@@ -356,7 +355,7 @@ const ChatsListScreen = ({ navigation }) => {
        deleteRow(rowKey, rowMap, listItem);
     }
     if (rowOpenValue.current > 200 && isRowOpen) {
-      pinChatHandler(rowKey, rowMap, listItem);
+      muteChatHandler(rowKey, rowMap, listItem);
     }
   };
 
@@ -422,11 +421,11 @@ const ChatsListScreen = ({ navigation }) => {
     });
   };
 
-  const pinChatHandler = (rowKey, rowMap, selectedChat) => {
+  const muteChatHandler = (rowKey, rowMap, selectedChat) => {
     openRowRefs.push(rowMap[rowKey]);
-    togglePinChat(username, selectedChat.chatId, selectedChat.type, selectedChat.pinned)
+    toggleMuteChat(username, selectedChat.chatId, selectedChat.type, selectedChat.muted)
       .then(res => {
-        setPinAnimate(true);
+        // setPinAnimate(true);
         closeAllOpenRows();
       });
   };
@@ -497,9 +496,9 @@ const ChatsListScreen = ({ navigation }) => {
                     <HeadingText numberOfLines={1} style={rowData.item.groupOwner ? styles.groupName : styles.name}>{rowData.item.contact}</HeadingText>
                     <View style={{ flexDirection: 'row', alignItems: 'center'}}>  
                       <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
-                      {rowData.item.pinned && (
-                        <ScaleViewTriggerAnim triggerPinAnim={pinAnimate}>
-                          <AntDesign style={{marginLeft: 5}} name="pushpin" size={20} color="lightgrey" />
+                      {rowData.item.muted && (
+                        <ScaleViewTriggerAnim>
+                          <Octicons style={{marginLeft: 5}} name="mute" size={20} color='lightgrey' >
                         </ScaleViewTriggerAnim>
                       )}
                     </View>
@@ -540,12 +539,12 @@ const ChatsListScreen = ({ navigation }) => {
          return (
             <View style={styles.rowBack}>
               <View style={{
-                backgroundColor: data.item.pinned ? Colors.secondary : 'grey', 
+                backgroundColor: data.item.muted ? Colors.secondary : 'grey', 
                 width: '50%', 
                 height: '100%',
                 justifyContent: 'center'
               }}>
-               <TouchableOpacity style={{ }} onPress={() => pinChatHandler(data.index, rowMap, data.item)}>
+               <TouchableOpacity style={{ }} onPress={() => muteChatHandler(data.index, rowMap, data.item)}>
                   <Animated.View style={{
                     width: 54,
                     height: 54,
@@ -559,10 +558,10 @@ const ChatsListScreen = ({ navigation }) => {
                       })) : (new Animated.Value(0)) 
                       }
                     ] }}>
-                    {data.item.pinned ? 
+                    {data.item.muted ? 
                       <Octicons name="unmute" size={30} color='#fff' />:
                       <Octicons name="mute" size={30} color='#fff' />}
-                    {data.item.pinned ? 
+                    {data.item.muted ? 
                       <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Unmute</HeadingText> :
                       <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Mute</HeadingText>}
                   </Animated.View>

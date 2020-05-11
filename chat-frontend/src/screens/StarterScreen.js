@@ -6,7 +6,8 @@ import {
   Image, 
   TouchableOpacity,
   Animated,
-  StatusBar
+  StatusBar,
+  Dimensions
 } from 'react-native';
 import ViewPager from '@react-native-community/viewpager';
 import { NavigationEvents } from 'react-navigation';
@@ -56,7 +57,7 @@ const StarterScreen = ({ navigation }) => {
       <ViewPager showPageIndicator={true} style={styles.viewPager} initialPage={0}>
         <View style={styles.page} key="1">
           <View style={styles.imageContainer}>
-          <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_chat.png')} />
+          <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-01.png')} />
           <TranslateFadeViewAnim>
             <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
           </TranslateFadeViewAnim>
@@ -64,7 +65,7 @@ const StarterScreen = ({ navigation }) => {
         </View>
         <View style={styles.page} key="2">
           <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_contact.png')} />
+        <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-02.png')} />
         <TranslateFadeViewAnim>
           <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
         </TranslateFadeViewAnim>
@@ -72,7 +73,7 @@ const StarterScreen = ({ navigation }) => {
       </View>
         <View style={styles.page} key="3">
           <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_search.png')} />
+        <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-01.png')} />
         <TranslateFadeViewAnim>
           <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
         </TranslateFadeViewAnim>
@@ -80,7 +81,7 @@ const StarterScreen = ({ navigation }) => {
         </View>
         <View style={styles.page} key="4">
           <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/icons_256_chat.png')} />
+        <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-02.png')} />
         <TranslateFadeViewAnim>
           <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
         </TranslateFadeViewAnim>
@@ -114,14 +115,16 @@ StarterScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#202020',
+    // backgroundColor: '#202020',
+    backgroundColor: '#F0F0F0',
     paddingVertical: 8
   },
   viewPager: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#202020'
+    // backgroundColor: '#202020'
+    backgroundColor: '#F0F0F0'
   },
   textWrapper: {
     flexDirection: 'row'
@@ -145,15 +148,17 @@ const styles = StyleSheet.create({
   signinButtonText: {
     fontSize: 20,
     textAlign: 'center',
-    color: '#fff'
+    // color: '#fff'
+    color: '#202020'
+
   },
   page: {
     justifyContent: 'center',
     alignItems: 'center',
   },
    image: {
-    width: 100,
-    height: 100
+    width: Dimensions.get('window').width * 0.75,
+    height: Dimensions.get('window').width * 0.75
   },
    imageContainer: {
     flex: 1,
@@ -164,7 +169,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 10,
-    color: '#fff'
+    // color: '#fff'
+    color: '#202020'
   },
 });
 

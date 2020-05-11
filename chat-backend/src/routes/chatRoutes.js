@@ -83,7 +83,7 @@ router.post('/chats', checkAuth, async (req, res) => {
           imgName: contactProfile[0].profile.imgName
         },
         chatId: p.privateChat._id, 
-        pinned: p.pinned,
+        muted: p.muted,
         from: lastprivateChatMessage[0].from,
         unreadMessageCount
       });
@@ -127,7 +127,7 @@ router.post('/chats', checkAuth, async (req, res) => {
         },
         groupOwner: g.group.owner,
         chatId: g.group._id,
-        pinned: g.pinned,
+        muted: g.muted,
         from: lastGroupMessage[0].from,
         unreadMessageCount: 0
       });

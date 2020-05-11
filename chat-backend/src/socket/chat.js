@@ -243,7 +243,6 @@ module.exports = function(io) {
     
     if (type === 'private') {
 
-
       const tempUserId = await User.find({ username: from });
       const tempUserId2 = await User.find({ username: to });
 
@@ -257,11 +256,6 @@ module.exports = function(io) {
       const recipientImage = tempUserId2[0].profile.imgPath;
 
       expoPushTokens.push(tempUserId2[0].expoToken);
-
-      const contactRecipient = await User.find({
-        username: to, 
-        'contacts.user': tempUserId[0]._id
-      });
 
       let privateChatId;
 
@@ -286,9 +280,15 @@ module.exports = function(io) {
           { new: true}
         );
       } else {
+
         privateChatId = checkPrivateChat[0]._id;
 
+        console.log('second')
+        console.log(chatId)
         const isPrivateChat = await User.find({ username: username, 'privateChats.privateChat': chatId });
+
+        console.log(isPrivateChat)
+        console.log(isPrivateChat.length)
 
         if (isPrivateChat.length === 0) {
           const updateFromUserChats = await User.updateOne(
@@ -303,9 +303,14 @@ module.exports = function(io) {
         }
       }
 
+      const contactRecipient = await User.find({
+        username: to, 
+        'contacts.user': tempUserId[0]._id
+      });
+
       if (contactRecipient.length === 0) {
 
-        const newContact = await User.findOneAndUpdate(
+      const newContact = await User.findOneAndUpdate(
           { username: to },
           { $addToSet: {
               contacts: {

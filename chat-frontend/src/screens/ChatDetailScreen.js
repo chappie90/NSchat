@@ -142,7 +142,7 @@ const ChatDetailScreen = ({ navigation }) => {
             msgArr.push(message.message);
             setIncomingMsgs(msgArr);
             message.chat.type = 'private';
-            message.chat.pinned = false;
+            message.chat.muted = false;
             message.chat.unreadMessageCount = 0;
             message.chat.from = username;
             if (navigation.getParam('image')) {

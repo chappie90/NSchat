@@ -58,22 +58,10 @@ const chatReducer = (state, action) => {
       }
       
       updatedChat = updatedChat.sort((a, b) => new Date(b.date) - new Date(a.date));
-      updatedChat.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
       return { ...state, previousChats: updatedChat };
     case 'delete_chat':
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };
-    case 'pin_chat':
-      let newChats;
-      let pinnedChat = state.previousChats.find(p => p.chatId === action.payload.chatId);
-      pinnedChat.pinned = !action.payload.currentValue;
-      if (pinnedChat.pinned) {
-        newChats = [pinnedChat, ...state.previousChats.filter(item => item.chatId !== action.payload.chatId)];
-      } else {  
-        newChats = state.previousChats.sort((a, b) => new Date(b.date) - new Date(a.date));
-        newChats.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
-      }
-      return { ...state, previousChats: newChats };
     case 'mute_chat':
       const mutedChat = state.previousChats.map(item => {
         return item.chatId === action.payload.chatId ? { ...item, muted: !action.payload.currentValue } : item;
@@ -152,10 +140,6 @@ const getChats = dispatch => async ({ username }) => {
 
     const chats = response.data.chats.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    chats.sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
-
-    console.log(chats)
-
     dispatch({ type: 'get_chats', payload: chats });
   } catch (err) {
     console.log(err);
@@ -203,21 +187,6 @@ const toggleMuteChat = dispatch => async (username, chatId, type, currentValue) 
     }
 
     dispatch({ type: 'mute_chat', payload: { chatId, currentValue } });
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
-};
-
-const togglePinChat = dispatch => async (username, chatId, type, currentValue) => {
-  try {
-    const response = await chatApi.patch('/chat/pin', { username, chatId, type, currentValue });
-
-    if (!response.data) {
-      return;
-    }
-
-    dispatch({ type: 'pin_chat', payload: { chatId, currentValue }});
   } catch (err) {
     console.log(err);
     throw err;

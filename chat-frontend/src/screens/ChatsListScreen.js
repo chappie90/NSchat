@@ -498,7 +498,7 @@ const ChatsListScreen = ({ navigation }) => {
                       <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
                       {rowData.item.muted && (
                         <ScaleViewTriggerAnim>
-                          <Octicons style={{marginLeft: 5}} name="mute" size={20} color='lightgrey' >
+                          <Octicons style={{marginLeft: 5}} name="mute" size={20} color='lightgrey' />
                         </ScaleViewTriggerAnim>
                       )}
                     </View>

@@ -71,7 +71,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
   const [chatType, setChatType] = useState('');
-  const [chatId, setChatId] = useState('');
   const [previewImage, setPreviewImage] = useState('');
   const [markSendAsActive, setMarkSendAsActive] = useState(false);
   const [previewImageWidth, setPreviewImageWidth] = useState(null);
@@ -90,7 +89,6 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     setChatType(navigation.getParam('type'));
-    setChatId(navigation.getParam('chatId'));
     chatIdRef.current = navigation.getParam('chatId');
     navigation.setParams({ 
       openModal: openModalHandler,
@@ -127,16 +125,12 @@ const ChatDetailScreen = ({ navigation }) => {
       let recipient = recipient || navigation.getParam('username');
 
       socket.current.on('message', message => {
-        let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
-        // console.log('message ' + chatId)
         socket.current.emit('stop_typing', recipient); 
         if (mounted) {
           updateMessages({ chatId: message.chat.chatId, message: message.message });
         }
         if (message.message.user.name === username) {
-          // console.log('previousChats')
-          // console.log(previousChats)
-          if (chatId) {
+          if (chatIdRef.current) {
             setIncomingMsgs(prevState => prevState.map(msg => {
               return msg._id === message.message._id ? { ...msg, read: false } : msg;
             }));
@@ -159,10 +153,6 @@ const ChatDetailScreen = ({ navigation }) => {
               }
             }    
             addNewChat(message.chat);
-            // setChatId(message.chat.chatId);
-            // navigation.setParams({ 
-            //   chatId: message.chat.chatId
-            // });
           }
         }
         
@@ -184,7 +174,7 @@ const ChatDetailScreen = ({ navigation }) => {
       });
       socket.current.on('has_joined_chat', user => {
         let chatType =  chatType || navigation.getParam('type');
-        let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+        let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
         if (user === recipient) {
           markMessageAsRead({ user:recipient });
@@ -202,7 +192,8 @@ const ChatDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     let mounted = true;
-    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+    let chatId = navigation.getParam('chatId') || chatIdRef.current;
+
     setCurrentPage(1);
     setRecipient(navigation.getParam('username'));
 
@@ -223,7 +214,7 @@ const ChatDetailScreen = ({ navigation }) => {
     if (recipient && currentPage) {
       page = currentPage;
       let chatType =  chatType || navigation.getParam('type');
-      let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+      let chatId = navigation.getParam('chatId') || chatIdRef.current;
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
           if (mounted) {
@@ -238,9 +229,8 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [recipient]);
 
   useEffect(() => {
+    let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
-    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
-    
     if (!chatId) {
       return;
     }
@@ -308,7 +298,7 @@ const ChatDetailScreen = ({ navigation }) => {
       image: image,
     };
 
-    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+    let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
     const msgObj = {
       type: chatType,
@@ -334,7 +324,7 @@ const ChatDetailScreen = ({ navigation }) => {
     setLoadMoreHelper(true);
     let page = currentPage + 1; 
     let chatType =  chatType || navigation.getParam('type');
-    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+    let chatId = navigation.getParam('chatId') || chatIdRef.current;
     getMessages({ chatType, chatId, username, recipient, page })
       .then((messages) => {
         if (mounted) {
@@ -359,7 +349,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
     const msgObj = {
       type: chatType,
-      chatId: chatId,
+      chatId: chatIdRef.current,
       from: username,
       to: recipient,
       message,
@@ -718,8 +708,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const renderLoadEarlier = (props) => {
-    // let recipient = recipient || navigation.getParam('username');
-    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
+    let chatId = navigation.getParam('chatId') || chatIdRef.current;
     if (chat.hasOwnProperty(chatId) && (chat[chatId].length < 50 || allMessagesLoaded)) {
       return;
     }

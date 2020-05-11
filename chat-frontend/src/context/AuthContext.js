@@ -26,7 +26,6 @@ const authReducer = (state, action) => {
     case 'update_socket':
       return { ...state, socketState: action.payload };
     case 'set_statusbar_color':
-      console.log(action.payload)
       return { ...state, statusBarColor: action.payload };
     default: 
       return state;

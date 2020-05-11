@@ -27,13 +27,13 @@ const userSchema = new mongoose.Schema({
   privateChats: [
     {
       privateChat: { type: mongoose.Schema.Types.ObjectId, ref: 'PrivateChat' },
-      pinned: { type: Boolean, default: false }
+      muted: { type: Boolean, default: false }
     }
   ],
   groups: [
     {
       group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' },
-      pinned: { type: Boolean, default: false }
+      muted: { type: Boolean, default: false }
     }
   ],
   youtube: {

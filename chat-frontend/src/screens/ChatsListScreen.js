@@ -74,6 +74,7 @@ const ChatsListScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const rowTranslateAnimatedValues = useRef({}).current;
+  // const rowTranslateAnimatedHeightValues = useRef({}).current;
   const rowOpenValue = useRef(0);
   const isRowOpen = useRef(false);
   const screenWidth = Math.round(Dimensions.get('window').width);
@@ -115,10 +116,6 @@ const ChatsListScreen = ({ navigation }) => {
       AppState.removeEventListener('change', _handleAppStateChange);
     }  
   }, []);
-
-  useEffect(() =>{
-    // console.log(onlineContacts)
-  }, [onlineContacts])
 
   useEffect(() => {
     screen.current = currentScreen;
@@ -198,9 +195,14 @@ const ChatsListScreen = ({ navigation }) => {
     // if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
     //     rowTranslateAnimatedValues.constructor === Object) {
     // if (previousChats.length > 0) {
+    if (Object.keys(rowTranslateAnimatedValues).length !== previousChats.length) {
       previousChats.forEach((item, index) => {
         rowTranslateAnimatedValues[`${index}`] = { left: new Animated.Value(0), right: new Animated.Value(0) };
       });
+    }
+      // previousChats.forEach((item, index) => {
+      //   rowTranslateAnimatedHeightValues[`${index}`] = new Animated.Value(1);
+      // });
     // }
   }, [previousChats]);
 
@@ -351,16 +353,37 @@ const ChatsListScreen = ({ navigation }) => {
 
   const onRowOpen = (rowKey, rowMap, toValue) => {
     const listItem = previousChats[rowKey];
-    if (rowOpenValue.current < -200 && isRowOpen) {
-       deleteRow(rowKey, rowMap, listItem);
-    }
-    if (rowOpenValue.current > 200 && isRowOpen) {
-      muteChatHandler(rowKey, rowMap, listItem);
-    }
+    // if (rowOpenValue.current < -200 && isRowOpen) {
+    //    deleteRow(rowKey, rowMap, listItem);
+    // }
+    // if (rowOpenValue.current > 200 && isRowOpen) {
+    //   muteChatHandler(rowKey, rowMap, listItem);
+    // }
   };
 
   const onSwipeValueChange = (swipeData) => {
     const { key, value, isOpen } = swipeData;
+
+    // let animationIsRunning;
+
+    // if (
+    //     value < -Dimensions.get('window').width / 3 && !animationIsRunning
+    // ) {
+    //     animationIsRunning = true;
+    //     Animated.timing(rowTranslateAnimatedHeightValues[key], {
+    //         toValue: 0,
+    //         duration: 200,
+    //     }).start(() => {
+    //       console.log('deleted')
+    //         // const newData = [...previousChats];
+    //         // const prevIndex = previousChats.findIndex(item => item.key === key);
+    //         // newData.splice(prevIndex, 1);
+    //         // setListData(newData);
+    //         // // this.animationIsRunning = false;
+    //     });
+    // }
+
+
 
     rowOpenValue.current = value;
     isRowOpen.current = false;
@@ -559,8 +582,8 @@ const ChatsListScreen = ({ navigation }) => {
                       }
                     ] }}>
                     {data.item.muted ? 
-                      <Octicons name="unmute" size={30} color='#fff' />:
-                      <Octicons name="mute" size={30} color='#fff' />}
+                      <Octicons name="unmute" size={28} color='#fff' />:
+                      <Octicons name="mute" size={28} color='#fff' />}
                     {data.item.muted ? 
                       <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Unmute</HeadingText> :
                       <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Mute</HeadingText>}
@@ -588,7 +611,7 @@ const ChatsListScreen = ({ navigation }) => {
                     })) : (new Animated.Value(0)) 
                     }
                   ] }}>
-                    <Entypo name="trash" size={26} color="#fff" />
+                    <Entypo name="trash" size={24} color="#fff" />
                     <HeadingText style={{ flex: 1, color: '#fff', fontSize: 14 }}>Delete</HeadingText>
                 </Animated.View>
               </TouchableOpacity>

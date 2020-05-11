@@ -413,7 +413,6 @@ export const { Context, Provider } = createDataContext(
     deleteMessage,
     createGroup,
     resetChatState,
-    togglePinChat,
     toggleMuteChat,
     saveExpoToken,
     markMessageAsRead,

@@ -156,33 +156,39 @@ module.exports = function(io) {
           if (!Expo.isExpoPushToken(p.user.expoToken)) {
             console.log(`Push token ${p.user.expoToken} is not a valid Expo push token`);
           }
-          notifications.push({
-            to: p.user.expoToken,
-            sound: 'default',
-            title: from,
-            ttl: 2419200,
-            badge: badgeCount,
-            body: text ? `${from}: ${text}` : `${from} sent a photo`,
-            data: {
-             sender: group[0].name,
-             message: text ? `${from}: ${text}` : `${from} sent a photo`,
-             img: group[0].avatar.imagePath,
-             type: type,
-             chatId: chatId 
-           },
-          });
 
-          let chunks = expo.chunkPushNotifications(notifications);
+          const checkIfMuted = p.user.groups.filter(item => item.group == chatId);
 
-          (async () => {
-            for (let chunk of chunks) {
-              try {
-                let receipts = await expo.sendPushNotificationsAsync(chunk);
-              } catch (error) {
-                console.log(error);
+          if (checkIfMuted.length > 0 && !checkIfMuted[0].muted) {
+
+            notifications.push({
+              to: p.user.expoToken,
+              sound: 'default',
+              title: from,
+              ttl: 2419200,
+              badge: badgeCount,
+              body: text ? `${from}: ${text}` : `${from} sent a photo`,
+              data: {
+               sender: group[0].name,
+               message: text ? `${from}: ${text}` : `${from} sent a photo`,
+               img: group[0].avatar.imagePath,
+               type: type,
+               chatId: chatId 
+             },
+            });
+
+            let chunks = expo.chunkPushNotifications(notifications);
+
+            (async () => {
+              for (let chunk of chunks) {
+                try {
+                  let receipts = await expo.sendPushNotificationsAsync(chunk);
+                } catch (error) {
+                  console.log(error);
+                }
               }
-            }
-          })();
+            })();
+          }
         }
       }
      
@@ -257,7 +263,7 @@ module.exports = function(io) {
 
       expoPushTokens.push(tempUserId2[0].expoToken);
 
-      let privateChatId;
+      let privateChatId, newContact;
 
       const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
 
@@ -283,12 +289,7 @@ module.exports = function(io) {
 
         privateChatId = checkPrivateChat[0]._id;
 
-        console.log('second')
-        console.log(chatId)
         const isPrivateChat = await User.find({ username: username, 'privateChats.privateChat': chatId });
-
-        console.log(isPrivateChat)
-        console.log(isPrivateChat.length)
 
         if (isPrivateChat.length === 0) {
           const updateFromUserChats = await User.updateOne(
@@ -310,7 +311,7 @@ module.exports = function(io) {
 
       if (contactRecipient.length === 0) {
 
-      const newContact = await User.findOneAndUpdate(
+      newContact = await User.findOneAndUpdate(
           { username: to },
           { $addToSet: {
               contacts: {
@@ -323,6 +324,7 @@ module.exports = function(io) {
           }},
           { new: true }
         );
+
       }
 
       const myChat = await User.updateOne(
@@ -415,33 +417,42 @@ module.exports = function(io) {
         console.log(`Push token ${pushToken} is not a valid Expo push token`);
       }
 
-      notifications.push({
-        to: expoPushTokens[0],
-        sound: 'default',
-        title: from,
-        ttl: 2419200,
-        badge: badgeCount,
-        body: text ? text : `${from} sent a photo`,
-        data: {
-          sender: from, 
-          message: text ? text : `${from} sent a photo`,
-          img: recipientImage, 
-          type: type, 
-          chatId: chatId 
-        }
-      });
-
-      let chunks = expo.chunkPushNotifications(notifications);
-
-      (async () => {
-        for (let chunk of chunks) {
-          try {
-            let receipts = await expo.sendPushNotificationsAsync(chunk);
-          } catch (error) {
-            console.log(error);
+      let checkIfMuted;
+      if (newContact) {
+        checkIfMuted = newContact.privateChats.filter(item => item.privateChat == chatId);
+      } else {
+        checkIfMuted = tempUserId2[0].privateChats.filter(item => item.privateChat == chatId);
+      }
+      if (checkIfMuted.length > 0 && !checkIfMuted[0].muted) {
+        notifications.push({
+          to: expoPushTokens[0],
+          sound: 'default',
+          title: from,
+          ttl: 2419200,
+          badge: badgeCount,
+          body: text ? text : `${from} sent a photo`,
+          data: {
+            sender: from, 
+            message: text ? text : `${from} sent a photo`,
+            img: recipientImage, 
+            type: type, 
+            chatId: chatId 
           }
-        }
-      })();
+        });
+
+        let chunks = expo.chunkPushNotifications(notifications);
+
+        (async () => {
+          for (let chunk of chunks) {
+            try {
+              let receipts = await expo.sendPushNotificationsAsync(chunk);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        })();        
+      }
+
     }
 
     } catch(err) {

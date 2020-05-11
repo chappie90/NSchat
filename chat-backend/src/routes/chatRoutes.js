@@ -283,33 +283,33 @@ router.patch('/chat/delete', checkAuth, async (req, res) => {
   }
 });
 
-router.patch('/chat/pin', checkAuth, async (req, res) => {
+router.patch('/chat/mute', checkAuth, async (req, res) => {
   const { username, chatId, type, currentValue } = req.body;
-  let pinnedChat;
+  let mutedChat;
 
   try {
     if (type === 'group') {
-      pinnedChat = await User.update(
+      mutedChat = await User.update(
         { username: username, 'groups.group': chatId },
         { $set: {
-          'groups.$.pinned': !currentValue
+          'groups.$.muted': !currentValue
         } }
       );
     } else if (type === 'private') {
-      pinnedChat = await User.update(
+      mutedChat = await User.update(
         { username: username, 'privateChats.privateChat': chatId },
         { $set: {
-          'privateChats.$.pinned': !currentValue
+          'privateChats.$.muted': !currentValue
         } }
       );
     }
 
-    let response = pinnedChat.nModified > 0 ? true : false;
+    let response = mutedChat.nModified > 0 ? true : false;
 
     res.status(200).send(response);
   } catch (err) {
     console.log(err);
-    res.status(422).send({ error: 'Could not pin chat' });
+    res.status(422).send({ error: 'Could not mute chat' });
   }
 });
 

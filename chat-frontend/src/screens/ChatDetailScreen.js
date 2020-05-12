@@ -71,6 +71,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
   const [chatType, setChatType] = useState('');
+  const [loadEarlier, setLoadEarlier] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [markSendAsActive, setMarkSendAsActive] = useState(false);
   const [previewImageWidth, setPreviewImageWidth] = useState(null);
@@ -205,9 +206,11 @@ const ChatDetailScreen = ({ navigation }) => {
       if (chat[chatId].length > 50) {
         resetChatState(chatId);
         setIncomingMsgs(chat[chatId].slice(0, 50));
+        setLoadEarlier(true);
         return;
       }
       setIncomingMsgs(chat[chatId]);
+      setLoadEarlier(true);
       return;
     }
 
@@ -218,7 +221,8 @@ const ChatDetailScreen = ({ navigation }) => {
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
           if (mounted) {
-            setIncomingMsgs(messages); 
+            setIncomingMsgs(messages);
+            setLoadEarlier(true); 
           }         
       });
     }
@@ -709,6 +713,10 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const renderLoadEarlier = (props) => {
     let chatId = navigation.getParam('chatId') || chatIdRef.current;
+    if (!chatId) {
+      return;
+    }
+
     if (chat.hasOwnProperty(chatId) && (chat[chatId].length < 50 || allMessagesLoaded)) {
       return;
     }
@@ -805,7 +813,7 @@ const ChatDetailScreen = ({ navigation }) => {
               placeholderTextColor="#202020"
               renderBubble={renderBubble}
               renderAvatar={renderAvatar}
-              loadEarlier={true} // enables load earlier messages button
+              loadEarlier={loadEarlier} // enables load earlier messages button
               onLoadEarlier={() => {
                 loadMoreMessages();
               }}

@@ -20,13 +20,10 @@ export function getTabBarHeight() {
 }
 
 export function TabBarComponent({ navigation }) {
-  const activeTab = useRef('ChatsList');
+  // const activeTab = useRef('ChatsList');
+ let activeTab = getActiveRouteState(navigation.state).routeName;
 
-  useEffect(() => {
-    activeTab.current = getActiveRouteState(navigation.state);
-  }, [navigation.state]);
-
-  if (activeTab.current === 'ChatDetail') {
+  if (activeTab === 'ChatDetail') {
     return <View></View>;
   }
 
@@ -46,36 +43,36 @@ export function TabBarComponent({ navigation }) {
     >
       <TouchableWithoutFeedback onPress={() => navigation.navigate('ChatsList')}>
         <View style={{ height: 44, alignItems: 'center', justifyContent: 'flex-end' }}>
-          <ChatsNavigatorTab color={ activeTab.current === 'ChatsList' ? Colors.primary : '#fff'} />
+          <ChatsNavigatorTab color={ activeTab === 'ChatsList' ? Colors.primary : '#fff'} />
           <BodyText 
             style={{ 
               marginTop: 2, 
               fontSize: 12, 
-              color: activeTab.current === 'ChatsList' ? Colors.primary : '#fff' }}>
+              color: activeTab === 'ChatsList' ? Colors.primary : '#fff' }}>
             Chats
           </BodyText>
         </View>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback onPress={() => navigation.navigate('ContactsList')}>
         <View style={{ height: 44, justifyContent: 'flex-end', alignItems: 'center' }}>
-          <FontAwesome5 color={ activeTab.current === 'ContactsList' ? Colors.primary : '#fff'} name="user-friends" size={22} />
+          <FontAwesome5 color={ activeTab === 'ContactsList' ? Colors.primary : '#fff'} name="user-friends" size={22} />
           <BodyText 
             style={{
               marginTop: 2, 
               fontSize: 12, 
-              color: activeTab.current === 'ContactsList' ? Colors.primary : '#fff' }}>
+              color: activeTab === 'ContactsList' ? Colors.primary : '#fff' }}>
             Contacts
           </BodyText>
         </View>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback onPress={() => navigation.navigate('Account')}>
         <View style={{ height: 44, justifyContent: 'flex-end', alignItems: 'center'  }}>
-          <MaterialIcons color={ activeTab.current === 'Account' ? Colors.primary : '#fff' } name="account-balance" size={22} />
+          <MaterialIcons color={ activeTab === 'Account' ? Colors.primary : '#fff' } name="account-balance" size={22} />
           <BodyText
             style={{ 
               marginTop: 2, 
               fontSize: 12, 
-              color:activeTab.current === 'Account' ? Colors.primary : '#fff' }}>
+              color:activeTab === 'Account' ? Colors.primary : '#fff' }}>
             Account
           </BodyText>
         </View>

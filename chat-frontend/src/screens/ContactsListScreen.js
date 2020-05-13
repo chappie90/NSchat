@@ -126,7 +126,8 @@ const ContactsListScreen = ({ navigation }) => {
                         username: rowData.item.user.username,
                         image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
                         type: 'private',
-                        chatId: chat.length > 0 ? chat[0].chatId : null
+                        chatId: chat.length > 0 ? chat[0].chatId : null,
+                        origin: 'ContactsList'
                       })
                     }}>
                     <View 
@@ -214,7 +215,8 @@ const ContactsListScreen = ({ navigation }) => {
                           username: rowData.item.user.username,
                           image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
                           type: 'private',
-                          chatId: chat.length > 0 ? chat[0].chatId : null
+                          chatId: chat.length > 0 ? chat[0].chatId : null,
+                          origin: 'ContactsList'
                         })
                       }}>
                       <View 

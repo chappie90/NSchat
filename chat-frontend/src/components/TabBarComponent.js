@@ -1,6 +1,12 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, TouchableWithoutFeedback } from 'react-native';
 import { BottomTabBar } from 'react-navigation-tabs';
+import { MaterialIcons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+
+import Colors from '../constants/colors';
+import BodyText from './BodyText';
+import ChatsNavigatorTab from './ChatsNavigatorTab';
+import { getActiveRouteState } from '../helpers/getCurrentRoute';
 
 let tabBarLayout = {
   x: 0,
@@ -13,15 +19,68 @@ export function getTabBarHeight() {
   return tabBarLayout.height;
 }
 
-export function TabBarComponent(props) {
+export function TabBarComponent({ navigation }) {
+  const activeTab = useRef('ChatsList');
+
+  useEffect(() => {
+    activeTab.current = getActiveRouteState(navigation.state);
+  }, [navigation.state]);
+
+  if (activeTab.current === 'ChatDetail') {
+    return <View></View>;
+  }
+
   return (
     <View
+      style={{ 
+        backgroundColor: '#202020', 
+        flexDirection: 'row', 
+        alignItems: 'flex-end', 
+        justifyContent: 'space-around',
+        height: 50,
+        paddingVertical: 2 }}
       collapsable={false}
       onLayout={(event) => {
         tabBarLayout = event.nativeEvent.layout;
       }}
     >
-      <BottomTabBar {...props} />
+      <TouchableWithoutFeedback onPress={() => navigation.navigate('ChatsList')}>
+        <View style={{ height: 44, alignItems: 'center', justifyContent: 'flex-end' }}>
+          <ChatsNavigatorTab color={ activeTab.current === 'ChatsList' ? Colors.primary : '#fff'} />
+          <BodyText 
+            style={{ 
+              marginTop: 2, 
+              fontSize: 12, 
+              color: activeTab.current === 'ChatsList' ? Colors.primary : '#fff' }}>
+            Chats
+          </BodyText>
+        </View>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={() => navigation.navigate('ContactsList')}>
+        <View style={{ height: 44, justifyContent: 'flex-end', alignItems: 'center' }}>
+          <FontAwesome5 color={ activeTab.current === 'ContactsList' ? Colors.primary : '#fff'} name="user-friends" size={22} />
+          <BodyText 
+            style={{
+              marginTop: 2, 
+              fontSize: 12, 
+              color: activeTab.current === 'ContactsList' ? Colors.primary : '#fff' }}>
+            Contacts
+          </BodyText>
+        </View>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={() => navigation.navigate('Account')}>
+        <View style={{ height: 44, justifyContent: 'flex-end', alignItems: 'center'  }}>
+          <MaterialIcons color={ activeTab.current === 'Account' ? Colors.primary : '#fff' } name="account-balance" size={22} />
+          <BodyText
+            style={{ 
+              marginTop: 2, 
+              fontSize: 12, 
+              color:activeTab.current === 'Account' ? Colors.primary : '#fff' }}>
+            Account
+          </BodyText>
+        </View>
+      </TouchableWithoutFeedback>
+     {/* <BottomTabBar {...props} /> */}
     </View>
   );
 }

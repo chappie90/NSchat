@@ -23,7 +23,7 @@ const ChatsNavigatorTab = props => {
           containerStyle={{ position: 'absolute', top: 8, right: -10, zIndex: 1 }} 
           badgeStyle={{ backgroundColor: Colors.tertiary }} />
       )}
-      <MaterialIcons color={props.color} name="chat" size={26} />
+      <MaterialIcons color={props.color} name="chat" size={22} />
     </View>
   );
 };

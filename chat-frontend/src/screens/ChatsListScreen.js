@@ -104,6 +104,7 @@ const ChatsListScreen = ({ navigation }) => {
   //     },
   //   }), []);
   useEffect(() => {
+    console.log('chats list mounted')
     // console.log(username)
     registerForPushNotificationsAsync();
     getChats({ username }).then(res => {
@@ -687,7 +688,7 @@ const ChatsListScreen = ({ navigation }) => {
       <View style={styles.headerContainer}>
         <HeadingText style={styles.header}>My Chats</HeadingText>
         <TouchableOpacity onPress={() => setNewGroupMode(true)}>
-          <MaterialIcons style={{ marginBottom: 10 }} name="group" size={36} color="#fff" />
+          <MaterialIcons style={{ marginBottom: 10 }} name="group-add" size={38} color="#fff" />
         </TouchableOpacity>   
       </View>
 

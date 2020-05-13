@@ -82,23 +82,13 @@ const ChatDetailScreen = ({ navigation }) => {
   const isBackgroundYoutube = useRef(false);
   const socket = useRef(null);
   const chatIdRef = useRef(null);
+  const [chatId, setChatId] = useState(null);
+  const previousRoute = useRef(null);
   const [uuid, setUuid] = useState('');
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
   let mounted = true;
-
-  useEffect(() => {
-    setChatType(navigation.getParam('type'));
-    chatIdRef.current = navigation.getParam('chatId');
-    navigation.setParams({ 
-      openModal: openModalHandler,
-      openYoutube: openYoutubeHandler,
-      isVisibleYou: isVisibleYoutube.current,
-      setAsBackgroundYoutube: youtubeBackgroundHandler,
-      isBackgroundYou: isBackgroundYoutube.current 
-    });
-  }, []);
 
   useEffect(() => {
     if (!Object.keys(group).length === 0 && group.constructor === Object) {
@@ -192,47 +182,6 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [socketState]);
 
   useEffect(() => {
-    let mounted = true;
-    let chatId = navigation.getParam('chatId') || chatIdRef.current;
-
-    setCurrentPage(1);
-    setRecipient(navigation.getParam('username'));
-
-    if (!chatId) {
-      return;
-    }
-
-    if (chat.hasOwnProperty(chatId)) {
-      if (chat[chatId].length > 50) {
-        resetChatState(chatId);
-        setIncomingMsgs(chat[chatId].slice(0, 50));
-        setLoadEarlier(true);
-        return;
-      }
-      setIncomingMsgs(chat[chatId]);
-      setLoadEarlier(true);
-      return;
-    }
-
-    if (recipient && currentPage) {
-      page = currentPage;
-      let chatType =  chatType || navigation.getParam('type');
-      let chatId = navigation.getParam('chatId') || chatIdRef.current;
-      getMessages({ chatType, chatId, username, recipient, page })
-        .then((messages) => {
-          if (mounted) {
-            setIncomingMsgs(messages);
-            setLoadEarlier(true); 
-          }         
-      });
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, [recipient]);
-
-  useEffect(() => {
     let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
     if (!chatId) {
@@ -252,11 +201,56 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const willBlurHandler = () => {
+    setIncomingMsgs([]);
     // resetChatState();
   };
 
   const willFocusHandler = () => {
+    setChatType(navigation.getParam('type'));
+    setRecipient(navigation.getParam('username'));
+    let recipient = navigation.getParam('username');
+    setChatId(navigation.getParam('chatId'));
+    let chatId = navigation.getParam('chatId');
+    previousRoute.current = navigation.getParam('origin');
+
+    navigation.setParams({ 
+      openModal: openModalHandler,
+      openYoutube: openYoutubeHandler,
+      isVisibleYou: isVisibleYoutube.current,
+      setAsBackgroundYoutube: youtubeBackgroundHandler,
+      isBackgroundYou: isBackgroundYoutube.current,
+      goBack: previousRoute.current 
+    });
+
     setStatusBarColor(2);
+
+    setCurrentPage(1);
+    let page = 1;
+
+    if (!chatId) {
+      return;
+    }
+
+    if (chat.hasOwnProperty(chatId)) {
+      if (chat[chatId].length > 50) {
+        resetChatState(chatId);
+        setIncomingMsgs(chat[chatId].slice(0, 50));
+        setLoadEarlier(true);
+        return;
+      }
+      setIncomingMsgs(chat[chatId]);
+      setLoadEarlier(true);
+      return;
+    }
+
+    if (recipient) {
+      let chatType =  chatType || navigation.getParam('type');
+      getMessages({ chatType, chatId, username, recipient, page })
+        .then((messages) => {
+          setIncomingMsgs(messages);
+          setLoadEarlier(true);      
+      });
+    }
   }
 
   const openModalHandler = () => {
@@ -810,6 +804,7 @@ const ChatDetailScreen = ({ navigation }) => {
               //   }
               // }}
               textInputStyle={styles.input}
+              // infiniteScroll={true}
               placeholderTextColor="#202020"
               renderBubble={renderBubble}
               renderAvatar={renderAvatar}
@@ -835,9 +830,9 @@ const ChatDetailScreen = ({ navigation }) => {
               keyboardShouldPersistTaps={'handled'}
               onInputTextChanged={startTypingHandler}
               //isLoadingEarlier={true}
-              bottomOffset={ Platform.OS === 'android' ? null : 46 }
+              // bottomOffset={ Platform.OS === 'android' ? null : null }
               scrollToBottom={true}
-              // isAnimated
+              isAnimated={false}
               scrollToBottomComponent={() => {
                 return (
                   <View style={styles.scrollContainer}>
@@ -890,7 +885,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
 
   return {
     headerLeft: (
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity onPress={() => navigation.navigate(params.goBack)}>
         <Ionicons
           name="ios-arrow-back" 
           size={34} 

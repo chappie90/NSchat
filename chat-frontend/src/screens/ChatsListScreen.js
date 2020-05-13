@@ -257,7 +257,8 @@ const ChatsListScreen = ({ navigation }) => {
         username: notificationState.current.data.sender,
         image: notificationState.current.data.img,
         type: notificationState.current.data.type,
-        chatId: notificationState.current.data.chatId
+        chatId: notificationState.current.data.chatId,
+        origin: 'ChatsList'
       });
     }
 
@@ -270,7 +271,8 @@ const ChatsListScreen = ({ navigation }) => {
         username: notificationState.current.data.sender,
         image: notificationState.current.data.img,
         type: notificationState.current.data.type,
-        chatId: notificationState.current.data.chatId
+        chatId: notificationState.current.data.chatId,
+        origin: 'ChatsList'
       });
     }
 
@@ -496,7 +498,8 @@ const ChatsListScreen = ({ navigation }) => {
                   username: rowData.item.contact,
                   image: rowData.item.profile ? rowData.item.profile.imgPath : '',
                   type: rowData.item.type,
-                  chatId: rowData.item.chatId
+                  chatId: rowData.item.chatId,
+                  origin: 'ChatsList'
                 });
             }}>
             <View>

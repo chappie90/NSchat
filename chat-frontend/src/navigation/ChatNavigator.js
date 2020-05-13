@@ -15,9 +15,90 @@ import ChatDetailScreen from '../screens/ChatDetailScreen';
 import ChatsNavigatorTab from '../components/ChatsNavigatorTab';
 import { TabBarComponent } from '../components/TabBarComponent';
 
-const ChatsFlow = createStackNavigator(
+// const ChatsFlow = createStackNavigator(
+//   {
+//     ChatsList: ChatsListScreen,
+//     ChatDetail: ChatDetailScreen
+//   },
+//   {
+//     defaultNavigationOptions: {
+//       headerStyle: {
+//         height: 50
+//       },
+//       // headerMode: 'screen'
+//     }
+//   }
+// );
+
+// ChatsFlow.navigationOptions = {
+//   title: 'Chats',
+//   tabBarIcon: ({ tintColor }) => (
+//     <ChatsNavigatorTab color={tintColor} />
+//   ),
+//   tabBarOptions: {
+//     inactiveTintColor: 'white',
+//     activeTintColor: Colors.primary, 
+//     keyboardHidesTabBar: false,
+//     style: {
+//       backgroundColor: '#202020'
+//     },
+//     labelStyle: {
+//       fontFamily: 'open-sans',
+//     }  
+//   }
+// };
+
+// ContactsListFlow.navigationOptions = {
+//   title: 'Contacts',
+//   tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={26} />,
+//   tabBarOptions: {
+//     inactiveTintColor: 'white',
+//     activeTintColor: Colors.primary,
+//     keyboardHidesTabBar: false,
+//     style: {
+//       backgroundColor: '#202020'
+//     },
+//     labelStyle: {
+//       fontFamily: 'open-sans',
+//     }
+//   }
+// };
+
+// AccountScreen.navigationOptions = {
+//   title: 'Account',
+//   tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={26} />,
+//   tabBarOptions: {
+//     inactiveTintColor: 'white',
+//     activeTintColor: Colors.primary,
+//     style: {
+//       backgroundColor: '#202020'
+//     },
+//     labelStyle: {
+//       fontFamily: 'open-sans',
+//     }
+//   }
+// };
+
+// ChatsDetailFlow.navigationOptions = ({ navigation }) => {
+//   let tabBarVisible;
+//   if (navigation.state.routes.length > 1) {
+//     navigation.state.routes.map(route => {
+//       console.log(route.routeName)
+//       if (route.routeName === 'ChatsDetailFlow') {
+//         tabBarVisible = false;
+//       } else {
+//         tabBarVisible = true;
+//       }
+//     })
+//   }
+
+//   return {
+//     tabBarVisible
+//   }
+// };
+
+const ChatDetailStack = createStackNavigator(
   {
-    ChatsList: ChatsListScreen,
     ChatDetail: ChatDetailScreen
   },
   {
@@ -25,87 +106,22 @@ const ChatsFlow = createStackNavigator(
       headerStyle: {
         height: 50
       },
-      // headerMode: 'screen'
     }
   }
 );
-
-ChatsFlow.navigationOptions = {
-  title: 'Chats',
-  tabBarIcon: ({ tintColor }) => (
-    <ChatsNavigatorTab color={tintColor} />
-  ),
-  tabBarOptions: {
-    inactiveTintColor: 'white',
-    activeTintColor: Colors.primary, 
-    keyboardHidesTabBar: false,
-    style: {
-      backgroundColor: '#202020'
-    },
-    labelStyle: {
-      fontFamily: 'open-sans',
-    }  
-  }
-};
-
-const ContactsListFlow = createStackNavigator(
-  {
-    ContactsList: ContactsListScreen,
-    ChatDetail: ChatDetailScreen
-  },
-  {
-    defaultNavigationOptions: {
-      headerStyle: {
-        height: 50
-      },
-      // headerTitleAlign: 'center',
-      // headerLayoutPreset: 'center'
-      // headerMode: 'screen'
-    }
-  }
-);
-
-ContactsListFlow.navigationOptions = {
-  title: 'Contacts',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="import-contacts" size={26} />,
-  tabBarOptions: {
-    inactiveTintColor: 'white',
-    activeTintColor: Colors.primary,
-    keyboardHidesTabBar: false,
-    style: {
-      backgroundColor: '#202020'
-    },
-    labelStyle: {
-      fontFamily: 'open-sans',
-    }
-  }
-};
-
-AccountScreen.navigationOptions = {
-  title: 'Account',
-  tabBarIcon: ({ tintColor }) => <MaterialIcons color={tintColor} name="account-box" size={26} />,
-  tabBarOptions: {
-    inactiveTintColor: 'white',
-    activeTintColor: Colors.primary,
-    style: {
-      backgroundColor: '#202020'
-    },
-    labelStyle: {
-      fontFamily: 'open-sans',
-    } 
-  }
-};
 
 const BottomTabNavigator = createBottomTabNavigator(
   {
-    ChatsFlow,
-    ContactsListFlow,
+    ChatsList: ChatsListScreen,
+    ContactsList: ContactsListScreen,
     Account: AccountScreen,
+    ChatDetailStack: ChatDetailStack
   },
   {
-    tabBarComponent: TabBarComponent
+    tabBarComponent: TabBarComponent,
   }
 );
+
 
 const ChatNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,

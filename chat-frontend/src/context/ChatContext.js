@@ -35,7 +35,13 @@ const chatReducer = (state, action) => {
     case 'add_new_chat':
       return { ...state, previousChats: [ ...state.previousChats, action.payload ] };
     case 'update_chat_state':
+    console.log('update chat context')
+    console.log(state.previousChats)
+    console.log(action.payload)
       let updatedChat;
+      if (state.previousChats.find(chat => chat.chatId === action.payload.chatId)) {
+        console.log('found')
+      }
       if (action.payload.updateUnreadMessageCount) {
         updatedChat = state.previousChats.map(item => {
           return item.chatId === action.payload.chat.chatId ?

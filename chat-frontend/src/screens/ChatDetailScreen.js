@@ -90,6 +90,7 @@ const ChatDetailScreen = ({ navigation }) => {
   let stopTypingTimeout;
   let giftedChatRef;
   let mounted = true;
+  const screen = useRef(null);
 
   useEffect(() => {
     if (!Object.keys(group).length === 0 && group.constructor === Object) {
@@ -101,86 +102,8 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [group]);
 
   useEffect(() => {
-    getCurrentScreen(navigation.state.routeName);
-
-    return () => {
-      getCurrentScreen(null);
-    };
+    screen.current = currentScreen;
   }, [currentScreen]);
-
-  useEffect(() => {
-    let mounted = true;
-
-    if (socketState) {
-      socket.current = socketState; 
-
-      socket.current.on('message', message => {
-        let recipient = recipient || navigation.getParam('username');
-
-        socket.current.emit('stop_typing', recipient); 
-        if (mounted) {
-          updateMessages({ chatId: message.chat.chatId, message: message.message });
-        }
-        if (message.message.user.name === username) {
-          if (chatIdRef.current) {
-            setIncomingMsgs(prevState => prevState.map(msg => {
-              return msg._id === message.message._id ? { ...msg, read: false } : msg;
-            }));
-
-            updateChatState(message.chat);
-          } else {
-            chatIdRef.current = message.chat.chatId;
-            let msgArr = [];
-            msgArr.push(message.message);
-            setIncomingMsgs(msgArr);
-            message.chat.type = 'private';
-            message.chat.muted = false;
-            message.chat.unreadMessageCount = 0;
-            message.chat.from = username;
-            if (navigation.getParam('image')) {
-              message.chat = {
-                profile: {
-                  imgPath: navigation.getParam('image')
-                }
-              }
-            }    
-            addNewChat(message.chat);
-          }
-        }
-        
-        if (message.message.user.name === recipient) {
-          updateChatState(message.chat);
-          socket.current.emit('join_chat', { username, recipient });
-        }
-      });
-      socket.current.on('is_typing', () => {
-        navigation.setParams({ isTyping: 'is typing...' });
-      });
-      socket.current.on('is_not_typing', () => {
-        navigation.setParams({ isTyping: '' });
-      });
-      socket.current.on('message_deleted', data => {
-        if (username === data.recipient) {
-          deleteMessageState({ user: recipient, messageId: data.selectedMessage._id })
-        }
-      });
-      socket.current.on('has_joined_chat', user => {
-        let chatType =  chatType || navigation.getParam('type');
-        let chatId = navigation.getParam('chatId') || chatIdRef.current;
-
-        if (user === recipient) {
-          markMessageAsRead({ user:recipient });
-        } 
-      });
-    }
-
-    return () => {
-      mounted = false;
-      if (socket.current) {
-        socket.current.removeAllListeners();
-      }
-    };
-  }, [socketState]);
 
   useEffect(() => {
     let chatId = navigation.getParam('chatId') || chatIdRef.current;
@@ -234,6 +157,7 @@ const ChatDetailScreen = ({ navigation }) => {
       goBack: previousRoute.current 
     });
 
+    getCurrentScreen(navigation.state.routeName);
     setStatusBarColor(2);
 
     setCurrentPage(1);

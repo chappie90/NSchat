@@ -806,13 +806,13 @@ const styles = StyleSheet.create({
   },
   badge: {
     backgroundColor: '#32CD32', 
-    width: 15, 
-    height: 15, 
+    width: 16, 
+    height: 16, 
     borderRadius: 10, 
     borderWidth: 2, 
     borderColor: 'white',
     position: 'absolute', 
-    top: 32, 
+    top: 42, 
     left: 46
   },
   unreadBadge: {

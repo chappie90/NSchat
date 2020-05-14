@@ -396,8 +396,8 @@ const styles = StyleSheet.create({
   },
   badge: {
    backgroundColor: '#32CD32', 
-    width: 15, 
-    height: 15, 
+    width: 16, 
+    height: 16, 
     borderRadius: 10, 
     borderWidth: 2, 
     borderColor: 'white'
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     badgeContainer: {
     position: 'absolute', 
     top: 35, 
-    left: 50
+    left: 47
   },
    rowBack: {
     alignItems: 'center',

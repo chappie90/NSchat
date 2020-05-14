@@ -106,6 +106,63 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [currentScreen]);
 
   useEffect(() => {
+    if (socketState) {
+      socket.current = socketState; 
+
+      socket.current.on('message', message => {
+        let recipient = recipient || navigation.getParam('username');
+
+        socket.current.emit('stop_typing', recipient); 
+        if (mounted) {
+          updateMessages({ chatId: message.chat.chatId, message: message.message });
+        }
+        if (message.message.user.name === username) {
+          if (chatIdRef.current) {
+            setIncomingMsgs(prevState => prevState.map(msg => {
+              return msg._id === message.message._id ? { ...msg, read: false } : msg;
+            }));
+
+            updateChatState(message.chat);
+          } else {
+            chatIdRef.current = message.chat.chatId;
+            let msgArr = [];
+            msgArr.push(message.message);
+            setIncomingMsgs(msgArr);
+            message.chat.type = 'private';
+            message.chat.muted = false;
+            message.chat.unreadMessageCount = 0;
+            message.chat.from = username;
+            if (navigation.getParam('image')) {
+              message.chat = {
+                profile: {
+                  imgPath: navigation.getParam('image')
+                }
+              }
+            }    
+            addNewChat(message.chat);
+          }
+        }
+        
+        if (message.message.user.name === recipient) {
+          if (screen.current === 'ChatDetail') {
+            updateChatState(message.chat);
+          } 
+          socket.current.emit('join_chat', { username, recipient });
+        }
+      });
+     
+      socket.current.on('has_joined_chat', user => {
+        let chatType =  chatType || navigation.getParam('type');
+        let chatId = navigation.getParam('chatId') || chatIdRef.current;
+
+        if (user === recipient) {
+          markMessageAsRead({ user:recipient });
+        } 
+      });
+    }
+  }, [socketState]);
+
+  useEffect(() => {
     let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
     if (!chatId) {
@@ -288,8 +345,6 @@ const ChatDetailScreen = ({ navigation }) => {
       to: recipient,
       message,
     };
-
-    console.log(msgObj)
 
     if (showReplyBox) {
       msgObj.replyTo = {

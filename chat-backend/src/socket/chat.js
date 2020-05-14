@@ -259,6 +259,7 @@ module.exports = function(io) {
       );
 
       const badgeCount = tempUserId2[0].badgeCount + 1;
+      const senderImage = tempUserId[0].profile.imgPath;
       const recipientImage = tempUserId2[0].profile.imgPath;
 
       expoPushTokens.push(tempUserId2[0].expoToken);
@@ -384,7 +385,8 @@ module.exports = function(io) {
         chatId: privateChatId,
         contact: from,
         date: createdAt,
-        text
+        text, 
+        profile: senderImage
       };
 
       const returnMsgUser = 

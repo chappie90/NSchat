@@ -35,14 +35,21 @@ const chatReducer = (state, action) => {
     case 'add_new_chat':
       return { ...state, previousChats: [ ...state.previousChats, action.payload ] };
     case 'update_chat_state':
-    console.log('update chat context')
-    console.log(state.previousChats)
-    console.log(action.payload)
       let updatedChat;
-      if (state.previousChats.find(chat => chat.chatId === action.payload.chatId)) {
-        console.log('found')
-      }
-      if (action.payload.updateUnreadMessageCount) {
+      if (action.payload.chat && !state.previousChats.find(chat => chat.chatId === action.payload.chat.chatId)) {
+        updatedChat = {
+          chatId: action.payload.chat.chatId,
+          contact: action.payload.chat.contact,
+          date: action.payload.chat.date,
+          text: action.payload.chat.text,
+          type: 'private',
+          muted: false,
+          profile: action.payload.chat.profile,
+          unreadMessageCount: 1
+        };
+        return { ...state, previousChats: [ ...state.previousChats, updatedChat ]}; 
+      } else {
+         if (action.payload.updateUnreadMessageCount) {
         updatedChat = state.previousChats.map(item => {
           return item.chatId === action.payload.chat.chatId ?
             { ...item,
@@ -62,9 +69,9 @@ const chatReducer = (state, action) => {
             item
         });
       }
-      
       updatedChat = updatedChat.sort((a, b) => new Date(b.date) - new Date(a.date));
       return { ...state, previousChats: updatedChat };
+    }
     case 'delete_chat':
       const updatedChats = state.previousChats.filter(item => item.chatId !== action.payload );
       return { ...state, previousChats: updatedChats };

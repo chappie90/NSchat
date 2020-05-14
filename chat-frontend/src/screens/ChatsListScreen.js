@@ -168,108 +168,32 @@ const ChatsListScreen = ({ navigation }) => {
         userIsOffline(user);
       });
 
-
-      if (screen.current !== 'ChatDetail') {
-        socket.current.on('message', message => {
-
-           // message.chat.type = 'private';
-           //    message.chat.muted = false;
-           //    message.chat.unreadMessageCount = 0;
-           //    message.chat.from = username;
-           //    if (navigation.getParam('image')) {
-           //      message.chat = {
-           //        profile: {
-           //          imgPath: navigation.getParam('image')
-           //        }
-           //      }
-           //    }    
-           //    addNewChat(message.chat);
-          // console.log(message)
-          if (mounted) {
-            if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
-              // console.log('fired')
-              updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
-              // updateMessages({ user: message.message.user.name, message: message.message });
-            }       
-          }
-        });
-      }
-
-      if (screen.current === 'ChatsList') {
-        socket.current.on('is_typing', username => {
-          setIsTyping(true);
-          setTypingUser(username);
-        });
-        socket.current.on('is_not_typing', () => {
-          setIsTyping(false);
-          setTypingUser(null);
-        });
-        socket.current.on('new_group', () => {
-          getChats({ username });
-        });
-      }
-      
-      if (screen.current === 'ChatDetail') {
-          socket.current.on('message', message => {
-            let recipient = recipient || navigation.getParam('username');
-
-            socket.current.emit('stop_typing', recipient); 
-            if (mounted) {
-              updateMessages({ chatId: message.chat.chatId, message: message.message });
-            }
-            if (message.message.user.name === username) {
-              if (chatIdRef.current) {
-                setIncomingMsgs(prevState => prevState.map(msg => {
-                  return msg._id === message.message._id ? { ...msg, read: false } : msg;
-                }));
-
-                updateChatState(message.chat);
-              } else {
-                chatIdRef.current = message.chat.chatId;
-                let msgArr = [];
-                msgArr.push(message.message);
-                setIncomingMsgs(msgArr);
-                message.chat.type = 'private';
-                message.chat.muted = false;
-                message.chat.unreadMessageCount = 0;
-                message.chat.from = username;
-                if (navigation.getParam('image')) {
-                  message.chat = {
-                    profile: {
-                      imgPath: navigation.getParam('image')
-                    }
-                  }
-                }    
-                addNewChat(message.chat);
-              }
-            }
-            
-            if (message.message.user.name === recipient) {
-              updateChatState(message.chat);
-              socket.current.emit('join_chat', { username, recipient });
-            }
-          });
-         socket.current.on('is_typing', () => {
-          navigation.setParams({ isTyping: 'is typing...' });
-        });
-        socket.current.on('is_not_typing', () => {
-          navigation.setParams({ isTyping: '' });
-        });
-        socket.current.on('message_deleted', data => {
-          if (username === data.recipient) {
-            deleteMessageState({ user: recipient, messageId: data.selectedMessage._id })
-          }
-        });
-        socket.current.on('has_joined_chat', user => {
-          let chatType =  chatType || navigation.getParam('type');
-          let chatId = navigation.getParam('chatId') || chatIdRef.current;
-
-          if (user === recipient) {
-            markMessageAsRead({ user:recipient });
-          } 
-        });
-      }
-      
+      socket.current.on('message', message => {
+        // if (navigation.getParam('image')) {
+        //   message.chat = {
+        //     profile: {
+        //       imgPath: navigation.getParam('image')
+        //     }
+        //   }
+        // }    
+        if (mounted) {
+          if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
+            updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
+            // updateMessages({ user: message.message.user.name, message: message.message });
+          }       
+        }
+      });
+      socket.current.on('is_typing', username => {
+        setIsTyping(true);
+        setTypingUser(username);
+      });
+      socket.current.on('is_not_typing', () => {
+        setIsTyping(false);
+        setTypingUser(null);
+      });
+      socket.current.on('new_group', () => {
+        getChats({ username });
+      });
     }
 
     return () => {

@@ -85,6 +85,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [chatId, setChatId] = useState(null);
   const previousRoute = useRef(null);
   const [uuid, setUuid] = useState('');
+  const [fadeAnim, setFadeAnim] = useState(new Animated.Value(0));
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
@@ -113,9 +114,9 @@ const ChatDetailScreen = ({ navigation }) => {
     if (socketState) {
       socket.current = socketState; 
 
-      let recipient = recipient || navigation.getParam('username');
-
       socket.current.on('message', message => {
+        let recipient = recipient || navigation.getParam('username');
+
         socket.current.emit('stop_typing', recipient); 
         if (mounted) {
           updateMessages({ chatId: message.chat.chatId, message: message.message });
@@ -202,15 +203,26 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const willBlurHandler = () => {
     setIncomingMsgs([]);
+    setFadeAnim(new Animated.Value(0));
     // resetChatState();
   };
 
   const willFocusHandler = () => {
-    setChatType(navigation.getParam('type'));
-    setRecipient(navigation.getParam('username'));
+    Animated.timing(
+      fadeAnim,
+      {
+        toValue: 1,
+        duration: 50,
+        delay: 50
+      }
+    ).start();
+
     let recipient = navigation.getParam('username');
-    setChatId(navigation.getParam('chatId'));
-    let chatId = navigation.getParam('chatId');
+    setRecipient(recipient);
+    let chatType = navigation.getParam('type');
+    setChatType(chatType);
+    chatIdRef.current = navigation.getParam('chatId');
+    let chatId = chatIdRef.current;
     previousRoute.current = navigation.getParam('origin');
 
     navigation.setParams({ 
@@ -244,7 +256,7 @@ const ChatDetailScreen = ({ navigation }) => {
     }
 
     if (recipient) {
-      let chatType =  chatType || navigation.getParam('type');
+      let chatType = navigation.getParam('type');
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
           setIncomingMsgs(messages);
@@ -296,7 +308,7 @@ const ChatDetailScreen = ({ navigation }) => {
       image: image,
     };
 
-    let chatId = navigation.getParam('chatId') || chatIdRef.current;
+    let chatId = chatId || navigation.getParam('chatId') || chatIdRef.current;
 
     const msgObj = {
       type: chatType,
@@ -352,6 +364,8 @@ const ChatDetailScreen = ({ navigation }) => {
       to: recipient,
       message,
     };
+
+    console.log(msgObj)
 
     if (showReplyBox) {
       msgObj.replyTo = {
@@ -790,6 +804,9 @@ const ChatDetailScreen = ({ navigation }) => {
             </TouchableWithoutFeedback>
          </Modal>
         <GroupSettingsScreen navigation={navigation} visible={groupSettingsModal} closeModal={closeModalHandler} />
+          <Animated.View
+            style={{
+              opacity: fadeAnim, flex: 1 }}>
           <GiftedChat
               renderUsernameOnMessage 
               messages={incomingMsgs} 
@@ -840,6 +857,7 @@ const ChatDetailScreen = ({ navigation }) => {
                   </View>
                 );
               }}/>
+            </Animated.View>
          {/*<KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Animated } from 'react-native';
 
 const FadeViewAnim = props => {
-  const [fadeAnim] = useState(new Animated.Value(0));
+  const [fadeAnim] = useState(new Animated.Value(0.01));
 
    useEffect(() => {
     Animated.timing(

@@ -3,13 +3,13 @@ import { Animated } from 'react-native';
 
 const TranslateFadeViewAnim = props => {
   const [translateAnim] = useState(new Animated.Value(150));
-  const [fadeAnim] = useState(new Animated.Value(0));
+  const [fadeAnim] = useState(new Animated.Value(0.01));
 
    useEffect(() => {
     Animated.timing(
       translateAnim,
       {
-        toValue: 0,
+        toValue: 0.01,
         duration: 600,
         delay: 400
       }

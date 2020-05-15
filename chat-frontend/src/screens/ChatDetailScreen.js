@@ -85,7 +85,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [chatId, setChatId] = useState(null);
   const previousRoute = useRef(null);
   const [uuid, setUuid] = useState('');
-  const [fadeAnim, setFadeAnim] = useState(new Animated.Value(0));
+  const [fadeAnim, setFadeAnim] = useState(new Animated.Value(0.01));
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
@@ -183,7 +183,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const willBlurHandler = () => {
     setIncomingMsgs([]);
-    setFadeAnim(new Animated.Value(0));
+    setFadeAnim(new Animated.Value(0.01));
     // resetChatState();
   };
 

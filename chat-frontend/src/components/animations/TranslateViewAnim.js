@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Animated } from 'react-native';
 
 const TranslateViewAnim = props => {
-  const [translateAnim] = useState(new Animated.Value(0));
+  const [translateAnim] = useState(new Animated.Value(0.01));
 
   if (props.triggerAnim) {
     Animated.spring(
@@ -15,7 +15,7 @@ const TranslateViewAnim = props => {
     Animated.spring(
       translateAnim,
       {
-        toValue: 0
+        toValue: 0.01
       }
     ).start();
   }

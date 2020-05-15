@@ -16,6 +16,7 @@ import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAni
 import { Context as AuthContext } from '../context/AuthContext';
 import BodyText from '../components/BodyText';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
+import ScaleViewAnim from '../components/animations/ScaleViewAnim';
 import Colors from '../constants/colors';
 import HeadingText from '../components/HeadingText';
 import PrimaryButton from '../components/PrimaryButton';
@@ -56,41 +57,35 @@ const StarterScreen = ({ navigation }) => {
       <StatusBar barStyle={statusBarColor === 1 ? 'light-content' : 'dark-content'} />
       <SignupScreen visible={signupMode} toggleModal={toggleModal} closeModal={closeModal} />
       <SigninScreen visible={signinMode} toggleModal={toggleModal} closeModal={closeModal} />
-      <ViewPager showPageIndicator={true} style={styles.viewPager} initialPage={0}>
-        <View style={styles.page} key="1">
-          <View style={styles.imageContainer}>
-          <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-01.png')} />
-          <TranslateFadeViewAnim>
-            <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-          </TranslateFadeViewAnim>
-        </View>
-        </View>
-        <View style={styles.page} key="2">
-          <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-02.png')} />
-        <TranslateFadeViewAnim>
-          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-        </TranslateFadeViewAnim>
-      </View>
-      </View>
-        <View style={styles.page} key="3">
-          <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-01.png')} />
-        <TranslateFadeViewAnim>
-          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-        </TranslateFadeViewAnim>
-      </View>
-        </View>
-        <View style={styles.page} key="4">
-          <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/Hey_Info-02.png')} />
-        <TranslateFadeViewAnim>
-          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-        </TranslateFadeViewAnim>
-      </View>
-        </View>
-      </ViewPager>
-      <View style={{ alignItems: 'center' }}>
+        <ViewPager showPageIndicator={true} style={styles.viewPager} initialPage={0}>
+          <View style={styles.page} key="1">
+            <View style={styles.imageContainer}>
+            <ScaleImageAnim style={styles.image} source={require('../../assets/starter_chat.png')} />
+            <TranslateFadeViewAnim>
+              <BodyText style={styles.imageCaption}>Stay in touch with the people you love</BodyText>
+            </TranslateFadeViewAnim>
+          </View>
+          </View>
+          <View style={styles.page} key="2">
+            <View style={styles.imageContainer}>
+              <Image style={styles.image} source={require('../../assets/starter_active.png')} />
+              <BodyText style={styles.imageCaption}>Always know what your friends are up to</BodyText>
+            </View>
+          </View>
+          <View style={styles.page} key="3">
+            <View style={styles.imageContainer}>
+              <Image style={styles.image} source={require('../../assets/starter_youtube.png')} />
+                <BodyText style={styles.imageCaption}>Watch your favourite videos while chatting with your friends</BodyText>
+              </View>
+            </View>
+            <View style={styles.page} key="4">
+            <View style={styles.imageContainer}>
+              <Image style={styles.image} source={require('../../assets/starter_group.png')} />
+              <BodyText style={styles.imageCaption}>Create groups based on shared interests</BodyText>
+            </View>
+          </View>
+        </ViewPager>
+      <ScaleViewAnim style={{ alignItems: 'center' }}>
         <PrimaryButton
           style={styles.signupButton} 
           onPress={() => {
@@ -105,7 +100,7 @@ const StarterScreen = ({ navigation }) => {
           }}>
           <HeadingText style={styles.signinButtonText}>Sign In</HeadingText>
         </TouchableOpacity>
-      </View>
+      </ScaleViewAnim>
     </View>
   );
 };
@@ -159,19 +154,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
    image: {
-    width: Dimensions.get('window').width * 0.75,
-    height: Dimensions.get('window').width * 0.75
+    width: Dimensions.get('window').width * 0.85,
+    height: Dimensions.get('window').width * 0.85 / 1.522
   },
    imageContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingHorizontal: 25
   },
     imageCaption: {
     fontSize: 18,
     textAlign: 'center',
-    marginTop: 10,
-    // color: '#fff'
     color: '#202020'
   },
 });

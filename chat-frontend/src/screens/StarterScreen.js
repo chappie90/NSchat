@@ -29,7 +29,9 @@ const StarterScreen = ({ navigation }) => {
   const [signinMode, setSigninMode] = useState(false);
 
   const willFocusHandler = () => {
-    setStatusBarColor(1);
+    if (Platform.OS === 'ios') {
+      setStatusBarColor(2);
+    } 
   }
 
   const closeModal = () => {

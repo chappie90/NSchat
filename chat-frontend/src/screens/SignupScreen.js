@@ -27,7 +27,6 @@ const SignupScreen = (props) => {
             <TouchableOpacity onPress={() => {
               clearErrorMessage();
               props.closeModal();
-              setStatusBarColor(1);
             }}>
               <MaterialIcons name="close" size={35} color={Colors.tertiary} />
             </TouchableOpacity>

@@ -215,7 +215,9 @@ const ChatDetailScreen = ({ navigation }) => {
     });
 
     getCurrentScreen(navigation.state.routeName);
-    setStatusBarColor(2);
+    if (Platform.OS === 'ios') {
+      setStatusBarColor(2);
+    } 
 
     setCurrentPage(1);
     let page = 1;

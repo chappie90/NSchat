@@ -310,6 +310,7 @@ const ChatsListScreen = ({ navigation }) => {
 
   const willFocusHandler = () => {
     setStatusBarColor(1);
+
     getCurrentScreen(navigation.state.routeName);
   }
 

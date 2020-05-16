@@ -73,10 +73,15 @@ router.post('/chats', checkAuth, async (req, res) => {
         }
       ).count();
 
-      let origPath = contactProfile[0].profile.cloudinaryImgPath;
-      let imageParts = origPath.split('/');
-      imageParts.splice(-1, 0, 'w_200');
-      let modifiedPath = imageParts.join('/');
+      let modifiedPath;
+      if (contactProfile[0].profile && contactProfile[0].profile.cloudinaryImgPath) {
+        let origPath = contactProfile[0].profile.cloudinaryImgPath;
+        let imageParts = origPath.split('/');
+        imageParts.splice(-1, 0, 'w_200');
+        modifiedPath = imageParts.join('/');
+      } else {
+        modifiedPath = undefined;
+      }
  
       chats.push({
         text: lastprivateChatMessage[0].message.text,
@@ -121,10 +126,14 @@ router.post('/chats', checkAuth, async (req, res) => {
       .sort({ 'message.created': -1 })
       .limit(1);
 
-      let origPath = g.group.avatar.cloudinaryImgPath;
-      let imageParts = origPath.split('/');
-      imageParts.splice(-1, 0, 'w_200');
-      let modifiedPath = imageParts.join('/');
+      if (g.group.avatar && g.group.avatar.cloudinaryImgPath) {
+        let origPath = g.group.avatar.cloudinaryImgPath;
+        let imageParts = origPath.split('/');
+        imageParts.splice(-1, 0, 'w_200');
+        modifiedPath = imageParts.join('/');
+      } else {
+        modifiedPath = undefined;
+      }
 
       chats.push({
         text: lastGroupMessage[0].message.text,
@@ -143,9 +152,14 @@ router.post('/chats', checkAuth, async (req, res) => {
       });
     }
 
+    if (!chats) {
+      return res.status(422).send({ error: 'Could not fetch chats' });
+    }
+
     res.send({ chats });
   } catch (err) {
-    return res.status(422).send(err.message);
+    console.log(err)
+    return res.status(422).send({ error: 'Could not fetch chats' });
   }
 
 });

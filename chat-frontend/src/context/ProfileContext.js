@@ -59,19 +59,24 @@ const saveImage = dispatch => async (user, imageUri, base64) => {
 
 const getImage = dispatch => async (user) => {
   const params = { user };
-  let imagePayload;
+  let imagePayload, imgUrl;
 
   try {
     const response = await chatApi.get('/image', { params });
 
     if (response.data) {
       imagePayload = response.data.image;
+      let imageParts = imagePayload.split('/');
+      // If you want to center on face
+      // imageParts.splice(-1, 0, 'w_400,h_400,c_crop,g_face,r_max/w_400');
+      imageParts.splice(-1, 0, 'w_400');
+      imgUrl = imageParts.join('/');
     } else {
       const dbResult = await fetchProfileImage(user);
       imagePayload = dbResult.rows._array.length > 0 ? dbResult.rows._array[0].imageUri : null;   
     }
-   
-    dispatch({ type: 'update_image', payload: imagePayload });
+
+    dispatch({ type: 'update_image', payload: imgUrl });
   } catch (err) {
     console.log(err);
     throw err;

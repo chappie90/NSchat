@@ -56,12 +56,16 @@ router.post(
         return res.status(422).send({ error: 'Could not save image' });
       }
 
+      let urlParts = response.data.url.split('/');
+      urlParts.splice(-2, 1);
+      let url = urlParts.join('/');
+
       const user = await User.findOneAndUpdate(
         { username: username },
         { profile: {
           imgPath,
           imgName: req.file.filename,
-          cloudinaryImgPath: response.data.url
+          cloudinaryImgPath: url
         } },
         { new: true }
       );
@@ -70,7 +74,10 @@ router.post(
         return res.status(422).send({ error: 'Could not save image' });
       } 
 
-      const path = user.profile.cloudinaryImgPath; 
+      let path = user.profile.cloudinaryImgPath; 
+      let imageParts = path.split('/');
+      imageParts.splice(-1, 0, 'w_400');
+      path = imageParts.join('/');
       
       res.status(200).send({ img: path });
     } catch (err) {
@@ -110,7 +117,7 @@ router.get('/image', checkAuth, async (req, res) => {
       return res.status(422).send({ error: 'Could not fetch image' }); 
     }
 
-    res.status(200).send({ image: user[0].profile.imgPath });
+    res.status(200).send({ image: user[0].profile.cloudinaryImgPath });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not fetch image' });

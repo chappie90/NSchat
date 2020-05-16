@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const { Expo } = require('expo-server-sdk');
+const axios = require('axios');
 
 const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
@@ -333,30 +334,31 @@ router.post(
     let expoPushTokens = [];
     let notifications = [];
     
-    let imgPath, url;
-    if (req.file) {
-      const url = req.protocol + '://' + req.get('host');
-      imgPath = url + '/public/uploads/' + req.file.filename;
+    let imgPath, cloudinaryUrl;
 
-      const base64 = req.body.base64;
-      let cloudinaryData = {
-        file: base64,
-        upload_preset: 'ml_default'
-      }; 
+    try {
 
-      const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+      if (req.file) {
+        const url = req.protocol + '://' + req.get('host');
+        imgPath = url + '/public/uploads/' + req.file.filename;
 
-      if (response.status !== 200) {
-        return res.status(422).send({ error: 'Could not save image' });
+        const base64 = req.body.base64;
+        let cloudinaryData = {
+          file: base64,
+          upload_preset: 'ml_default'
+        }; 
+
+        const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+
+        if (response.status !== 200) {
+          return res.status(422).send({ error: 'Could not save image' });
+        }
+
+        let urlParts = response.data.url.split('/');
+        urlParts.splice(-2, 1);
+        cloudinaryUrl = urlParts.join('/');
       }
 
-      let urlParts = response.data.url.split('/');
-      urlParts.splice(-2, 1);
-      url = urlParts.join('/');
-    }
-
-   
-    try {
       let participantsArr = [];
       for (let member of groupMembers) {
         let memberId = await User.find({ username: member });
@@ -374,9 +376,9 @@ router.post(
         avatar: {
           imagePath: imgPath ? imgPath : null,
           imageName: req.file ? req.file.filename : '',
-          cloudinaryImgPath_150: url ? setCloudinaryTransformUrl(url, 150) : null,
-          cloudinaryImgPath_200: url ? setCloudinaryTransformUrl(url, 200) : null,
-          cloudinaryImgPath_400: url ? setCloudinaryTransformUrl(url, 400) : null
+          cloudinaryImgPath_150: cloudinaryUrl ? setCloudinaryTransformUrl(cloudinaryUrl, 150) : null,
+          cloudinaryImgPath_200: cloudinaryUrl ? setCloudinaryTransformUrl(cloudinaryUrl, 200) : null,
+          cloudinaryImgPath_400: cloudinaryUrl ? setCloudinaryTransformUrl(cloudinaryUrl, 400) : null
         }
       });
       await group.save();
@@ -412,7 +414,7 @@ router.post(
         date: initialGroupMessage.message.created,
         contact: groupName,
         profile: {
-          imgPath: cloudinaryImgPath_200 ? cloudinaryImgPath_200 : null,
+          imgPath: group.avatar.cloudinaryImgPath_200 ? group.avatar.cloudinaryImgPath_200 : null,
           imgName: req.file ? req.file.filename : ''
         },
         groupOwner: username,

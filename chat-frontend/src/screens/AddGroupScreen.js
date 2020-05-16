@@ -50,6 +50,7 @@ const AddGroupScreen = props => {
   const [disableCreateBtn, setDisableCreateBtn] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState("");
+  const [base64, setBase64] = useState('');
   const socket = useRef(null);
 
   useEffect(() => {
@@ -66,9 +67,9 @@ const AddGroupScreen = props => {
     setGroupContacts(contacts);
   }, [contacts]);
 
-  const createGroupHandler = (username, groupName, groupImage, groupMembers) => {
+  const createGroupHandler = (username, groupName, groupImageUri, groupImageBase64, groupMembers) => {
     setIsLoading(true);
-    createGroup({ username, groupName, groupImage, groupMembers }).then(res => {
+    createGroup({ username, groupName, groupImageUri, groupImageBase64, groupMembers }).then(res => {
       getChats({ username });
       socketState.emit('new_group', { groupMembers });
       setAddToGroupArr([]);
@@ -77,6 +78,7 @@ const AddGroupScreen = props => {
       setSearch("");
       setGroupName("");
       setImagePreview('');
+      setBase64('');
       props.closeModal();
       setIsLoading(false);
     });  
@@ -133,13 +135,15 @@ const AddGroupScreen = props => {
       return;
     }
     const cameraImage = await ImagePicker.launchCameraAsync({
-      allowsEditing: true
+      allowsEditing: true,
+      base64: true
     });
     if (!cameraImage.uri) {
       return;
     }
     setModalVisible(false);
     setImagePreview(cameraImage.uri);
+    setBase64(cameraImage.base64);
   };
 
   const choosePhotoHandler = async () => {
@@ -148,13 +152,15 @@ const AddGroupScreen = props => {
       return;
     }
     const libraryImage = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true
+      allowsEditing: true,
+      base64: true
     });
     if (!libraryImage.uri) {
       return;
     }
     setModalVisible(false);
     setImagePreview(libraryImage.uri);
+    setBase64(libraryImage.base64);
   };
 
   const deletePhotoHandler = () => {
@@ -246,7 +252,7 @@ const AddGroupScreen = props => {
               </TouchableOpacity>    
               <HeadingText style={styles.heading}>New Group</HeadingText>
               <TouchableOpacity disabled={disableCreateBtn} onPress={() => {
-                createGroupHandler(username, groupName, imagePreview, addToGroupArr);
+                createGroupHandler(username, groupName, imagePreview, base64, addToGroupArr);
               }}>
                 <Ionicons
                   color={disableCreateBtn ? "#C0C0C0" : "#fff"}

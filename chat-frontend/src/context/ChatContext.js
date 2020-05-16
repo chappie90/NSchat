@@ -312,7 +312,13 @@ const deleteMessageState = dispatch => async ({ user, messageId }) => {
   dispatch({ type: 'delete_message', payload: { user, messageId } });
 };
 
-const createGroup = dispatch => async ({ username, groupName, groupImage = '', groupMembers = [] }) => {
+const createGroup = dispatch => async ({
+  username, 
+  groupName, 
+  groupImageUri = '', 
+  groupImageBase64 = '', 
+  groupMembers = [] 
+}) => {
   
   try {
     let allMembers = groupMembers.slice();
@@ -322,20 +328,24 @@ const createGroup = dispatch => async ({ username, groupName, groupImage = '', g
 
     let formData = new FormData();
 
-    if (groupImage) {
-      let uriParts = groupImage.split('.');
+    if (groupImageUri) {
+      let uriParts = groupImageUri.split('.');
       let fileType = uriParts[uriParts.length - 1];
 
       formData.append('group', {
-        uri: groupImage,
+        uri: groupImageUri,
         name: `${username}_${groupName}`,
         type: `image/${fileType}`
       });      
+
+      let base64Img = `data:image/jpg;base64,${groupImageBase64}`;
+      formData.append('base64', base64Img);
     }
 
     formData.append('username', username);
     formData.append('groupName', groupName);
     formData.append('groupMembers', groupMembersStr);
+
 
     const response = await chatApi.post('/group/new', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 

@@ -61,13 +61,14 @@ const ImgPicker = props => {
       return;
     }
     const cameraImage = await ImagePicker.launchCameraAsync({
-      allowsEditing: true
+      allowsEditing: true,
+      base64: true
     });
     if (!cameraImage.uri) {
       return;
     }
     setModalVisible(false);
-    saveImage(username, cameraImage.uri);
+    saveImage(username, cameraImage.uri, cameraImage.base64);
   };
 
   const choosePhotoHandler = async () => {
@@ -76,13 +77,15 @@ const ImgPicker = props => {
       return;
     }
     const libraryImage = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true
+      allowsEditing: true,
+      base64: true
     });
     if (!libraryImage.uri) {
       return;
     }
+
     setModalVisible(false);
-    saveImage(username, libraryImage.uri);
+    saveImage(username, libraryImage.uri, libraryImage.base64);
   };
 
   const deletePhotoHandler = () => {

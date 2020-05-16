@@ -10,7 +10,8 @@ const groupSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now() },
   avatar: {
     imagePath: String,
-    imageName: String 
+    imageName: String,
+    cloudinaryImgPath: String
   }
 });
 

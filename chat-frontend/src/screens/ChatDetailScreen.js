@@ -119,13 +119,7 @@ const ChatDetailScreen = ({ navigation }) => {
           updateMessages({ chatId: message.chat.chatId, message: message.message });
         }
         if (message.message.user.name === username) {
-          if (chatIdRef.current) {
-            setIncomingMsgs(prevState => prevState.map(msg => {
-              return msg._id === message.message._id ? { ...msg, read: false } : msg;
-            }));
-
-            updateChatState(message.chat);
-          } else {
+          if (chatIdRef.current === null) {
             chatIdRef.current = message.chat.chatId;
             let msgArr = [];
             msgArr.push(message.message);
@@ -134,14 +128,12 @@ const ChatDetailScreen = ({ navigation }) => {
             message.chat.muted = false;
             message.chat.unreadMessageCount = 0;
             message.chat.from = username;
-            if (navigation.getParam('image')) {
-              message.chat = {
-                profile: {
-                  imgPath: navigation.getParam('image')
-                }
-              }
-            }    
             addNewChat(message.chat);
+          } else {
+            setIncomingMsgs(prevState => prevState.map(msg => {
+              return msg._id === message.message._id ? { ...msg, read: false } : msg;
+            }));
+            updateChatState(message.chat);
           }
         }
         

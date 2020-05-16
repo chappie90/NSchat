@@ -111,6 +111,9 @@ module.exports = function(io) {
       replyTo: { messageId, messageText, messageAuthor }
     } = msgObj;
 
+    // console.log('on message')
+    // console.log(msgObj)
+
     try {
 
     // messageHandler.handleMessage(socket, users); 
@@ -171,7 +174,7 @@ module.exports = function(io) {
               data: {
                sender: group[0].name,
                message: text ? `${from}: ${text}` : `${from} sent a photo`,
-               img: group[0].avatar.imagePath,
+               img: group[0].avatar.cloudinaryImgPath,
                type: type,
                chatId: chatId 
              },
@@ -259,8 +262,8 @@ module.exports = function(io) {
       );
 
       const badgeCount = tempUserId2[0].badgeCount + 1;
-      const senderImage = tempUserId[0].profile.imgPath;
-      const recipientImage = tempUserId2[0].profile.imgPath;
+      const senderImage = tempUserId[0].profile.cloudinaryImgPath;
+      const recipientImage = tempUserId2[0].profile.cloudinaryImgPath;
 
       expoPushTokens.push(tempUserId2[0].expoToken);
 
@@ -381,12 +384,22 @@ module.exports = function(io) {
           image: imgPath ? imgPath : '',
         };
 
+      let modifiedPathSenderImg;
+      if (senderImage) {
+        let imageParts = senderImage.split('/');
+        imageParts.splice(-1, 0, 'w_200');
+        modifiedPathSenderImg = imageParts.join('/');
+      }
+     
+
       const updatePreviousChatsRecipient = {
         chatId: privateChatId,
         contact: from,
         date: createdAt,
         text, 
-        profile: senderImage
+        profile: {
+          imgPath: modifiedPathSenderImg
+        } 
       };
 
       const returnMsgUser = 
@@ -405,11 +418,21 @@ module.exports = function(io) {
           image: imgPath ? imgPath : '',
         };
 
+      let modifiedPathRecipientImg;
+      if (recipientImage) {
+        imageParts = recipientImage.split('/');
+        imageParts.splice(-1, 0, 'w_200');
+        modifiedPathRecipientImg = imageParts.join('/');
+      }
+      
       const updatePreviousChatsUser = {
         chatId: privateChatId,
         contact: to,
         date: createdAt,
         text,
+        profile: {
+          imgPath: modifiedPathRecipientImg
+        } 
       };
 
       io.to(recipientSocketId).emit('message', { message: returnMsgRecipient, chat: updatePreviousChatsRecipient });
@@ -436,7 +459,7 @@ module.exports = function(io) {
           data: {
             sender: from, 
             message: text ? text : `${from} sent a photo`,
-            img: recipientImage, 
+            img: modifiedPathRecipientImg, 
             type: type, 
             chatId: chatId 
           }

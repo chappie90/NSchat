@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
 router.post(
   '/image/upload', 
   checkAuth, 
-  multer({ storage: storage }).single('profile'),
+  multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('profile'),
   async (req, res) => {
     const username = req.body.user;
     const url = req.protocol + '://' + req.get('host');
@@ -109,6 +109,7 @@ router.patch('/image/delete', checkAuth, async (req, res) => {
 
 router.get('/image', checkAuth, async (req, res) => {
   const username = req.query.user;
+  let modifiedPath;
 
   try {
     const user = await User.find({ username });
@@ -117,7 +118,19 @@ router.get('/image', checkAuth, async (req, res) => {
       return res.status(422).send({ error: 'Could not fetch image' }); 
     }
 
-    res.status(200).send({ image: user[0].profile.cloudinaryImgPath });
+
+    let origPath = user[0].profile.cloudinaryImgPath;
+    if (origPath) {
+      let imageParts = origPath.split('/');
+      // If you want to center on face
+      // imageParts.splice(-1, 0, 'w_500,h_500,c_crop,g_face,r_max/w_400');
+      imageParts.splice(-1, 0, 'w_400');
+      modifiedPath = imageParts.join('/');
+    } else {
+      modifiedPath = origPath;
+    }
+    
+    res.status(200).send({ image: modifiedPath });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not fetch image' });

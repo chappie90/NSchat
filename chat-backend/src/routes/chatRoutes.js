@@ -72,6 +72,11 @@ router.post('/chats', checkAuth, async (req, res) => {
           read: false 
         }
       ).count();
+
+      let origPath = contactProfile[0].profile.cloudinaryImgPath;
+      let imageParts = origPath.split('/');
+      imageParts.splice(-1, 0, 'w_200');
+      let modifiedPath = imageParts.join('/');
  
       chats.push({
         text: lastprivateChatMessage[0].message.text,
@@ -79,8 +84,8 @@ router.post('/chats', checkAuth, async (req, res) => {
         type: p.privateChat.type,
         contact: contactProfile[0].username,
         profile: {
-          imgPath: contactProfile[0].profile.imgPath,
-          imgName: contactProfile[0].profile.imgName
+          imgPath: modifiedPath,
+          // imgName: contactProfile[0].profile.imgName
         },
         chatId: p.privateChat._id, 
         muted: p.muted,
@@ -116,14 +121,19 @@ router.post('/chats', checkAuth, async (req, res) => {
       .sort({ 'message.created': -1 })
       .limit(1);
 
+      let origPath = g.group.avatar.cloudinaryImgPath;
+      let imageParts = origPath.split('/');
+      imageParts.splice(-1, 0, 'w_200');
+      let modifiedPath = imageParts.join('/');
+
       chats.push({
         text: lastGroupMessage[0].message.text,
         date: lastGroupMessage[0].message.created,
         type: g.group.type,
         contact: g.group.name,
         profile: {
-          imgPath: g.group.avatar.imagePath,
-          imgName: g.group.avatar.imageName
+          imgPath: modifiedPath,
+          // imgName: g.group.avatar.imageName
         },
         groupOwner: g.group.owner,
         chatId: g.group._id,
@@ -316,7 +326,7 @@ router.patch('/chat/mute', checkAuth, async (req, res) => {
 router.post(
   '/group/new', 
   checkAuth,
-  multer({ storage: storage }).single('group'),
+  multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('group'),
   async (req, res) => {
     const username = req.body.username;
     const groupName = req.body.groupName;
@@ -479,7 +489,7 @@ router.post('/badge/clear', checkAuth, async (req, res) => {
 router.post(
   '/message/image/save', 
   checkAuth,
-  multer({ storage: storage }).single('imageMessage'),
+  multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('imageMessage'),
   async (req, res) => {
 
   try {

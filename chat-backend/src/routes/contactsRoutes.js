@@ -4,6 +4,7 @@ const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
 
 const checkAuth = require('../middlewares/checkAuth');
+const setCloudinaryTransformUrl = require('../helpers/setCloudinaryTransformUrl');
 
 const router = express.Router();
 
@@ -69,10 +70,7 @@ router.post('/contacts', checkAuth, async (req, res) => {
 
     for (let contact of user[0].contacts) {
       if (contact.user.profile.cloudinaryImgPath) {
-        let origPath = contact.user.profile.cloudinaryImgPath;
-        let imageParts = origPath.split('/');
-        imageParts.splice(-1, 0, 'w_150');
-        let modifiedPath = imageParts.join('/');
+        let modifiedPath = setCloudinaryTransformUrl(contact.user.profile.cloudinaryImgPath, 150);
 
         contact.user.profile.cloudinaryImgPath = modifiedPath;
       }

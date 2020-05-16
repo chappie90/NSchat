@@ -67,6 +67,17 @@ router.post('/contacts', checkAuth, async (req, res) => {
       return res.status(422).send({ error: 'Something went wrong with your request' });
     }
 
+    for (let contact of user[0].contacts) {
+      if (contact.user.profile) {
+        let origPath = contact.user.profile.cloudinaryImgPath;
+        let imageParts = origPath.split('/');
+        imageParts.splice(-1, 0, 'w_150');
+        let modifiedPath = imageParts.join('/');
+
+        contact.user.profile.cloudinaryImgPath = modifiedPath;
+      }
+    }
+
     res.send({ contacts: user[0].contacts });
   } catch (err) {
     return res.status(422).send(err.message);

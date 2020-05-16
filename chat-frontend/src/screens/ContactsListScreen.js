@@ -124,7 +124,7 @@ const ContactsListScreen = ({ navigation }) => {
                     onPress={() => {
                       navigation.navigate('ChatDetail', {
                         username: rowData.item.user.username,
-                        image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
+                        image: rowData.item.user.profile ? rowData.item.user.profile.cloudinaryImgPath : '',
                         type: 'private',
                         chatId: chat.length > 0 ? chat[0].chatId : null,
                         origin: 'ContactsList'
@@ -146,7 +146,7 @@ const ContactsListScreen = ({ navigation }) => {
                           <Image 
                             style={{ width: '100%', height: '100%' }} 
                             placeholderStyle={styles.placeholder}
-                            source={{ uri: rowData.item.user.profile.imgPath }}
+                            source={{ uri: rowData.item.user.profile.cloudinaryImgPath }}
                             /> : 
                           <Image style={{ width: '100%', height: '100%' }} source={require('../../assets/avatar-small.png')} />
                         }
@@ -213,7 +213,7 @@ const ContactsListScreen = ({ navigation }) => {
                       onPress={() => {
                         navigation.navigate('ChatDetail', {
                           username: rowData.item.user.username,
-                          image: rowData.item.user.profile ? rowData.item.user.profile.imgPath : '',
+                          image: rowData.item.user.profile ? rowData.item.user.profile.cloudinaryImgPath : '',
                           type: 'private',
                           chatId: chat.length > 0 ? chat[0].chatId : null,
                           origin: 'ContactsList'
@@ -235,7 +235,7 @@ const ContactsListScreen = ({ navigation }) => {
                             <Image 
                               style={{ width: '100%', height: '100%' }} 
                               placeholderStyle={styles.placeholder}
-                              source={{ uri: rowData.item.user.profile.imgPath }}
+                              source={{ uri: rowData.item.user.profile.cloudinaryImgPath }}
                               /> : 
                             <Image style={{ width: '100%', height: '100%' }} source={require('../../assets/avatar-small.png')} />
                           }

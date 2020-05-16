@@ -13,13 +13,15 @@ const profileReducer = (state, action) => {
   }
 };
 
-const saveImage = dispatch => async (user, image) => {
+const saveImage = dispatch => async (user, imageUri, base64) => {
 
   try {
-    const fileName = image.split('/').pop();
+    const fileName = imageUri.split('/').pop();
     const newPath = FileSystem.documentDirectory + fileName;
 
-    let uriParts = image.split('.');
+    let base64Img = `data:image/jpg;base64,${base64}`;
+
+    let uriParts = imageUri.split('.');
     let fileType = uriParts[uriParts.length - 1];
     let formData = new FormData();
 
@@ -28,17 +30,18 @@ const saveImage = dispatch => async (user, image) => {
     // make sure this name is the same as multer({ storage: storage }).single('profile'),
     // otherwise will get MulterError: Unexpected field error
     formData.append('profile', {
-      uri: image,
+      uri: imageUri,
       name: `${user}`,
       type: `image/${fileType}` 
     });
     formData.append('user', user);
+    formData.append('base64', base64Img);
 
     const response = await chatApi.post('/image/upload', formData , { headers: { 'Content-Type': 'multipart/form-data' }});
 
     if (response.data) {
       await FileSystem.moveAsync({
-        from: image,
+        from: imageUri,
         to: newPath
       });
 

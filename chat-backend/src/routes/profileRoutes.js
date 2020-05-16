@@ -1,10 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
-const path = require('path');
+const path = require('path'); 
+const axios = require('axios');
 
 const User = mongoose.model('User');
 const checkAuth = require('../middlewares/checkAuth');
+
+let CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dycqqk3s6/upload';
 
 const router = express.Router();
 
@@ -38,12 +41,27 @@ router.post(
     const username = req.body.user;
     const url = req.protocol + '://' + req.get('host');
     const imgPath = url + '/public/uploads/' + req.file.filename;
+    const base64 = req.body.base64;
+
     try {
+  
+      let cloudinaryData = {
+        file: base64,
+        upload_preset: 'ml_default'
+      };     
+
+      const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+
+      if (response.status !== 200) {
+        return res.status(422).send({ error: 'Could not save image' });
+      }
+
       const user = await User.findOneAndUpdate(
         { username: username },
         { profile: {
           imgPath,
-          imgName: req.file.filename
+          imgName: req.file.filename,
+          cloudinaryImgPath: response.data.url
         } },
         { new: true }
       );
@@ -52,7 +70,7 @@ router.post(
         return res.status(422).send({ error: 'Could not save image' });
       } 
 
-      const path = user.profile.imgPath; 
+      const path = user.profile.cloudinaryImgPath; 
       
       res.status(200).send({ img: path });
     } catch (err) {

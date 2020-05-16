@@ -91,6 +91,8 @@ const ChatDetailScreen = ({ navigation }) => {
   let giftedChatRef;
   let mounted = true;
   const screen = useRef(null);
+  const deviceHeight = Dimensions.get('window').height;
+  const statusBarHeight = Constants.statusBarHeight;
 
   useEffect(() => {
     if (!Object.keys(group).length === 0 && group.constructor === Object) {
@@ -724,7 +726,7 @@ const ChatDetailScreen = ({ navigation }) => {
   // };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { height: deviceHeight - statusBarHeight - 50 }]}>
       <NavigationEvents
         onWillBlur={willBlurHandler}
         onWillFocus={willFocusHandler}
@@ -785,9 +787,7 @@ const ChatDetailScreen = ({ navigation }) => {
             </TouchableWithoutFeedback>
          </Modal>
         <GroupSettingsScreen navigation={navigation} visible={groupSettingsModal} closeModal={closeModalHandler} />
-          <Animated.View
-            style={{
-              opacity: fadeAnim, flex: 1 }}>
+      
           <GiftedChat
               renderUsernameOnMessage 
               messages={incomingMsgs} 
@@ -838,7 +838,7 @@ const ChatDetailScreen = ({ navigation }) => {
                   </View>
                 );
               }}/>
-            </Animated.View>
+       
          {/*<KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
             keyboardVerticalOffset={80} />
@@ -943,7 +943,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    // flex: 1``
   },
   content: {
     flex: 1,

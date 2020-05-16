@@ -9,6 +9,9 @@ const Group = mongoose.model('Group');
 const GroupMessage = mongoose.model('GroupMessage');
 const PrivateChat = mongoose.model('PrivateChat');
 const checkAuth = require('../middlewares/checkAuth');
+const setCloudinaryTransformUrl = require('../helpers/setCloudinaryTransformUrl');
+
+const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dycqqk3s6/upload';
 
 const router = express.Router();
 const expo = new Expo();
@@ -52,7 +55,6 @@ router.post('/chats', checkAuth, async (req, res) => {
     let unreadMessageCount;
 
     for (let p of privateChats) {
-       // console.log(p.privateChat._id);
       const lastprivateChatMessage = await PrivateMessage.find(
         { privateChat: p.privateChat._id }
       )
@@ -73,23 +75,13 @@ router.post('/chats', checkAuth, async (req, res) => {
         }
       ).count();
 
-      let modifiedPath;
-      if (contactProfile[0].profile && contactProfile[0].profile.cloudinaryImgPath) {
-        let origPath = contactProfile[0].profile.cloudinaryImgPath;
-        let imageParts = origPath.split('/');
-        imageParts.splice(-1, 0, 'w_200');
-        modifiedPath = imageParts.join('/');
-      } else {
-        modifiedPath = undefined;
-      }
- 
       chats.push({
         text: lastprivateChatMessage[0].message.text,
         date: lastprivateChatMessage[0].message.createdAt,
         type: p.privateChat.type,
         contact: contactProfile[0].username,
         profile: {
-          imgPath: modifiedPath,
+          imgPath: contactProfile[0].profile.cloudinaryImgPath_200,
           // imgName: contactProfile[0].profile.imgName
         },
         chatId: p.privateChat._id, 
@@ -126,22 +118,13 @@ router.post('/chats', checkAuth, async (req, res) => {
       .sort({ 'message.created': -1 })
       .limit(1);
 
-      if (g.group.avatar && g.group.avatar.cloudinaryImgPath) {
-        let origPath = g.group.avatar.cloudinaryImgPath;
-        let imageParts = origPath.split('/');
-        imageParts.splice(-1, 0, 'w_200');
-        modifiedPath = imageParts.join('/');
-      } else {
-        modifiedPath = undefined;
-      }
-
       chats.push({
         text: lastGroupMessage[0].message.text,
         date: lastGroupMessage[0].message.created,
         type: g.group.type,
         contact: g.group.name,
         profile: {
-          imgPath: modifiedPath,
+          imgPath: g.group.avatar.cloudinaryImgPath_200,
           // imgName: g.group.avatar.imageName
         },
         groupOwner: g.group.owner,
@@ -350,11 +333,28 @@ router.post(
     let expoPushTokens = [];
     let notifications = [];
     
-    let imgPath;
+    let imgPath, url;
     if (req.file) {
       const url = req.protocol + '://' + req.get('host');
       imgPath = url + '/public/uploads/' + req.file.filename;
+
+      const base64 = req.body.base64;
+      let cloudinaryData = {
+        file: base64,
+        upload_preset: 'ml_default'
+      }; 
+
+      const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+
+      if (response.status !== 200) {
+        return res.status(422).send({ error: 'Could not save image' });
+      }
+
+      let urlParts = response.data.url.split('/');
+      urlParts.splice(-2, 1);
+      url = urlParts.join('/');
     }
+
    
     try {
       let participantsArr = [];
@@ -373,7 +373,10 @@ router.post(
         participants: participantsArr,
         avatar: {
           imagePath: imgPath ? imgPath : null,
-          imageName: req.file ? req.file.filename : ''
+          imageName: req.file ? req.file.filename : '',
+          cloudinaryImgPath_150: url ? setCloudinaryTransformUrl(url, 150) : null,
+          cloudinaryImgPath_200: url ? setCloudinaryTransformUrl(url, 200) : null,
+          cloudinaryImgPath_400: url ? setCloudinaryTransformUrl(url, 400) : null
         }
       });
       await group.save();
@@ -409,7 +412,7 @@ router.post(
         date: initialGroupMessage.message.created,
         contact: groupName,
         profile: {
-          imgPath: imgPath ? imgPath : null,
+          imgPath: cloudinaryImgPath_200 ? cloudinaryImgPath_200 : null,
           imgName: req.file ? req.file.filename : ''
         },
         groupOwner: username,
@@ -430,7 +433,7 @@ router.post(
             data: {
               sender: group.name,
               message: `${username} added you to a group`,
-              img: group.avatar.imagePath,
+              img: group.avatar.cloudinaryImgPath_200,
               type: 'group',
               chatId: group._id
             }

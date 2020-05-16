@@ -23,7 +23,9 @@ const userSchema = new mongoose.Schema({
   profile: {
     imgPath: String,
     imgName: String,
-    cloudinaryImgPath: String
+    cloudinaryImgPath_150: String,
+    cloudinaryImgPath_200: String,
+    cloudinaryImgPath_400: String
   },
   privateChats: [
     {

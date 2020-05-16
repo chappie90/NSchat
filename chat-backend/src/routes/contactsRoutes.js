@@ -4,7 +4,6 @@ const User = mongoose.model('User');
 const PrivateMessage = mongoose.model('PrivateMessage');
 
 const checkAuth = require('../middlewares/checkAuth');
-const setCloudinaryTransformUrl = require('../helpers/setCloudinaryTransformUrl');
 
 const router = express.Router();
 
@@ -20,6 +19,7 @@ router.post('/contacts/search', checkAuth, async (req, res) => {
       if (contacts.length == 0) {
         return res.send({ contacts: [] });
       }
+
       return res.send({ contacts });
     }
     res.send({ contacts: [] });  
@@ -66,14 +66,6 @@ router.post('/contacts', checkAuth, async (req, res) => {
 
     if (!user) {
       return res.status(422).send({ error: 'Something went wrong with your request' });
-    }
-
-    for (let contact of user[0].contacts) {
-      if (contact.user.profile.cloudinaryImgPath) {
-        let modifiedPath = setCloudinaryTransformUrl(contact.user.profile.cloudinaryImgPath, 150);
-
-        contact.user.profile.cloudinaryImgPath = modifiedPath;
-      }
     }
 
     res.send({ contacts: user[0].contacts });

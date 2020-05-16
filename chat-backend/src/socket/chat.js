@@ -174,7 +174,7 @@ module.exports = function(io) {
               data: {
                sender: group[0].name,
                message: text ? `${from}: ${text}` : `${from} sent a photo`,
-               img: group[0].avatar.cloudinaryImgPath,
+               img: group[0].avatar.cloudinaryImgPath_150,
                type: type,
                chatId: chatId 
              },
@@ -262,8 +262,8 @@ module.exports = function(io) {
       );
 
       const badgeCount = tempUserId2[0].badgeCount + 1;
-      const senderImage = tempUserId[0].profile.cloudinaryImgPath;
-      const recipientImage = tempUserId2[0].profile.cloudinaryImgPath;
+      const senderImage = tempUserId[0].profile.cloudinaryImgPath_200;
+      const recipientImage = tempUserId2[0].profile.cloudinaryImgPath_200;
 
       expoPushTokens.push(tempUserId2[0].expoToken);
 
@@ -384,21 +384,13 @@ module.exports = function(io) {
           image: imgPath ? imgPath : '',
         };
 
-      let modifiedPathSenderImg;
-      if (senderImage) {
-        let imageParts = senderImage.split('/');
-        imageParts.splice(-1, 0, 'w_200');
-        modifiedPathSenderImg = imageParts.join('/');
-      }
-     
-
       const updatePreviousChatsRecipient = {
         chatId: privateChatId,
         contact: from,
         date: createdAt,
         text, 
         profile: {
-          imgPath: modifiedPathSenderImg
+          imgPath: senderImage
         } 
       };
 
@@ -418,20 +410,13 @@ module.exports = function(io) {
           image: imgPath ? imgPath : '',
         };
 
-      let modifiedPathRecipientImg;
-      if (recipientImage) {
-        imageParts = recipientImage.split('/');
-        imageParts.splice(-1, 0, 'w_200');
-        modifiedPathRecipientImg = imageParts.join('/');
-      }
-      
       const updatePreviousChatsUser = {
         chatId: privateChatId,
         contact: to,
         date: createdAt,
         text,
         profile: {
-          imgPath: modifiedPathRecipientImg
+          imgPath: recipientImage
         } 
       };
 
@@ -459,7 +444,7 @@ module.exports = function(io) {
           data: {
             sender: from, 
             message: text ? text : `${from} sent a photo`,
-            img: modifiedPathRecipientImg, 
+            img: tempUserId2[0].profile.cloudinaryImgPath_150, 
             type: type, 
             chatId: chatId 
           }

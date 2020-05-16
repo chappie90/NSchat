@@ -11,7 +11,9 @@ const groupSchema = new mongoose.Schema({
   avatar: {
     imagePath: String,
     imageName: String,
-    cloudinaryImgPath: String
+    cloudinaryImgPath_150: String,
+    cloudinaryImgPath_200: String,
+    cloudinaryImgPath_400: String
   }
 });
 

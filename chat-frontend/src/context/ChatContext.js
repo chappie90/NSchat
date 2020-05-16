@@ -151,8 +151,6 @@ const getChats = dispatch => async ({ username }) => {
   try {
     const response = await chatApi.post('/chats', { username });
 
-    console.log(response.data)
-
     const chats = response.data.chats.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     dispatch({ type: 'get_chats', payload: chats });

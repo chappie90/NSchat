@@ -6,8 +6,9 @@ const axios = require('axios');
 
 const User = mongoose.model('User');
 const checkAuth = require('../middlewares/checkAuth');
+const setCloudinaryTransformUrl = require('../helpers/setCloudinaryTransformUrl');
 
-let CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dycqqk3s6/upload';
+const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dycqqk3s6/upload';
 
 const router = express.Router();
 
@@ -63,9 +64,11 @@ router.post(
       const user = await User.findOneAndUpdate(
         { username: username },
         { profile: {
-          imgPath,
-          imgName: req.file.filename,
-          cloudinaryImgPath: url
+            imgPath,
+            imgName: req.file.filename,
+            cloudinaryImgPath_150: setCloudinaryTransformUrl(url, 150),
+            cloudinaryImgPath_200: setCloudinaryTransformUrl(url, 200),
+            cloudinaryImgPath_400: setCloudinaryTransformUrl(url, 400)
         } },
         { new: true }
       );
@@ -74,12 +77,7 @@ router.post(
         return res.status(422).send({ error: 'Could not save image' });
       } 
 
-      let path = user.profile.cloudinaryImgPath; 
-      let imageParts = path.split('/');
-      imageParts.splice(-1, 0, 'w_400');
-      path = imageParts.join('/');
-      
-      res.status(200).send({ img: path });
+      res.status(200).send({ img: user.profile.cloudinaryImgPath_400 });
     } catch (err) {
       console.log(err);
       res.status(422).send({ error: 'Could not save image' });
@@ -117,20 +115,8 @@ router.get('/image', checkAuth, async (req, res) => {
     if (!user) {
       return res.status(422).send({ error: 'Could not fetch image' }); 
     }
-
-
-    let origPath = user[0].profile.cloudinaryImgPath;
-    if (origPath) {
-      let imageParts = origPath.split('/');
-      // If you want to center on face
-      // imageParts.splice(-1, 0, 'w_500,h_500,c_crop,g_face,r_max/w_400');
-      imageParts.splice(-1, 0, 'w_400');
-      modifiedPath = imageParts.join('/');
-    } else {
-      modifiedPath = origPath;
-    }
     
-    res.status(200).send({ image: modifiedPath });
+    res.status(200).send({ image: user[0].profile.cloudinaryImgPath_400 });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not fetch image' });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -19,6 +19,7 @@ import { WebView } from 'react-native-webview';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Modal from "react-native-modal";
 import Constants from 'expo-constants';
+import moment from 'moment';
 
 import Colors from '../constants/colors';
 import youtubeApi from '../api/youtube';
@@ -37,8 +38,6 @@ const YoutubeComponent = (props) => {
   const [searchMode, setSearchMode] = useState(false);
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
-  // const showSmallPlayer = useRef(false);
-  const [showSmallPlayer, setShowSmallPlayer] = useState(false);
 
   const topNavHeight = 50;
   const bottomNavHeight = getTabBarHeight();
@@ -49,6 +48,32 @@ const YoutubeComponent = (props) => {
   const scrollPos = useRef(new Animated.Value(0)).current;
   const showResults = useRef(false);
   let initalScrollPos;
+
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [keepTrack, setKeepTrack] = useState(0);
+
+  const timeElapsedRef = useRef(timeElapsed);
+
+  const increment = useCallback(() => {
+
+    setTimeElapsed(timeElapsedRef.current + 1)
+  }, [timeElapsed])
+
+  let timer;
+
+  const startTimer = () => {
+
+    timer = setInterval(() => {
+      increment()
+    }, 1000);
+  };
+
+
+  const stopTimer = () => {
+    console.log('timer stoped')
+    clearInterval(timer);
+  };
 
   const panResponder = React.useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -67,30 +92,32 @@ const YoutubeComponent = (props) => {
     },
     onPanResponderRelease: (e, gestureState) => {
       if (e.nativeEvent.pageY < deviceHeight * 1 / 3) {
-        Animated.spring(
+        Animated.timing(
           scrollPos,
           {
-            toValue: topNavHeight + 80
+            toValue: topNavHeight + 80,
+            duration: 100
           },
         ).start();
       }
        if (e.nativeEvent.pageY > deviceHeight * 1 / 3 && e.nativeEvent.pageY < deviceHeight * 2 / 3 ) {
-        Animated.spring(
+        Animated.timing(
           scrollPos,
           {
-            toValue: topNavHeight + deviceWidth / playerRatio + 50
+            toValue: topNavHeight + deviceWidth / playerRatio + 50,
+            duration: 100
           },
         ).start();
          showResults.current = true;
       }
       if (e.nativeEvent.pageY > deviceHeight * 2 / 3) {
-        Animated.spring(
+        Animated.timing(
           scrollPos,
           {
-            toValue: deviceHeight - topNavHeight - bottomNavHeight
+            toValue: deviceHeight - topNavHeight - bottomNavHeight,
+            duration: 100
           },
         ).start();
-        setShowSmallPlayer(false);
         showResults.current = true;
       }
       scrollPos.flattenOffset();
@@ -101,18 +128,24 @@ const YoutubeComponent = (props) => {
     if (currentVideo === null) {
       initalScrollPos = topNavHeight + deviceWidth / playerRatio + 50;
       scrollPos.setValue(initalScrollPos);
+      setSearchMode(true);
     } else {
       initalScrollPos = topNavHeight + 80;
       scrollPos.setValue(initalScrollPos);
     }
 
     getYoutubeResults('');
-    if (currentVideo === null) {
-      setSearchMode(true);
-    } else {
-      setShowSmallPlayer(true);
-    }
+
   }, []);
+
+  const onPlayerReadyHandler = () => {
+    if (playerRef.current) {
+      playerRef.current.getCurrentTime()
+        .then(currentTime => setTimeElapsed(currentTime));
+      playerRef.current.getDuration()
+        .then(duration => setVideoDuration(duration));
+    }
+  };
 
   const youtubeSearchHander = (term) => {
     getYoutubeResults(term);
@@ -120,12 +153,35 @@ const YoutubeComponent = (props) => {
   };
 
   const playerOnChangeState = event => {
+    let timer;
     // console.log(event)
     if (event === 'playing') {
-      setPlaying(true)
+      setPlaying(true);
+      startTimer(true);
     } else if (event === 'paused') {
       setPlaying(false);
+      stopTimer();
     }
+  };
+
+
+
+  // useEffect(() => {
+  //   const timer = setInterval(() => {  
+  //       setTimeElapsed(timeElapsed + 1);
+  //     }, 1000)
+
+  //   return () => {
+  //     clearInterval(timer);
+  //   }
+  // }, []);
+
+  const renderPlayerTime = (seconds) => {
+    if (seconds < 3600) {
+      return moment.utc(seconds * 1000).format('m:ss');
+    } else {
+      return moment.utc(seconds * 1000).format('HH:mm:ss')
+    } 
   };
 
   return (
@@ -247,10 +303,11 @@ const YoutubeComponent = (props) => {
             videoId={currentVideo.id.videoId}
             play={playing}
             onChangeState={playerOnChangeState}   
-            onReady={() => console.log("ready")}
+            onReady={onPlayerReadyHandler}
             onError={e => console.log(e)}
             onPlaybackQualityChange={q => console.log(q)}
             volume={50}
+            // allowWebViewZoom={true}
             playbackRate={1}
             playerParams={{
               cc_lang_pref: "us",
@@ -280,7 +337,7 @@ const YoutubeComponent = (props) => {
           ]}>
             <Animated.View
              style={{
-               flexDirection: 'row', paddingHorizontal: 8, justifyContent: 'space-between',
+               flexDirection: 'row', justifyContent: 'space-between',
                alignItems: 'center',
               width: scrollPos.interpolate({
                 inputRange: [
@@ -295,18 +352,44 @@ const YoutubeComponent = (props) => {
                 ]
               })
             }}>
-               <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(true)}>
-                <Ionicons name="ios-play" size={34} color="#989898" />
-              </TouchableOpacity>
-              <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(false)}>
-                <Ionicons name="ios-pause" size={34} color="#989898" />
-              </TouchableOpacity>
-              <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setSearchMode(true)}>
-                <Ionicons name="ios-search" size={34} color="#989898" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => props.youtubeBackgroundHandler(props.isBackground)}>
-                <MaterialCommunityIcons name="flip-to-back" size={34} style={{ marginHorizontal: 8 }} color={props.isBackground ? Colors.tertiary : "#989898"}/>
-              </TouchableOpacity>
+              <View style={{ paddingVertical: 2, marginHorizontal: 8, flexDirection: 'row', justifyContent: 'space-around'}}>
+                <View style={{ alignSelf: 'flex-end', marginRight: 12 }}>
+                  <BodyText style={{ color: '#989898' }}>{renderPlayerTime(timeElapsed)}</BodyText>
+                </View>
+                <TouchableOpacity onPress={() => setSearchMode(true)}>
+                  <Ionicons name="ios-search" size={30} color="#989898" />
+                </TouchableOpacity>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => setPlaying(true)}>
+                  <MaterialIcons name="skip-previous" size={36} color="#989898" />
+                </TouchableOpacity> 
+                {!playing && (
+                  <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(true)}>
+                    <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor:'#989898' }}>
+                      <Ionicons style={{textAlign: 'center', top: 3, left: 1}} name="ios-play" size={30} color="#F5F5F5" />
+                    </View>
+                  </TouchableOpacity>
+                )}
+                {playing && (
+                  <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(false)}>
+                    <View style={{width: 38, height: 38, borderRadius: 19, backgroundColor:'#989898' }}>
+                      <Ionicons style={{textAlign: 'center', top: 3 }} name="ios-pause" size={30} color="#F5F5F5" />
+                    </View>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => setPlaying(true)}>
+                  <MaterialIcons name="skip-next" size={36} color="#989898" />
+                </TouchableOpacity>
+              </View>
+               <View style={{ paddingVertical: 3, marginHorizontal: 8, flexDirection: 'row', justifyContent: 'space-around'}}>
+                <TouchableOpacity onPress={() => props.youtubeBackgroundHandler(props.isBackground)}>
+                  <MaterialCommunityIcons name="flip-to-back" size={30} color={props.isBackground ? Colors.tertiary : "#989898"}/>
+                </TouchableOpacity>
+                <View style={{ alignSelf: 'flex-end', marginLeft: 12 }}>
+                  <BodyText  style={{ color: '#989898' }}>{renderPlayerTime(videoDuration)}</BodyText>
+                </View>
+              </View>
             </Animated.View>
         </Animated.View>}
         {showResults.current && <ScrollView

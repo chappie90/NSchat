@@ -494,7 +494,7 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const onIputBlurHandler = () => {
-    setInputFocused(false);
+     setInputFocused(false);
   };
  
   const startTypingHandler = (text) => {
@@ -817,7 +817,7 @@ const ChatDetailScreen = ({ navigation }) => {
               renderSend={renderSend}
               renderActions={renderActions}
               // renderComposer={renderComposer}
-              textInputProps={styles.messageInputContainer, { onFocus: onIputFocusHandler, onBlur: onIputBlurHandler} }
+              textInputProps={{ ...styles.messageInputContainer, onFocus: onIputFocusHandler, onBlur: onIputBlurHandler }}
               textInputStyle={styles.messageInput}
               renderChatFooter={renderChatFooter}
               renderCustomView={false ? null : renderCustomView}

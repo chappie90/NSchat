@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
+  FlatList,
   TouchableOpacity,
   TouchableWithoutFeedback,
   ActivityIndicator,
@@ -14,12 +15,13 @@ import {
   KeyboardAvoidingView,
   Dimensions
 } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons, Ionicons, AntDesign, EvilIcons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Modal from "react-native-modal";
 import Constants from 'expo-constants';
-import moment from 'moment';
+import { formatDate } from '../helpers/formatDate';
+const decode = require('unescape');
 
 import Colors from '../constants/colors';
 import youtubeApi from '../api/youtube';
@@ -64,7 +66,7 @@ const YoutubeComponent = (props) => {
     },
     onPanResponderMove: (e, gestureState) => {      
       // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
-      if (e.nativeEvent.pageY >= 130 && e.nativeEvent.pageY <= deviceHeight - topNavHeight) {
+      if (e.nativeEvent.pageY >= 130 && e.nativeEvent.pageY <= deviceHeight - topNavHeight - 40) {
         scrollPos.setValue(e.nativeEvent.pageY);
       }
     },
@@ -91,7 +93,7 @@ const YoutubeComponent = (props) => {
         Animated.timing(
           scrollPos,
           {
-            toValue: deviceHeight - topNavHeight - 35,
+            toValue: deviceHeight - topNavHeight - 40,
             duration: 100
           },
         ).start();
@@ -182,7 +184,7 @@ const YoutubeComponent = (props) => {
           props.isVisible && props.isBackground ? styles.youtubeBackground : styles.youtubePane
         ]}>
         <Modal
-          style={{ alignItems: "center", justifyContent: "center", marginHorizontal: 15, marginVertical: 35 }}
+          style={{ alignItems: "center", justifyContent: "center", marginHorizontal: 10, marginVertical: 35 }}
           isVisible={searchMode}
           animationIn="fadeIn"
           animationOut="fadeOut"
@@ -200,39 +202,43 @@ const YoutubeComponent = (props) => {
                   props.isVisibleHandler(false);
                 }
               }}>
-                <Ionicons name="ios-close" size={46} color="#989898" />
+                <EvilIcons name="close" size={34} color="#989898" />
               </TouchableOpacity>
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search YouTube"
-                placeholderTextColor='#202020'
+                placeholderTextColor='#989898'
                 autoCorrect={false}
                 value={searchTerm}
                 onChangeText={setSearchTerm}
                />  
               <TouchableOpacity onPress={() => youtubeSearchHander(searchTerm)}>
-                <AntDesign name="arrowright" size={30} color="#989898" />
+                <Ionicons name="ios-arrow-round-forward" size={38} color="#989898" />
               </TouchableOpacity>
             </View>
-            <ScrollView>
-              {youtubeResults && youtubeResults.map(item => (
-                <TouchableWithoutFeedback key={item.etag} onPress={() => {
-                  getCurrentVideo(item);
-                  setSearchMode(false);
-                }}>
-                  <View style={styles.item}>
-                    <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
-                    <View style={styles.itemInfo}>
-                      <HeadingText>{item.snippet.title}</HeadingText>
-                      <View style={styles.itemMeta}>
-                        <BodyText style={styles.channelTitle}>{item.snippet.channelTitle}</BodyText>
-                        <BodyText>{item.snippet.publishedAt.split('T')[0]}</BodyText>
+            <FlatList
+              data={youtubeResults}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => {
+                console.log(item)
+                return (
+                  <TouchableWithoutFeedback key={item.etag} onPress={() => {
+                    getCurrentVideo(item);
+                    setSearchMode(false);
+                  }}>
+                    <View style={styles.item}>
+                      <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
+                      <View style={styles.itemInfo}>
+                        <HeadingText numberOfLines={3} style={{ flexShrink: 1, fontSize: 16 }}>{decode(item.snippet.title)}</HeadingText>
+                        <View style={styles.itemMeta}>
+                          <BodyText numberOfLines={2} style={styles.channelTitle}>{decode(item.snippet.channelTitle)}</BodyText>
+                          <BodyText style={styles.date}>{formatDate(item.snippet.publishedAt)}</BodyText>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </TouchableWithoutFeedback>
-              ))}
-            </ScrollView>
+                  </TouchableWithoutFeedback>
+                );
+              }} />  
           </View>
         </Modal>
       {currentVideo && ( 
@@ -462,7 +468,7 @@ const YoutubeComponent = (props) => {
                       height: ( deviceWidth / 3 ) / playerRatio,
                       marginRight: 15
                   }} />
-                  <HeadingText numberOfLines={2} style={{ flexShrink: 1 }}>{item.snippet.title}</HeadingText>
+                  <HeadingText numberOfLines={2} style={{ flexShrink: 1 }}>{decode(item.snippet.title)}</HeadingText>
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -479,14 +485,13 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 18
-  },
-  item: {
-    // alignItems: 'center'
+    color: '#989898',
+    fontSize: 20,
+    bottom: 1
   },
   img: {
     width: '100%',
-    height: Dimensions.get('window').width / 1.333
+    height: (Dimensions.get('window').width - 20) / 1.333
   },
   itemInfo: {
     paddingTop: 8,
@@ -522,6 +527,13 @@ const styles = StyleSheet.create({
     bottom: 0, 
     right: 0 
   },
+  channelTitle: {
+    maxWidth: '60%',
+    flexShrink: 1
+  }, 
+  date: {
+    maxWidth: '40%'
+  }
 });
 
 export default YoutubeComponent;

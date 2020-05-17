@@ -114,6 +114,18 @@ const YoutubeComponent = (props) => {
 
   }, []);
 
+  useEffect(() => {
+    if (props.inputFocused) {
+      Animated.timing(
+        scrollPos,
+        {
+          toValue: topNavHeight + playerHeightBig,
+          duration: 350
+        },
+      ).start();
+    }
+  }, [props.inputFocused]);
+
   const onPlayerReadyHandler = () => {
     if (playerRef.current) {
       playerRef.current.getCurrentTime()
@@ -136,6 +148,8 @@ const YoutubeComponent = (props) => {
       setPlaying(false);
     }
   };
+
+
 
   // const renderPlayerTime = (seconds) => {
   //   if (seconds < 3600) {

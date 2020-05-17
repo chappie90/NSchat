@@ -86,6 +86,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const previousRoute = useRef(null);
   const [uuid, setUuid] = useState('');
   const [fadeAnim, setFadeAnim] = useState(new Animated.Value(0.01));
+  const [inputFocused, setInputFocused] = useState(false);
   let page;
   let stopTypingTimeout;
   let giftedChatRef;
@@ -487,6 +488,14 @@ const ChatDetailScreen = ({ navigation }) => {
     setShowReplyBox(true);
     setOverlayMode(false);
   };
+
+  const onIputFocusHandler = () => {
+    setInputFocused(true);
+  };
+
+  const onIputBlurHandler = () => {
+    setInputFocused(false);
+  };
  
   const startTypingHandler = (text) => {
     if (text) {
@@ -726,6 +735,7 @@ const ChatDetailScreen = ({ navigation }) => {
         />
       {isVisibleYoutube.current && (
         <YoutubeComponent
+          inputFocused={inputFocused}
           isBackground={isBackgroundYoutube.current}
           isVisible={isVisibleYoutube.current}
           youtubeBackgroundHandler={youtubeBackgroundHandler}
@@ -807,7 +817,7 @@ const ChatDetailScreen = ({ navigation }) => {
               renderSend={renderSend}
               renderActions={renderActions}
               // renderComposer={renderComposer}
-              textInputProps={styles.messageInputContainer}
+              textInputProps={styles.messageInputContainer, { onFocus: onIputFocusHandler, onBlur: onIputBlurHandler} }
               textInputStyle={styles.messageInput}
               renderChatFooter={renderChatFooter}
               renderCustomView={false ? null : renderCustomView}

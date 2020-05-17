@@ -3,7 +3,8 @@ import youtubeApi from '../api/youtube';
 import axios from 'axios';
 import chatApi from '../api/chat';
 
-const youtubeApiKey = 'AIzaSyCJopZMyUa6qsPBsfvnxElNobJkTBTxkdQ';
+// const youtubeApiKey = 'AIzaSyCJopZMyUa6qsPBsfvnxElNobJkTBTxkdQ';
+const youtubeApiKey = 'AIzaSyDNRHm0hJryOCP87lfEhOuKPX9OFEXPeRY';
 
 const youtubeReducer = (state, action) => {
   switch (action.type) {

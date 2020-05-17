@@ -40,40 +40,18 @@ const YoutubeComponent = (props) => {
   const [playing, setPlaying] = useState(true);
 
   const topNavHeight = 50;
+  const playerHeightSmall = 50;
+  const playerHeightBig = 80;
   const bottomNavHeight = getTabBarHeight();
   const deviceWidth = Dimensions.get('window').width;
   const deviceHeight = Dimensions.get('window').height;
   const playerRatio = 1.78;
   const statusBarHeight = Constants.statusBarHeight;
   const scrollPos = useRef(new Animated.Value(0)).current;
-  const showResults = useRef(false);
   let initalScrollPos;
 
   const [videoDuration, setVideoDuration] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [keepTrack, setKeepTrack] = useState(0);
-
-  const timeElapsedRef = useRef(timeElapsed);
-
-  const increment = useCallback(() => {
-
-    setTimeElapsed(timeElapsedRef.current + 1)
-  }, [timeElapsed])
-
-  let timer;
-
-  const startTimer = () => {
-
-    timer = setInterval(() => {
-      increment()
-    }, 1000);
-  };
-
-
-  const stopTimer = () => {
-    console.log('timer stoped')
-    clearInterval(timer);
-  };
 
   const panResponder = React.useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -86,7 +64,7 @@ const YoutubeComponent = (props) => {
     },
     onPanResponderMove: (e, gestureState) => {      
       // topHeight.setValue(gestureState.moveY > (deviceHeight - 40) ? 40 : deviceHeight - gestureState.moveY);
-      if (e.nativeEvent.pageY >= 130 && e.nativeEvent.pageY <= deviceHeight - topNavHeight - bottomNavHeight) {
+      if (e.nativeEvent.pageY >= 130 && e.nativeEvent.pageY <= deviceHeight - topNavHeight) {
         scrollPos.setValue(e.nativeEvent.pageY);
       }
     },
@@ -95,7 +73,7 @@ const YoutubeComponent = (props) => {
         Animated.timing(
           scrollPos,
           {
-            toValue: topNavHeight + 80,
+            toValue: topNavHeight + playerHeightBig,
             duration: 100
           },
         ).start();
@@ -104,21 +82,19 @@ const YoutubeComponent = (props) => {
         Animated.timing(
           scrollPos,
           {
-            toValue: topNavHeight + deviceWidth / playerRatio + 50,
+            toValue: topNavHeight + deviceWidth / playerRatio + playerHeightSmall,
             duration: 100
           },
         ).start();
-         showResults.current = true;
       }
       if (e.nativeEvent.pageY > deviceHeight * 2 / 3) {
         Animated.timing(
           scrollPos,
           {
-            toValue: deviceHeight - topNavHeight - bottomNavHeight,
+            toValue: deviceHeight - topNavHeight - 35,
             duration: 100
           },
         ).start();
-        showResults.current = true;
       }
       scrollPos.flattenOffset();
     },
@@ -153,36 +129,21 @@ const YoutubeComponent = (props) => {
   };
 
   const playerOnChangeState = event => {
-    let timer;
     // console.log(event)
     if (event === 'playing') {
       setPlaying(true);
-      startTimer(true);
     } else if (event === 'paused') {
       setPlaying(false);
-      stopTimer();
     }
   };
 
-
-
-  // useEffect(() => {
-  //   const timer = setInterval(() => {  
-  //       setTimeElapsed(timeElapsed + 1);
-  //     }, 1000)
-
-  //   return () => {
-  //     clearInterval(timer);
-  //   }
-  // }, []);
-
-  const renderPlayerTime = (seconds) => {
-    if (seconds < 3600) {
-      return moment.utc(seconds * 1000).format('m:ss');
-    } else {
-      return moment.utc(seconds * 1000).format('HH:mm:ss')
-    } 
-  };
+  // const renderPlayerTime = (seconds) => {
+  //   if (seconds < 3600) {
+  //     return moment.utc(seconds * 1000).format('m:ss');
+  //   } else {
+  //     return moment.utc(seconds * 1000).format('HH:mm:ss')
+  //   } 
+  // };
 
   return (
      <Animated.View
@@ -193,15 +154,16 @@ const YoutubeComponent = (props) => {
             height: scrollPos.interpolate({
               inputRange: [
                 130, 
-                topNavHeight + deviceWidth / playerRatio + 50,
-                deviceHeight - topNavHeight - bottomNavHeight
+                topNavHeight + deviceWidth / playerRatio + playerHeightSmall,
+                deviceHeight - topNavHeight
               ],
               outputRange: [
-                80, 
+                playerHeightBig, 
                 topNavHeight + deviceWidth / playerRatio,
-                deviceHeight - topNavHeight - bottomNavHeight - statusBarHeight
+                deviceHeight - topNavHeight - statusBarHeight
               ]
             }),
+            width: '100%'
           },
           props.isVisible && props.isBackground ? styles.youtubeBackground : styles.youtubePane
         ]}>
@@ -271,7 +233,7 @@ const YoutubeComponent = (props) => {
               inputRange: [
                 130, 
                 topNavHeight + deviceWidth / playerRatio + 50,
-                deviceHeight - topNavHeight - bottomNavHeight
+                deviceHeight - topNavHeight
               ],
               outputRange: [
                 80 * playerRatio, 
@@ -283,7 +245,7 @@ const YoutubeComponent = (props) => {
               inputRange: [
                 130, 
                 topNavHeight + deviceWidth / playerRatio + 50,
-                deviceHeight - topNavHeight - bottomNavHeight
+                deviceHeight - topNavHeight
               ],
               outputRange: [
                 80, 
@@ -305,13 +267,14 @@ const YoutubeComponent = (props) => {
             onChangeState={playerOnChangeState}   
             onReady={onPlayerReadyHandler}
             onError={e => console.log(e)}
-            onPlaybackQualityChange={q => console.log(q)}
+            // onPlaybackQualityChange={q => console.log(q)}
             volume={50}
+            // webViewProps={{allowsInlineMediaPlayback: false}}
             // allowWebViewZoom={true}
             playbackRate={1}
             playerParams={{
               cc_lang_pref: "us",
-              showClosedCaptions: true,
+              showClosedCaptions: true
             }}
           />
         </Animated.View>
@@ -325,74 +288,150 @@ const YoutubeComponent = (props) => {
                 inputRange: [
                   130, 
                   topNavHeight + deviceWidth / playerRatio + 50,
-                  deviceHeight - topNavHeight - bottomNavHeight
+                  deviceHeight - topNavHeight
                 ],
                 outputRange: [
                   80, 
                   50,
                   50
                 ]
-              })
+              }),
             }
           ]}>
             <Animated.View
-             style={{
-               flexDirection: 'row', justifyContent: 'space-between',
-               alignItems: 'center',
-              width: scrollPos.interpolate({
-                inputRange: [
-                  130, 
-                  topNavHeight + deviceWidth / playerRatio + 50,
-                  deviceHeight - topNavHeight - bottomNavHeight
-                ],
-                outputRange: [
-                  deviceWidth - 80 * playerRatio, 
-                  deviceWidth,
-                  deviceWidth
-                ]
+              style={{
+                 flexDirection: 'row', justifyContent: 'space-around',
+                 alignItems: 'center',
+                width: scrollPos.interpolate({
+                  inputRange: [
+                    130, 
+                    topNavHeight + deviceWidth / playerRatio + 50,
+                    deviceHeight - topNavHeight
+                  ],
+                  outputRange: [
+                    deviceWidth - 80 * playerRatio, 
+                    deviceWidth,
+                    deviceWidth
+                  ]
               })
             }}>
-              <View style={{ paddingVertical: 2, marginHorizontal: 8, flexDirection: 'row', justifyContent: 'space-around'}}>
-                <View style={{ alignSelf: 'flex-end', marginRight: 12 }}>
+              <Animated.View style={{
+                  transform: [
+                    { translateX: scrollPos.interpolate({
+                      inputRange: [
+                        130, 
+                        topNavHeight + deviceWidth / playerRatio + 50,
+                        deviceHeight - topNavHeight
+                      ],
+                      outputRange: [
+                        30, 
+                        10,
+                        0
+                      ]
+                    })}
+                  ]
+                }}>
+             {/*   <View style={{ alignSelf: 'flex-end', marginRight: 14 }}>
                   <BodyText style={{ color: '#989898' }}>{renderPlayerTime(timeElapsed)}</BodyText>
-                </View>
+                </View> */}
                 <TouchableOpacity onPress={() => setSearchMode(true)}>
-                  <Ionicons name="ios-search" size={30} color="#989898" />
+                  <Ionicons name="ios-search" size={32} color="#989898" />
                 </TouchableOpacity>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => setPlaying(true)}>
-                  <MaterialIcons name="skip-previous" size={36} color="#989898" />
-                </TouchableOpacity> 
-                {!playing && (
+              </Animated.View>
+  
+                <Animated.View style={{
+                  transform: [
+                    { translateX: scrollPos.interpolate({
+                      inputRange: [
+                        130, 
+                        topNavHeight + deviceWidth / playerRatio + 50,
+                        deviceHeight - topNavHeight
+                      ],
+                      outputRange: [
+                        deviceWidth / 8.5, 
+                        0,
+                        0
+                      ]
+                    })}
+                  ],
+                  opacity: scrollPos.interpolate({
+                    inputRange: [ 130, 190 ],
+                    outputRange: [ 0, 1 ]
+                  }),
+                  height: scrollPos.interpolate({
+                    inputRange: [ 130, 130 ],
+                    outputRange: [ 0, 36 ]
+                  })
+                }}>
                   <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(true)}>
-                    <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor:'#989898' }}>
-                      <Ionicons style={{textAlign: 'center', top: 3, left: 1}} name="ios-play" size={30} color="#F5F5F5" />
-                    </View>
+                    <MaterialIcons name="skip-previous" size={36} color="#989898" />
+                  </TouchableOpacity>
+                </Animated.View> 
+                {!playing && (
+                  <TouchableOpacity onPress={() => setPlaying(true)}>
+                    <Ionicons style={{ left: 2, top: 1.5 }} name="ios-play" size={34} color="#989898" />
                   </TouchableOpacity>
                 )}
                 {playing && (
-                  <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(false)}>
-                    <View style={{width: 38, height: 38, borderRadius: 19, backgroundColor:'#989898' }}>
-                      <Ionicons style={{textAlign: 'center', top: 3 }} name="ios-pause" size={30} color="#F5F5F5" />
-                    </View>
+                  <TouchableOpacity  onPress={() => setPlaying(false)}> 
+                    <Ionicons style={{ top: 1.5 }} name="ios-pause" size={34} color="#989898" />                
                   </TouchableOpacity>
                 )}
-                <TouchableOpacity style={{ marginHorizontal: 2 }} onPress={() => setPlaying(true)}>
-                  <MaterialIcons name="skip-next" size={36} color="#989898" />
-                </TouchableOpacity>
-              </View>
-               <View style={{ paddingVertical: 3, marginHorizontal: 8, flexDirection: 'row', justifyContent: 'space-around'}}>
+                 <Animated.View style={{
+                  transform: [
+                    { translateX: scrollPos.interpolate({
+                      inputRange: [
+                        130, 
+                        topNavHeight + deviceWidth / playerRatio + 50,
+                         deviceHeight - topNavHeight
+                      ],
+                      outputRange: [
+                        -deviceWidth / 8.5, 
+                        0,
+                        0
+                      ]
+                    })}
+                  ],
+                  opacity: scrollPos.interpolate({
+                    inputRange: [ 130, 190 ],
+                    outputRange: [ 0, 1 ]
+                  }),
+                  height: scrollPos.interpolate({
+                    inputRange: [ 130, 130 ],
+                    outputRange: [ 0, 36 ]
+                  })
+                }}>
+                  <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(true)}>
+                    <MaterialIcons name="skip-next" size={36} color="#989898" />
+                  </TouchableOpacity>
+                </Animated.View>
+  
+                <Animated.View style={{
+                  transform: [
+                    { translateX: scrollPos.interpolate({
+                      inputRange: [
+                        130, 
+                        topNavHeight + deviceWidth / playerRatio + 50,
+                        deviceHeight - topNavHeight
+                      ],
+                      outputRange: [
+                        -30, 
+                        -10,
+                        0
+                      ]
+                    })}
+                  ]
+                }}>
                 <TouchableOpacity onPress={() => props.youtubeBackgroundHandler(props.isBackground)}>
-                  <MaterialCommunityIcons name="flip-to-back" size={30} color={props.isBackground ? Colors.tertiary : "#989898"}/>
+                  <MaterialCommunityIcons name="flip-to-back" size={32} color={props.isBackground ? Colors.tertiary : "#989898"}/>
                 </TouchableOpacity>
-                <View style={{ alignSelf: 'flex-end', marginLeft: 12 }}>
+               {/* <View style={{ alignSelf: 'flex-end', marginLeft: 14 }}>
                   <BodyText  style={{ color: '#989898' }}>{renderPlayerTime(videoDuration)}</BodyText>
-                </View>
-              </View>
+                </View> */}
+              </Animated.View>
             </Animated.View>
         </Animated.View>}
-        {showResults.current && <ScrollView
+        <ScrollView
            style={{
               marginTop: deviceWidth / playerRatio + 15,
               flex: 1,
@@ -414,7 +453,7 @@ const YoutubeComponent = (props) => {
               </TouchableWithoutFeedback>
             </View>
           ))}
-        </ScrollView>}
+        </ScrollView>
       </Animated.View>
   );
 };

@@ -23,7 +23,7 @@ const getYoutubeResults = dispatch => async (term) => {
       params: {
         q: term,
         part: 'snippet',
-        maxResults: 2,
+        maxResults: 25,
         key: youtubeApiKey
       }
     });
@@ -34,6 +34,7 @@ const getYoutubeResults = dispatch => async (term) => {
 
     dispatch({ type: 'get_youtube_results', payload: response.data.items });
 
+    return response.data.items;
   } catch (error) {
     console.log(error);
   }

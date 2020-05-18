@@ -40,6 +40,7 @@ const YoutubeComponent = (props) => {
   const [searchMode, setSearchMode] = useState(false);
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
+  const [showYoutubeResults, setShowYoutubeResults] = useState([]);
 
   const topNavHeight = 50;
   const playerHeightSmall = 50;
@@ -112,7 +113,9 @@ const YoutubeComponent = (props) => {
       scrollPos.setValue(initalScrollPos);
     }
 
-    getYoutubeResults('');
+    getYoutubeResults('').then(results => {
+      setShowYoutubeResults(results.slice(0, 5));
+    });
 
   }, []);
 
@@ -138,7 +141,9 @@ const YoutubeComponent = (props) => {
   };
 
   const youtubeSearchHander = (term) => {
-    getYoutubeResults(term);
+    getYoutubeResults(term).then(results => {
+      setShowYoutubeResults(results.slice(0, 5));
+    });
     Keyboard.dismiss();
   };
 
@@ -217,10 +222,9 @@ const YoutubeComponent = (props) => {
               </TouchableOpacity>
             </View>
             <FlatList
-              data={youtubeResults}
+              data={showYoutubeResults}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item, index }) => {
-                console.log(item)
                 return (
                   <TouchableWithoutFeedback key={item.etag} onPress={() => {
                     getCurrentVideo(item);
@@ -238,6 +242,12 @@ const YoutubeComponent = (props) => {
                     </View>
                   </TouchableWithoutFeedback>
                 );
+              }}
+              onEndReached={() => {
+                setShowYoutubeResults([ 
+                  ...showYoutubeResults, 
+                  ...youtubeResults.slice(showYoutubeResults.length, showYoutubeResults.length + 5) 
+                ]);
               }} />  
           </View>
         </Modal>
@@ -451,29 +461,34 @@ const YoutubeComponent = (props) => {
               </Animated.View>
             </Animated.View>
         </Animated.View>}
-        <ScrollView
-           style={{
-              marginTop: deviceWidth / playerRatio + 15,
-              flex: 1,
-              marginBottom: 50
-          }}>
-          {youtubeResults && youtubeResults.map(item => (
-            <View style={{ marginBottom: 15 }}  key={item.etag}>
-              <TouchableWithoutFeedback onPress={() => {
-                getCurrentVideo(item);
-              }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, }}>
-                  <Image source={{ uri: item.snippet.thumbnails.high.url }} style={{
-                      width: deviceWidth / 3,
-                      height: ( deviceWidth / 3 ) / playerRatio,
-                      marginRight: 15
-                  }} />
-                  <HeadingText numberOfLines={2} style={{ flexShrink: 1 }}>{decode(item.snippet.title)}</HeadingText>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          ))}
-        </ScrollView>
+        <FlatList
+          style={{ marginTop: deviceWidth / playerRatio + 15, flex: 1, marginBottom: 50 }}
+          data={showYoutubeResults}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            return (
+              <View style={{ marginBottom: 15 }}  key={item.etag}>
+                <TouchableWithoutFeedback onPress={() => {
+                  getCurrentVideo(item);
+                }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, }}>
+                    <Image source={{ uri: item.snippet.thumbnails.high.url }} style={{
+                        width: deviceWidth / 3,
+                        height: ( deviceWidth / 3 ) / playerRatio,
+                        marginRight: 15
+                    }} />
+                    <HeadingText numberOfLines={2} style={{ flexShrink: 1 }}>{decode(item.snippet.title)}</HeadingText>
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            );
+          }}
+          onEndReached={() => {
+            setShowYoutubeResults([ 
+              ...showYoutubeResults, 
+              ...youtubeResults.slice(showYoutubeResults.length, 5) 
+            ]);
+          }} />
       </Animated.View>
   );
 };

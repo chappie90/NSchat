@@ -41,6 +41,8 @@ const YoutubeComponent = (props) => {
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
   const [showYoutubeResults, setShowYoutubeResults] = useState([]);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [isPreviousDisabled, setIsPreviousDisabled] = useState(false);
 
   const topNavHeight = 50;
   const playerHeightSmall = 50;
@@ -108,15 +110,14 @@ const YoutubeComponent = (props) => {
       initalScrollPos = topNavHeight + deviceWidth / playerRatio + 50;
       scrollPos.setValue(initalScrollPos);
       setSearchMode(true);
+      getYoutubeResults('').then(results => {
+        setShowYoutubeResults(results.slice(0, 5));
+      });
     } else {
       initalScrollPos = topNavHeight + 80;
       scrollPos.setValue(initalScrollPos);
+      setShowYoutubeResults(youtubeResults.slice(0, 5));
     }
-
-    getYoutubeResults('').then(results => {
-      setShowYoutubeResults(results.slice(0, 5));
-    });
-
   }, []);
 
   useEffect(() => {
@@ -132,6 +133,17 @@ const YoutubeComponent = (props) => {
   }, [props.inputFocused]);
 
   const onPlayerReadyHandler = () => {
+    let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
+    if (currentIndex === 0) {
+      setIsPreviousDisabled(true);
+    } else {
+      setIsPreviousDisabled(false);
+    }
+    if (currentIndex === youtubeResults.length - 1) {
+      setIsNextDisabled(true);
+    } else {
+      setIsNextDisabled(false);
+    }
     if (playerRef.current) {
       playerRef.current.getCurrentTime()
         .then(currentTime => setTimeElapsed(currentTime));
@@ -145,6 +157,28 @@ const YoutubeComponent = (props) => {
       setShowYoutubeResults(results.slice(0, 5));
     });
     Keyboard.dismiss();
+  };
+
+  const playNextHandler = () => {
+    let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
+    if (currentIndex === youtubeResults.length - 1) {
+      setIsNextDisabled(true);
+    } else {
+      setIsNextDisabled(false);
+    }
+    getCurrentVideo(youtubeResults[currentIndex + 1]);
+    setPlaying(false);
+  };
+
+  const playPreviousHandler = () => {
+    let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
+    if (currentIndex === 0) {
+      setIsPreviousDisabled(true);
+    } else {
+      setIsPreviousDisabled(false);
+    }
+    getCurrentVideo(youtubeResults[currentIndex - 1]);
+    setPlaying(false);
   };
 
   const playerOnChangeState = event => {
@@ -207,7 +241,7 @@ const YoutubeComponent = (props) => {
                   props.isVisibleHandler(false);
                 }
               }}>
-                <EvilIcons name="close" size={34} color="#989898" />
+                <EvilIcons name="close" size={30} color="#989898" />
               </TouchableOpacity>
               <TextInput
                 style={styles.searchInput}
@@ -393,10 +427,10 @@ const YoutubeComponent = (props) => {
                     outputRange: [ 0, 36 ]
                   })
                 }}>
-                  <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(true)}>
-                    <MaterialIcons name="skip-previous" size={36} color="#989898" />
+                  <TouchableOpacity disabled={isPreviousDisabled} style={{ marginHorizontal: 8 }} onPress={playPreviousHandler}>
+                    <MaterialIcons name="skip-previous" size={36} color={isPreviousDisabled ? '#DCDCDC' : '#989898'} />
                   </TouchableOpacity>
-                </Animated.View> 
+                </Animated.View>
                 {!playing && (
                   <TouchableOpacity onPress={() => setPlaying(true)}>
                     <Ionicons style={{ left: 2, top: 1.5 }} name="ios-play" size={34} color="#989898" />
@@ -407,7 +441,7 @@ const YoutubeComponent = (props) => {
                     <Ionicons style={{ top: 1.5 }} name="ios-pause" size={34} color="#989898" />                
                   </TouchableOpacity>
                 )}
-                 <Animated.View style={{
+                <Animated.View style={{
                   transform: [
                     { translateX: scrollPos.interpolate({
                       inputRange: [
@@ -431,8 +465,8 @@ const YoutubeComponent = (props) => {
                     outputRange: [ 0, 36 ]
                   })
                 }}>
-                  <TouchableOpacity style={{ marginHorizontal: 8 }} onPress={() => setPlaying(true)}>
-                    <MaterialIcons name="skip-next" size={36} color="#989898" />
+                  <TouchableOpacity disabled={isNextDisabled}  style={{ marginHorizontal: 8 }} onPress={playNextHandler}>
+                    <MaterialIcons name="skip-next" size={36} color={isNextDisabled ? '#DCDCDC' : '#989898'} />
                   </TouchableOpacity>
                 </Animated.View>
   

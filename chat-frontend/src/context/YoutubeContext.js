@@ -47,5 +47,5 @@ const getCurrentVideo = dispatch => async (video) => {
 export const { Context, Provider } = createDataContext(
   youtubeReducer,
   { getYoutubeResults, getCurrentVideo },
-  { youtubeResults: null, currentVideo: null }
+  { youtubeResults: [], currentVideo: null }
 );

@@ -39,10 +39,11 @@ const YoutubeComponent = (props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchMode, setSearchMode] = useState(false);
   const playerRef = useRef(null);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
   const [showYoutubeResults, setShowYoutubeResults] = useState([]);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isPreviousDisabled, setIsPreviousDisabled] = useState(false);
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   const topNavHeight = 50;
   const playerHeightSmall = 50;
@@ -117,6 +118,8 @@ const YoutubeComponent = (props) => {
       initalScrollPos = topNavHeight + 80;
       scrollPos.setValue(initalScrollPos);
       setShowYoutubeResults(youtubeResults.slice(0, 5));
+      setIsFirstRender(true);
+      console.log('ran use effect')
     }
   }, []);
 
@@ -133,6 +136,10 @@ const YoutubeComponent = (props) => {
   }, [props.inputFocused]);
 
   const onPlayerReadyHandler = () => {
+    if (!isFirstRender) {
+      setPlaying(true);
+    }
+
     let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
     if (currentIndex === 0) {
       setIsPreviousDisabled(true);
@@ -144,6 +151,7 @@ const YoutubeComponent = (props) => {
     } else {
       setIsNextDisabled(false);
     }
+    
     if (playerRef.current) {
       playerRef.current.getCurrentTime()
         .then(currentTime => setTimeElapsed(currentTime));
@@ -160,37 +168,38 @@ const YoutubeComponent = (props) => {
   };
 
   const playNextHandler = () => {
-    let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
-    if (currentIndex === youtubeResults.length - 1) {
-      setIsNextDisabled(true);
-    } else {
-      setIsNextDisabled(false);
+    if (currentVideo.id) {
+      let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
+      if (currentIndex === youtubeResults.length - 1) {
+        setIsNextDisabled(true);
+      } else {
+        setIsNextDisabled(false);
+        getCurrentVideo(youtubeResults[currentIndex + 1]);
+        setPlaying(false);
+      }    
     }
-    getCurrentVideo(youtubeResults[currentIndex + 1]);
-    setPlaying(false);
   };
 
   const playPreviousHandler = () => {
-    let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
-    if (currentIndex === 0) {
-      setIsPreviousDisabled(true);
-    } else {
-      setIsPreviousDisabled(false);
+    if (currentVideo.id) {
+      let currentIndex = youtubeResults.findIndex(item => item.id.videoId === currentVideo.id.videoId);
+      if (currentIndex === 0) {
+        setIsPreviousDisabled(true);
+      } else {
+        getCurrentVideo(youtubeResults[currentIndex - 1]);
+        setIsPreviousDisabled(false);
+        setPlaying(false);
+      }
     }
-    getCurrentVideo(youtubeResults[currentIndex - 1]);
-    setPlaying(false);
   };
 
   const playerOnChangeState = event => {
-    // console.log(event)
     if (event === 'playing') {
       setPlaying(true);
     } else if (event === 'paused') {
       setPlaying(false);
     }
   };
-
-
 
   // const renderPlayerTime = (seconds) => {
   //   if (seconds < 3600) {
@@ -263,6 +272,7 @@ const YoutubeComponent = (props) => {
                   <TouchableWithoutFeedback key={item.etag} onPress={() => {
                     getCurrentVideo(item);
                     setSearchMode(false);
+                    setIsFirstRender(false);
                   }}>
                     <View style={styles.item}>
                       <Image source={{ uri: item.snippet.thumbnails.high.url }} style={styles.img} />
@@ -504,6 +514,7 @@ const YoutubeComponent = (props) => {
               <View style={{ marginBottom: 15 }}  key={item.etag}>
                 <TouchableWithoutFeedback onPress={() => {
                   getCurrentVideo(item);
+                  setIsFirstRender(false);
                 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, }}>
                     <Image source={{ uri: item.snippet.thumbnails.high.url }} style={{
@@ -520,7 +531,7 @@ const YoutubeComponent = (props) => {
           onEndReached={() => {
             setShowYoutubeResults([ 
               ...showYoutubeResults, 
-              ...youtubeResults.slice(showYoutubeResults.length, 5) 
+              ...youtubeResults.slice(showYoutubeResults.length, showYoutubeResults.length + 5) 
             ]);
           }} />
       </Animated.View>

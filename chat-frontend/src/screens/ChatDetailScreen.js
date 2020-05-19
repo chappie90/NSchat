@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 import Constants from 'expo-constants';
 import { Overlay } from 'react-native-elements';
-import { GiftedChat, Bubble, Avatar, LoadEarlier, Message, MessageText, Time, Send } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Avatar, Message, MessageText, Time, Send } from 'react-native-gifted-chat';
 import { NavigationEvents } from 'react-navigation';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { MaterialIcons, MaterialCommunityIcons, FontAwesome, Ionicons, AntDesign } from '@expo/vector-icons';
@@ -71,13 +71,13 @@ const ChatDetailScreen = ({ navigation }) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [groupSettingsModal, setGroupSettingsModal] = useState(false);
   const [chatType, setChatType] = useState('');
-  const [loadEarlier, setLoadEarlier] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [markSendAsActive, setMarkSendAsActive] = useState(false);
   const [previewImageWidth, setPreviewImageWidth] = useState(null);
   const [previewImageHeight, setPreviewImageHeight] = useState(null);
   const [previewImageMode, setPreviewImageMode] = useState(false);
   const [previewImageInput, setPreviewImageInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const isVisibleYoutube = useRef(false);
   const isBackgroundYoutube = useRef(false);
   const [showScrollToBottomBtn, setShowScrollToBottomBtn] = useState(false);
@@ -223,14 +223,12 @@ const ChatDetailScreen = ({ navigation }) => {
     }
 
     if (chat.hasOwnProperty(chatId)) {
-      if (chat[chatId].length > 50) {
+      if (chat[chatId].length > 30) {
         resetChatState(chatId);
-        setIncomingMsgs(chat[chatId].slice(0, 50));
-        setLoadEarlier(true);
+        setIncomingMsgs(chat[chatId].slice(0, 30));
         return;
       }
       setIncomingMsgs(chat[chatId]);
-      setLoadEarlier(true);
       return;
     }
 
@@ -238,8 +236,7 @@ const ChatDetailScreen = ({ navigation }) => {
       let chatType = navigation.getParam('type');
       getMessages({ chatType, chatId, username, recipient, page })
         .then((messages) => {
-          setIncomingMsgs(messages);
-          setLoadEarlier(true);      
+          setIncomingMsgs(messages.slice(0, 30));   
       });
     }
   }
@@ -316,28 +313,50 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const loadMoreMessages = () => {
-    setLoadMoreHelper(true);
-    let page = currentPage + 1; 
     let chatType =  chatType || navigation.getParam('type');
     let chatId = navigation.getParam('chatId') || chatIdRef.current;
-    getMessages({ chatType, chatId, username, recipient, page })
-      .then((messages) => {
-        if (mounted) {
-          if (messages.length < 50) {
-            setAllMessagesLoaded(true);
-            setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
-          } else if (messages.length === 50) {
-            setIncomingMsgs(prevState => GiftedChat.prepend(prevState, messages));
-            getMessages({ chatType, chatId, username, recipient, page: page + 1 })
-              .then((messages) => {
-                if (messages.length === 0) {
-                  setAllMessagesLoaded(true);           
-                }
-              });
+
+    if (incomingMsgs.length < chat[chatId].length) {
+      if (chat[chatId].length - incomingMsgs.length < 30) {
+        console.log('first load more / reached last messages')
+        setAllMessagesLoaded(true);
+        setIncomingMsgs(prevState => 
+          GiftedChat.prepend(
+            prevState, 
+            chat[chatId].slice(incomingMsgs.length, incomingMsgs.length + (chat[chatId].length - incomingMsgs.length))
+          )
+        );
+        return;
+      }
+      console.log('first load more')
+      setIncomingMsgs(prevState => 
+        GiftedChat.prepend(
+          prevState, 
+          chat[chatId].slice(incomingMsgs.length, incomingMsgs.length + 30)
+        )
+      );
+      setIsLoading(false);
+    } else if (incomingMsgs.length === chat[chatId].length) {
+      setAllMessagesLoaded(true);
+    } else {
+      console.log('second load more')
+      setIsLoading(true);
+      setCurrentPage(currentPage + 1);
+      let page = currentPage + 1;
+      setLoadMoreHelper(true);
+      getMessages({ chatType, chatId, username, recipient, page })
+        .then(messages => {
+          if (mounted) {
+            if (messages.length < 30) {
+              setAllMessagesLoaded(true);
+            }
+            setIncomingsMsgs(prevState => GiftedChat.prepend(prevState, messages.slice(0, 30)));
+            setIsLoading(false);
           }
-        }
-      });
-    setCurrentPage(currentPage + 1);
+        }) 
+    }
+    console.log(incomingMsgs.length)
+    console.log(chat[chatId].length)
   };
 
   const sendMessage = async (message) => {
@@ -502,6 +521,11 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const onIputBlurHandler = () => {
      setInputFocused(false);
+  };
+
+  const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
+    const paddingTop = 80;
+    return contentSize.height - layoutMeasurement.height - paddingTop <= contentOffset.y;
   };
  
   const startTypingHandler = (text) => {
@@ -710,29 +734,6 @@ const ChatDetailScreen = ({ navigation }) => {
     );
   };
 
-  const renderLoadEarlier = (props) => {
-    let chatId = navigation.getParam('chatId') || chatIdRef.current;
-    if (!chatId) {
-      return;
-    }
-
-    if (chat.hasOwnProperty(chatId) && (chat[chatId].length < 50 || allMessagesLoaded)) {
-      return;
-    }
-
-    return (
-      <LoadEarlier { ...props } 
-        wrapperStyle={styles.loadButton}
-        textStyle={styles.loadButtonText} />
-    );
-  };
-
-  // IS OVERRIDING scrollToBottom
-  // const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
-  //   const paddingToTop = 80;
-  //   return contentSize.height - layoutMeasurement.height - paddingToTop <= contentOffset.y;
-  // };
-
   return (
     <View style={[styles.container, { height: deviceHeight - statusBarHeight - 50 }]}>
       <NavigationEvents
@@ -749,12 +750,6 @@ const ChatDetailScreen = ({ navigation }) => {
           isVisibleHandler={isVisibleHandler}
         /> 
       )}
-       {/* <WebView
-          mediaPlaybackRequiresUserAction={true}
-          allowsFullscreenVideo={true} 
-          allowsInlineMediaPlayback={true} 
-           automaticallyAdjustContentInsets={false}
-          style={{ flex: 1 }} source={{ uri: 'https://www.youtube.com' }} /> */}
            <Modal
               style={{ alignItems: "center", justifyContent: "center" }}
               isVisible={previewImageMode}
@@ -801,6 +796,9 @@ const ChatDetailScreen = ({ navigation }) => {
               <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
             </TouchableOpacity>
           </View>}
+          {isLoading && <View style={{ position: 'absolute', top: 40, alignSelf: 'center' }}>
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>}
           <GiftedChat
               renderUsernameOnMessage 
               messages={incomingMsgs} 
@@ -814,9 +812,13 @@ const ChatDetailScreen = ({ navigation }) => {
                   } else {
                     setShowScrollToBottomBtn(false);
                   }
-                  // if (isCloseToTop(nativeEvent)) {
-                    // console.log('test');
-                  // }
+                  if (isCloseToTop(nativeEvent)) {
+                    let chatId = navigation.getParam('chatId') || chatIdRef.current;
+                    if (chat[chatId].length > 30 && !allMessagesLoaded) {
+                      loadMoreMessages();
+                    }
+                    
+                  }
                 }
               }}
               textInputStyle={styles.input}
@@ -824,10 +826,6 @@ const ChatDetailScreen = ({ navigation }) => {
               placeholderTextColor="#202020"
               renderBubble={renderBubble}
               renderAvatar={renderAvatar}
-              loadEarlier={loadEarlier} // enables load earlier messages button
-              onLoadEarlier={() => {
-                loadMoreMessages();
-              }}
               renderLoading={renderLoading}
               ref={ref => giftedChatRef = ref}
               renderSend={renderSend}
@@ -841,8 +839,6 @@ const ChatDetailScreen = ({ navigation }) => {
               renderMessage={renderMessage}
               renderMessageText={renderMessageText}
               alwaysShowSend={true}
-              // renderLoading={() => {}}
-              renderLoadEarlier={renderLoadEarlier}
               keyboardShouldPersistTaps={'handled'}
               onInputTextChanged={startTypingHandler}
               //isLoadingEarlier={true}

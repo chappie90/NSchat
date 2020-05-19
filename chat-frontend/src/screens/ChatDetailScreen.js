@@ -80,6 +80,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const [previewImageInput, setPreviewImageInput] = useState('');
   const isVisibleYoutube = useRef(false);
   const isBackgroundYoutube = useRef(false);
+  const [showScrollToBottomBtn, setShowScrollToBottomBtn] = useState(false);
   const socket = useRef(null);
   const chatIdRef = useRef(null);
   const [chatId, setChatId] = useState(null);
@@ -269,6 +270,12 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const closeModalHandler = () => {
     setGroupSettingsModal(false);
+  };
+
+  const scrollToBottom = () => {
+    if (giftedChatRef) {
+      giftedChatRef.scrollToBottom();
+    }
   };
 
   const sendImage = async (image, caption) => {
@@ -789,20 +796,29 @@ const ChatDetailScreen = ({ navigation }) => {
             </TouchableWithoutFeedback>
          </Modal>
         <GroupSettingsScreen navigation={navigation} visible={groupSettingsModal} closeModal={closeModalHandler} />
-      
+           {showScrollToBottomBtn && <View style={styles.scrollBottomBtn}>
+            <TouchableOpacity onPress={() => scrollToBottom()}>
+              <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
+            </TouchableOpacity>
+          </View>}
           <GiftedChat
               renderUsernameOnMessage 
               messages={incomingMsgs} 
               onSend={sendMessage} 
               user={{ _id: 1 }}
-              // listViewProps={{
-              //   scrollEventThrottle: 400,
-              //   onScroll: ({ nativeEvent }) => { 
-              //     if (isCloseToTop(nativeEvent)) {
-              //       console.log('test');
-              //     }
-              //   }
-              // }}
+              listViewProps={{
+                scrollEventThrottle: 400,
+                onScroll: ({ nativeEvent }) => { 
+                  if (nativeEvent.contentOffset.y > 170) {
+                    setShowScrollToBottomBtn(true);
+                  } else {
+                    setShowScrollToBottomBtn(false);
+                  }
+                  // if (isCloseToTop(nativeEvent)) {
+                    // console.log('test');
+                  // }
+                }
+              }}
               textInputStyle={styles.input}
               // infiniteScroll={true}
               placeholderTextColor="#202020"
@@ -831,15 +847,8 @@ const ChatDetailScreen = ({ navigation }) => {
               onInputTextChanged={startTypingHandler}
               //isLoadingEarlier={true}
               // bottomOffset={ Platform.OS === 'android' ? null : null }
-              scrollToBottom={true}
-              isAnimated={false}
-              scrollToBottomComponent={() => {
-                return (
-                  <View style={styles.scrollContainer}>
-                    <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />
-                  </View>
-                );
-              }}/>
+              // isAnimated={false}
+              />
        
          {/*<KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
@@ -956,10 +965,21 @@ const styles = StyleSheet.create({
     minHeight: 40,
     zIndex: 2
   },
-  scrollContainer: {
-    width: 30,
-    height: 30,
-    paddingTop: 1
+  scrollBottomBtn: {
+    position: 'absolute',
+    opacity: 0.75,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+    zIndex: 2,
+    bottom: 74,
+    right: 10,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 2
   },
   left: {
     backgroundColor: '#E8E8E8'

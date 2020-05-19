@@ -117,7 +117,6 @@ const ContactsListScreen = ({ navigation }) => {
               data={contacts}
               keyExtractor={(item, index) => index.toString()}
               renderItem={ (rowData, rowMap) => {
-                console.log(rowData)
                 const chat = previousChats.filter(c => c.contact === rowData.item.user.username);
                 return (
                   <TouchableWithoutFeedback 

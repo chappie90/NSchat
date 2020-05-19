@@ -17,7 +17,7 @@ const chatReducer = (state, action) => {
           { ...state.chat, 
           [action.payload.chatId]: action.payload.messages } };
     case 'reset_chat_state':
-      return { ...state, chat: { [action.payload]: state.chat[action.payload].slice(0, 50) } };
+      return { ...state, chat: { [action.payload]: state.chat[action.payload].slice(0, 30) } };
     case 'update_messages':
       return state.chat[action.payload.chatId] ?
        { ...state, chat: {
@@ -278,7 +278,7 @@ const markMessagesAsRead = dispatch => async ({ username, recipient }) => {
   }
 };
 
-const markMessageAsRead = dispatch => async ({ user }) => {
+const markMessageAsRead = dispatch => async ({ chatId }) => {
   // try {
   //   const response = await chatApi.patch('/message/read', { username, recipient });
 
@@ -286,7 +286,7 @@ const markMessageAsRead = dispatch => async ({ user }) => {
   //     return;
   //   }
 
-  dispatch({ type: 'mark_message_read', payload: user });
+  dispatch({ type: 'mark_message_read', payload: chatId });
   // } catch (err) {
   //   console.log(err);
   //   throw err;

@@ -104,12 +104,12 @@ const chatReducer = (state, action) => {
           ...state.chat, 
           [action.payload]: markedMessage } };
     case 'delete_message':
-      const deletedMessage = state.chat[action.payload.user].map(item => {
+      const deletedMessage = state.chat[action.payload.chatId].map(item => {
         return item._id === action.payload.messageId ? { ...item, text: 'Message deleted', deleted: true } : item;
       });
       return { ...state, chat: {
         ...state.chat,
-        [action.payload.user]: deletedMessage } };
+        [action.payload.chatId]: deletedMessage } };
     case 'create_group':
       return { ...state, previousChats: [action.payload].concat(state.previousChats) }; // [action.payload, ...state.previousChats]
     case 'update_group':
@@ -293,7 +293,7 @@ const markMessageAsRead = dispatch => async ({ chatId }) => {
   // }
 };
 
-const deleteMessage = dispatch => async ({ user, messageId }) => {
+const deleteMessage = dispatch => async ({ chatId, messageId }) => {
   try {
     const response = await chatApi.patch('/message/delete', { messageId });
 
@@ -301,15 +301,15 @@ const deleteMessage = dispatch => async ({ user, messageId }) => {
       return;
     }
 
-    dispatch({ type: 'delete_message', payload: { user, messageId } });
+    dispatch({ type: 'delete_message', payload: { chatId, messageId } });
   } catch (err) {
     console.log(err);
     throw err;
   }
 };
 
-const deleteMessageState = dispatch => async ({ user, messageId }) => {
-  dispatch({ type: 'delete_message', payload: { user, messageId } });
+const deleteMessageState = dispatch => async ({ chatId, messageId }) => {
+  dispatch({ type: 'delete_message', payload: { chatId, messageId } });
 };
 
 const createGroup = dispatch => async ({

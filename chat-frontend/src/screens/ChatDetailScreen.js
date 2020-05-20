@@ -110,7 +110,6 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [currentScreen]);
 
   useEffect(() => {
-
     // console.log(username)
     // console.log('chat')
     // // console.log(chat)
@@ -127,14 +126,11 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current = socketState; 
 
       socket.current.on('message', message => {
-        console.log('message')
-        console.log(message)
         let recipient = recipient || navigation.getParam('username');
 
         socket.current.emit('stop_typing', recipient); 
         if (mounted) {
-          updateMessages({ chatId: message.chat.chatId, message: message.message }
-            );
+          updateMessages({ chatId: message.chat.chatId, message: message.message });
         }
         if (message.message.user.name === username) {
           if (chatIdRef.current === null) {
@@ -163,7 +159,18 @@ const ChatDetailScreen = ({ navigation }) => {
           socket.current.emit('join_chat', { username, recipient });
         }
       });
-     
+     socket.current.on('is_typing', () => {
+        navigation.setParams({ isTyping: 'is typing...' });
+      });
+      socket.current.on('is_not_typing', () => {
+        navigation.setParams({ isTyping: '' });
+      });
+      socket.current.on('message_deleted', data => {
+        if (username === data.recipient) {
+          let chatId = navigation.getParam('chatId') || chatIdRef.current;
+          deleteMessageState({ chatId: chatId, messageId: data.selectedMessage._id })
+        }
+      });
       socket.current.on('has_joined_chat', user => {
         let chatType =  chatType || navigation.getParam('type');
         let chatId = navigation.getParam('chatId') || chatIdRef.current;
@@ -530,8 +537,11 @@ const ChatDetailScreen = ({ navigation }) => {
   const deleteMessageHandler = () => {
     let chatId = navigation.getParam('chatId') || chatIdRef.current;
     // updateMessages({ chatId: message.chat.chatId, message: message.message });
-    deleteMessage({ user: recipient, messageId: selectedMessage._id })
+    deleteMessage({ chatId: chatId, messageId: selectedMessage._id })
       .then(res => {
+        setIncomingMsgs(prevState => prevState.map(msg => {
+          return msg._id === selectedMessage._id ? { ...msg, text: 'Message deleted', deleted: true } : msg;
+        }));
         socket.current.emit('delete_message', { selectedMessage, recipient });
       });
     setOverlayMode(false);

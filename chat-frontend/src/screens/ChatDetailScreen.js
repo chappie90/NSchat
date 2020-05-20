@@ -668,6 +668,38 @@ const ChatDetailScreen = ({ navigation }) => {
               <Time {...props} />
             </View>
           </View>
+          {props.currentMessage.read && !props.currentMessage.deleted && ( 
+            <View>
+              <Ionicons
+                style={styles.leftCheckmarkReply}
+                name="ios-checkmark"
+                size={24} color="#87CEEB" />
+              <Ionicons
+                style={styles.rightCheckmarkReply}
+                name="ios-checkmark"
+                size={24} color="#87CEEB" />
+            </View>
+          )}
+          {props.currentMessage.hasOwnProperty('read') && !props.currentMessage.deleted && (
+            <View>
+              <Ionicons
+                style={styles.leftCheckmarkReply}
+                name="ios-checkmark"
+                size={24} color="#C8C8C8" />
+              <Ionicons
+                style={styles.rightCheckmarkReply}
+                name="ios-checkmark"
+                size={24} color="#C8C8C8" />
+            </View>
+          )}
+          {!props.currentMessage.deleted && (
+            <View>
+              <Ionicons
+                style={styles.leftCheckmarkReply}
+                name="ios-checkmark"
+                size={24} color="#C8C8C8" />
+            </View>
+          )}
         </View>
       );
     } else if (props.currentMessage.user._id === 2) {
@@ -1109,6 +1141,16 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     right: -24, 
     bottom: -20
+  },
+  leftCheckmarkReply: {
+    position: 'absolute', 
+    right: 18, 
+    bottom: -2
+  },
+  rightCheckmarkReply: {
+    position: 'absolute', 
+    right: 8, 
+    bottom: -2
   },
   header: {
     width: '100%',

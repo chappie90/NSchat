@@ -168,7 +168,10 @@ const ChatDetailScreen = ({ navigation }) => {
       socket.current.on('message_deleted', data => {
         if (username === data.recipient) {
           let chatId = navigation.getParam('chatId') || chatIdRef.current;
-          deleteMessageState({ chatId: chatId, messageId: data.selectedMessage._id })
+          deleteMessageState({ chatId: chatId, messageId: data.selectedMessage._id });
+          setIncomingMsgs(prevState => prevState.map(msg => {
+            return msg._id === data.selectedMessage._id ? { ...msg, text: 'Message deleted', deleted: true } : msg;
+          }));
         }
       });
       socket.current.on('has_joined_chat', user => {
@@ -909,16 +912,16 @@ const ChatDetailScreen = ({ navigation }) => {
               renderMessageText={renderMessageText}
               alwaysShowSend={true}
               keyboardShouldPersistTaps={'handled'}
+              // forceGetKeyboardHeight={false}
               onInputTextChanged={startTypingHandler}
               //isLoadingEarlier={true}
               // bottomOffset={ Platform.OS === 'android' ? null : null }
               // isAnimated={false}
               />
-       
          {/*<KeyboardAvoidingView 
             behavior={ Platform.OS === 'android' ? 'padding' :  null}
-            keyboardVerticalOffset={80} />
-         {Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
+            keyboardVerticalOffset={95} />
+         {/*{Platform.OS === 'android' ? <KeyboardSpacer /> : null } */}
          <Overlay
               isVisible={overlayMode}
               width="auto"
@@ -1019,7 +1022,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1``
+    flex: Platform.OS === 'android' ? 1 : null
   },
   content: {
     flex: 1,
@@ -1144,12 +1147,12 @@ const styles = StyleSheet.create({
   },
   leftCheckmarkReply: {
     position: 'absolute', 
-    right: 18, 
+    right: 17, 
     bottom: -2
   },
   rightCheckmarkReply: {
     position: 'absolute', 
-    right: 8, 
+    right: 7, 
     bottom: -2
   },
   header: {

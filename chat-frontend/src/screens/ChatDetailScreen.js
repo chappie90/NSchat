@@ -110,15 +110,31 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [currentScreen]);
 
   useEffect(() => {
+
+    // console.log(username)
+    // console.log('chat')
+    // // console.log(chat)
+  }, [chat]);
+
+  useEffect(() => {
+    // console.log(username)
+    // console.log('incomingMsgs')
+    // console.log(incomingMsgs)
+  }, [incomingMsgs]);
+
+  useEffect(() => {
     if (socketState) {
       socket.current = socketState; 
 
       socket.current.on('message', message => {
+        console.log('message')
+        console.log(message)
         let recipient = recipient || navigation.getParam('username');
 
         socket.current.emit('stop_typing', recipient); 
         if (mounted) {
-          updateMessages({ chatId: message.chat.chatId, message: message.message });
+          updateMessages({ chatId: message.chat.chatId, message: message.message }
+            );
         }
         if (message.message.user.name === username) {
           if (chatIdRef.current === null) {
@@ -142,6 +158,7 @@ const ChatDetailScreen = ({ navigation }) => {
         if (message.message.user.name === recipient) {
           if (screen.current === 'ChatDetail') {
             updateChatState(message.chat);
+            setIncomingMsgs(prevState => GiftedChat.append(prevState, message.message));
           } 
           socket.current.emit('join_chat', { username, recipient });
         }
@@ -152,24 +169,24 @@ const ChatDetailScreen = ({ navigation }) => {
         let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
         if (user === recipient) {
-          markMessageAsRead({ user:recipient });
+          markMessageAsRead({ chatId: chatId });
         } 
       });
     }
   }, [socketState]);
 
-  useEffect(() => {
-    let chatId = navigation.getParam('chatId') || chatIdRef.current;
+  // useEffect(() => {
+  //   let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
-    if (!chatId) {
-      return;
-    }
+  //   if (!chatId) {
+  //     return;
+  //   }
 
-    if (!loadMoreHelper) {
-      setIncomingMsgs(chat[chatId]);
-    }   
-    setLoadMoreHelper(false);
-  }, [chat]);
+  //   if (!loadMoreHelper) {
+  //     setIncomingMsgs(chat[chatId]);
+  //   }   
+  //   setLoadMoreHelper(false);
+  // }, [chat]);
 
   const didFocusHandler = () => {
     if (socket.current) {
@@ -384,7 +401,14 @@ const ChatDetailScreen = ({ navigation }) => {
       setShowReplyBox(false);
       message[0].reply = selectedMessage.text;
       message[0].replyAuthor = selectedMessage.user.name;
+    } else {
+      message[0].reply = null;
+      message[0].replyAuthor = null;
     }
+
+    message[0].user.name = username;
+    message[0].deleted = false;
+    message[0].image = null;
 
     if (giftedChatRef) {
       giftedChatRef.scrollToBottom();
@@ -396,6 +420,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const renderChatFooter = (props) => {
     if (showReplyBox) {
+      // console.log(selectedMessage)
       return (
         <View style={{ minHeight: 50, flexDirection: 'row', backgroundColor: '#F8F8F8', borderTopWidth: 1, borderTopColor: 'lightgrey' }}>
           <View style={{ minHeight: 50, width: 7, backgroundColor: Colors.primary }}></View>
@@ -503,6 +528,8 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const deleteMessageHandler = () => {
+    let chatId = navigation.getParam('chatId') || chatIdRef.current;
+    // updateMessages({ chatId: message.chat.chatId, message: message.message });
     deleteMessage({ user: recipient, messageId: selectedMessage._id })
       .then(res => {
         socket.current.emit('delete_message', { selectedMessage, recipient });

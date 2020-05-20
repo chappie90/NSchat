@@ -155,8 +155,8 @@ const ChatDetailScreen = ({ navigation }) => {
           if (screen.current === 'ChatDetail') {
             updateChatState(message.chat);
             setIncomingMsgs(prevState => GiftedChat.append(prevState, message.message));
+            socket.current.emit('join_chat', { username, recipient, messageId: message.message._id });
           } 
-          socket.current.emit('join_chat', { username, recipient });
         }
       });
      socket.current.on('is_typing', () => {
@@ -174,12 +174,16 @@ const ChatDetailScreen = ({ navigation }) => {
           }));
         }
       });
-      socket.current.on('has_joined_chat', user => {
+      socket.current.on('has_joined_chat', data => {
         let chatType =  chatType || navigation.getParam('type');
         let chatId = navigation.getParam('chatId') || chatIdRef.current;
+        let recipient = recipient || navigation.getParam('username');
 
-        if (user === recipient) {
+        if (data.user === recipient) {
           markMessageAsRead({ chatId: chatId });
+          setIncomingMsgs(prevState => prevState.map(msg => {
+            return msg.read === false ? { ...msg, read: true } : msg;
+          }));
         } 
       });
     }

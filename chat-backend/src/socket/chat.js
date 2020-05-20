@@ -88,7 +88,7 @@ module.exports = function(io) {
 
   socket.on('join_chat', data => {
     if (users[data.recipient]) {
-      io.to(users[data.recipient].id).emit('has_joined_chat', data.username);
+      io.to(users[data.recipient].id).emit('has_joined_chat', { user: data.username, messageId: data.messageId });
     }
   });
 

@@ -171,6 +171,108 @@ const AddGroupScreen = props => {
     setImagePreview("");
   };
 
+  const renderNoResults = () => {
+    return search ?
+      <Text style={styles.noResults}>No contacts found</Text> :
+      <View style={styles.imageContainer}>
+        <ScaleImageAnim style={styles.image} source={require("../../assets/icons_256_new_group.png")} />
+        <TranslateFadeViewAnim>
+          <BodyText style={styles.imageCaption}>
+            Stay in touch with your loved ones
+          </BodyText>
+        </TranslateFadeViewAnim>
+      </View>;
+  };
+
+  const renderResults = () => {
+    return (
+      <FlatList
+        data={groupContacts}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => {
+          return (
+            <TouchableWithoutFeedback
+              style={{ borderRadius: 5, overflow: "hidden" }}
+              onPress={() => {
+                setExpandHeader(true);
+                updateGroupHandler(item.user.username);
+                setGroupContacts(contacts);
+                setSearch("");
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingVertical: 4,
+                  paddingHorizontal: 15
+                }}
+              >
+                <View
+                  style={{
+                    overflow: "hidden",
+                    width: 44,
+                    height: 44,
+                    borderRadius: 22
+                  }}
+                >
+                  {item.user.profile ? (
+                  <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
+                    <Image
+                      style={{ width: '100%', height: '100%' }}
+                      placeholderStyle={styles.placeholder}
+                      source={{ uri: item.user.profile.imgPath }}
+                    />
+                  </View>
+                  ) : (
+                  <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
+                    <Image
+                      style={{ width: '100%', height: '100%' }}
+                      source={require("../../assets/avatar-small.png")}
+                    />
+                  </View>
+                  )}
+                </View>
+                <View style={styles.itemContainer}>
+                  <HeadingText style={styles.name}>
+                    {item.user.username}
+                  </HeadingText>
+                </View>
+                {addToGroupArr.includes(item.user.username) ? (
+                  <ScaleViewAnim
+                    style={{
+                      width: 26,
+                      height: 26,
+                      borderRadius: 13,
+                      backgroundColor: Colors.tertiary,
+                      borderWidth: 2,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderColor: Colors.tertiary
+                    }}
+                  >
+                    <MaterialIcons name="check" size={20} color="#fff" />
+                  </ScaleViewAnim>
+                ) : (
+                  <View
+                    style={{
+                      width: 26,
+                      height: 26,
+                      borderRadius: 13,
+                      borderWidth: 2,
+                      borderColor: Colors.tertiary
+                    }}
+                  />
+                )}
+              </View>
+            </TouchableWithoutFeedback>
+          );
+        }}
+      />
+    );
+  };
+
   return (
     <Modal
       isVisible={props.visible}
@@ -454,108 +556,10 @@ const AddGroupScreen = props => {
               <ActivityIndicator size="large" color={Colors.primary} />
             </View>
             )}
-            {contacts.length > 0 ? (
-              <FlatList
-                data={groupContacts}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item, index }) => {
-                  return (
-                    <TouchableWithoutFeedback
-                      style={{ borderRadius: 5, overflow: "hidden" }}
-                      onPress={() => {
-                        setExpandHeader(true);
-                        updateGroupHandler(item.user.username);
-                        setGroupContacts(contacts);
-                        setSearch("");
-                      }}
-                    >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          paddingVertical: 4,
-                          paddingHorizontal: 15
-                        }}
-                      >
-                        <View
-                          style={{
-                            overflow: "hidden",
-                            width: 44,
-                            height: 44,
-                            borderRadius: 22
-                          }}
-                        >
-                          {item.user.profile ? (
-                          <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
-                            <Image
-                              style={{ width: '100%', height: '100%' }}
-                              placeholderStyle={styles.placeholder}
-                              source={{ uri: item.user.profile.imgPath }}
-                            />
-                          </View>
-                          ) : (
-                          <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
-                            <Image
-                              style={{ width: '100%', height: '100%' }}
-                              source={require("../../assets/avatar-small.png")}
-                            />
-                          </View>
-                          )}
-                        </View>
-                        <View style={styles.itemContainer}>
-                          <HeadingText style={styles.name}>
-                            {item.user.username}
-                          </HeadingText>
-                        </View>
-                        {addToGroupArr.includes(item.user.username) ? (
-                          <ScaleViewAnim
-                            style={{
-                              width: 26,
-                              height: 26,
-                              borderRadius: 13,
-                              backgroundColor: Colors.tertiary,
-                              borderWidth: 2,
-                              justifyContent: "center",
-                              alignItems: "center",
-                              borderColor: Colors.tertiary
-                            }}
-                          >
-                            <MaterialIcons
-                              name="check"
-                              size={20}
-                              color="#fff"
-                            />
-                          </ScaleViewAnim>
-                        ) : (
-                          <View
-                            style={{
-                              width: 26,
-                              height: 26,
-                              borderRadius: 13,
-                              borderWidth: 2,
-                              borderColor: Colors.tertiary
-                            }}
-                          />
-                        )}
-                      </View>
-                    </TouchableWithoutFeedback>
-                  );
-                }}
-              />
-            ) : (
-              <View style={styles.imageContainer}>
-                <ScaleImageAnim
-                  style={styles.image}
-                  source={require("../../assets/icons_256_new_group.png")}
-                />
-                <TranslateFadeViewAnim>
-                  <BodyText style={styles.imageCaption}>
-                    Stay in touch with your loved ones
-                  </BodyText>
-                </TranslateFadeViewAnim>
-              </View>
-            )}
+            {groupContacts.length > 0 ? 
+              renderResults() : 
+              renderNoResults()
+            }
           </View>
         </View>
     </Modal>
@@ -693,6 +697,11 @@ const styles = StyleSheet.create({
       { translateX: -10 }
     ],
     zIndex: 2
+  },
+  noResults: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 20
   }
 });
 

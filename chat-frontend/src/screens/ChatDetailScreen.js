@@ -182,6 +182,7 @@ const ChatDetailScreen = ({ navigation }) => {
         if (data.user === recipient) {
           markMessageAsRead({ chatId: chatId });
           setIncomingMsgs(prevState => prevState.map(msg => {
+            console.log(msg)
             return msg.read === false ? { ...msg, read: true } : msg;
           }));
         } 
@@ -427,6 +428,9 @@ const ChatDetailScreen = ({ navigation }) => {
     if (giftedChatRef) {
       giftedChatRef.scrollToBottom();
     }
+
+    // console.log('reply')
+    // console.log(message)
     
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
 
@@ -675,16 +679,12 @@ const ChatDetailScreen = ({ navigation }) => {
               <Time {...props} />
             </View>
           </View>
-          {props.currentMessage.read && !props.currentMessage.deleted && ( 
+          {!props.currentMessage.deleted && (
             <View>
               <Ionicons
                 style={styles.leftCheckmarkReply}
                 name="ios-checkmark"
-                size={24} color="#87CEEB" />
-              <Ionicons
-                style={styles.rightCheckmarkReply}
-                name="ios-checkmark"
-                size={24} color="#87CEEB" />
+                size={24} color="#C8C8C8" />
             </View>
           )}
           {props.currentMessage.hasOwnProperty('read') && !props.currentMessage.deleted && (
@@ -699,12 +699,16 @@ const ChatDetailScreen = ({ navigation }) => {
                 size={24} color="#C8C8C8" />
             </View>
           )}
-          {!props.currentMessage.deleted && (
+          {props.currentMessage.read && !props.currentMessage.deleted && ( 
             <View>
               <Ionicons
                 style={styles.leftCheckmarkReply}
                 name="ios-checkmark"
-                size={24} color="#C8C8C8" />
+                size={24} color="#87CEEB" />
+              <Ionicons
+                style={styles.rightCheckmarkReply}
+                name="ios-checkmark"
+                size={24} color="#87CEEB" />
             </View>
           )}
         </View>

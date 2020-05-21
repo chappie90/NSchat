@@ -174,14 +174,15 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 4,
     borderColor: 'white',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    backgroundColor: 'white'
   },
   placeholder: {
     backgroundColor: 'white'
   },
   image: {
-    width: 200,
-    height: 200,
+    width: '100%',
+    height: '100%',
   },
   cameraIconContainer: {
     backgroundColor: 'lightgrey',

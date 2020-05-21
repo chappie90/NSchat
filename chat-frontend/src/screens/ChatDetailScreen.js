@@ -428,9 +428,6 @@ const ChatDetailScreen = ({ navigation }) => {
     if (giftedChatRef) {
       giftedChatRef.scrollToBottom();
     }
-
-    // console.log('reply')
-    // console.log(message)
     
     setIncomingMsgs(prevState => GiftedChat.append(prevState, message));
 
@@ -438,7 +435,6 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const renderChatFooter = (props) => {
     if (showReplyBox) {
-      // console.log(selectedMessage)
       return (
         <View style={{ minHeight: 50, flexDirection: 'row', backgroundColor: '#F8F8F8', borderTopWidth: 1, borderTopColor: 'lightgrey' }}>
           <View style={{ minHeight: 50, width: 7, backgroundColor: Colors.primary }}></View>

@@ -173,7 +173,7 @@ const AddGroupScreen = props => {
 
   const renderNoResults = () => {
     return search ?
-      <Text style={styles.noResults}>No contacts found</Text> :
+      <BodyText style={styles.noResults}>No contacts found</BodyText> :
       <View style={styles.imageContainer}>
         <ScaleImageAnim style={styles.image} source={require("../../assets/icons_256_new_group.png")} />
         <TranslateFadeViewAnim>
@@ -235,9 +235,9 @@ const AddGroupScreen = props => {
                   )}
                 </View>
                 <View style={styles.itemContainer}>
-                  <HeadingText style={styles.name}>
+                  <BodyText style={styles.name}>
                     {item.user.username}
-                  </HeadingText>
+                  </BodyText>
                 </View>
                 {addToGroupArr.includes(item.user.username) ? (
                   <ScaleViewAnim
@@ -464,9 +464,9 @@ const AddGroupScreen = props => {
                           source={{ uri: contact.user.profile.imgPath }}
                         />
                       </View>
-                      <Text style={{ marginTop: 4, color: "#fff" }} key={item}>
+                      <BodyText style={{ fontSize: 15, color: "#fff" }} key={item}>
                         {item}
-                      </Text>
+                      </BodyText>
                     </ScaleViewAnim>
                   </TouchableOpacity>
                 ) : (
@@ -504,9 +504,9 @@ const AddGroupScreen = props => {
                           source={require("../../assets/avatar-small.png")}
                         />
                       </View>
-                      <Text style={{ marginTop: 4, color: "#fff" }} key={item}>
+                      <BodyText style={{ fontSize: 15, color: "#fff" }} key={item}>
                         {item}
-                      </Text>
+                      </BodyText>
                     </ScaleViewAnim>
                   </TouchableOpacity>
                 );
@@ -632,6 +632,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#000"
   },
+  name: {
+    fontSize: 17,
+    color: Colors.darkGrey
+  },
   headerBottom: {
     flexDirection: "row",
     justifyContent: "flex-start",
@@ -699,7 +703,7 @@ const styles = StyleSheet.create({
     zIndex: 2
   },
   noResults: {
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
     marginTop: 20
   }

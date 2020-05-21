@@ -89,19 +89,21 @@ const ContactsListScreen = ({ navigation }) => {
               <TouchableWithoutFeedback onPress={() => setShowActiveUsers(false)}>
                 <View style={{
                   paddingVertical: 4, 
-                  width: 90, 
-                  backgroundColor: showActiveUsers ? '#fff' : '#E8E8E8', borderRadius: 20 }}>
+                  width: 96, 
+                  backgroundColor: showActiveUsers ? '#fff' : '#F0F0F0', borderRadius: 20 }}>
                   <HeadingText style={{
-                   color: showActiveUsers ? '#A9A9A9' : '#202020', 
-                   textAlign: 'center' }}>All ({contacts.length})</HeadingText>
+                    fontSize: 16,
+                    color: showActiveUsers ? '#A9A9A9' : '#202020', 
+                    textAlign: 'center' }}>All ({contacts.length})</HeadingText>
                 </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback onPress={() => setShowActiveUsers(true)}>
               <View style={{ 
                 paddingVertical: 4,
-                width: 90,  backgroundColor: showActiveUsers ? '#E8E8E8' : '#fff' ,
+                width: 96,  backgroundColor: showActiveUsers ? '#F0F0F0' : '#fff' ,
                 borderRadius: 20 }}>
                 <HeadingText style={{ 
+                  fontSize: 16,
                   color: showActiveUsers ? '#202020' : '#A9A9A9', 
                   textAlign: 'center' }}>Active ({onlineContacts.length})</HeadingText>
               </View>
@@ -196,6 +198,9 @@ const ContactsListScreen = ({ navigation }) => {
               rightOpenValue={-65}
               onSwipeValueChange={onSwipeValueChange}
                />}
+            {showActiveUsers && onlineContacts.length === 0 && (
+              <BodyText style={styles.noResults}>No active users</BodyText>
+            )}
             {showActiveUsers && <SwipeListView
               refreshControl={
                 <RefreshControl
@@ -414,6 +419,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  noResults: {
+    fontSize: 17,
+    textAlign: 'center',
+    marginTop: 20
+  }
 });
 
 export default ContactsListScreen;

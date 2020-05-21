@@ -66,7 +66,7 @@ const AddContactScreen = (props) => {
                 }
               </View>                  
                <View style={styles.itemContainer}>
-                 <HeadingText style={styles.name}>{item.username}</HeadingText>
+                 <BodyText style={styles.name}>{item.username}</BodyText>
                 {contacts.find(c => c.user.username === item.username) ? (
                   <MaterialIcons name="check-circle" size={30} color={Colors.secondary} />
                 ) : (
@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25
   },
   name: {
-    fontSize: 16
+    fontSize: 17,
+    color: Colors.darkGrey
   },
   input: {
     fontSize: 24,
@@ -211,7 +212,8 @@ const styles = StyleSheet.create({
   noResults: {
     fontSize: 18,
     textAlign: 'center',
-    marginTop: 20
+    marginTop: 20,
+    color: Colors.darkGrey
   },
   imageContainer: {
     flex: 1,

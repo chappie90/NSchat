@@ -132,9 +132,9 @@ const AddGroupScreen = props => {
                   )}
                 </View>
                 <View style={styles.itemContainer}>
-                  <HeadingText style={styles.name}>
+                  <BodyText style={styles.name}>
                     {item.user.username}
-                  </HeadingText>
+                  </BodyText>
                 </View>
                 {addToGroupArr.filter(contact => contact.contactName === item.user.username).length > 0 ? (
                   <ScaleViewAnim
@@ -315,9 +315,9 @@ const AddGroupScreen = props => {
                           source={{ uri: contact.user.profile.imgPath }}
                         />
                       </View>
-                      <Text style={{ marginTop: 4, color: "#fff" }} key={item.contactId}>
+                      <BodyText style={{ fontSize: 15, color: "#fff" }} key={item.contactId}>
                         {item.contactName}
-                      </Text>
+                      </BodyText>
                     </ScaleViewAnim>
                   </TouchableOpacity>
                 ) : (
@@ -355,9 +355,9 @@ const AddGroupScreen = props => {
                           source={require("../../assets/avatar-small.png")}
                         />
                       </View>
-                      <Text style={{ marginTop: 4, color: "#fff" }} key={item.contactId}>
+                      <BodyText style={{ fontSize: 15, color: "#fff" }} key={item.contactId}>
                         {item.contactName}
-                      </Text>
+                      </BodyText>
                     </ScaleViewAnim>
                   </TouchableOpacity>
                 );
@@ -440,6 +440,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#000"
   },
+  name: {
+    fontSize: 17,
+    color: Colors.darkGrey
+  },
   headerBottom: {
     flexDirection: "row",
     justifyContent: "flex-start",
@@ -500,7 +504,8 @@ const styles = StyleSheet.create({
   noResults: {
     fontSize: 18,
     textAlign: 'center',
-    marginTop: 20
+    marginTop: 20,
+    color: Colors.darkGrey
   }
 });
 

@@ -166,8 +166,6 @@ const GroupSettingsScreen = (props) => {
     if (group.avatar) {
       deleteGroupImage(group._id, username)
         .then(data => {
-          console.log('response handler')
-          console.log(data)
           updateGroup(data.group, 'image', data.adminMessage);
           updateMessages({ chatId: group._id, message: data.adminMessage });
         });;
@@ -306,7 +304,7 @@ const GroupSettingsScreen = (props) => {
                 style={{ width: '100%', height: '100%'}}
                 source={require("../../assets/avatar-small.png")} />
             </View>
-            <BodyText>{group.owner}</BodyText>
+            <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{group.owner}</BodyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 8, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
             <BodyText style={{ fontSize: 16, marginRight: 15, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
@@ -324,7 +322,7 @@ const GroupSettingsScreen = (props) => {
                     style={{ width: '100%', height: '100%' }}
                     source={require("../../assets/avatar-small.png")} />
                   </View>
-                <BodyText>{item.user.username}</BodyText>
+                <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{item.user.username}</BodyText>
               </View>
             ))}      
           </View>

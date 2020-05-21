@@ -38,7 +38,7 @@ const AddContactScreen = (props) => {
   }, [searchResults]);
 
 
-  const showActivityIndicator = () => {
+  const renderActivityIndicator = () => {
     return (
       <View style={styles.spinnerContainer}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -46,7 +46,7 @@ const AddContactScreen = (props) => {
     );
   };
 
-  const showResultsList = () => {
+  const renderResultsList = () => {
     return (
       <ScrollView>
         {searchResults.map((item, index) => (
@@ -89,7 +89,7 @@ const AddContactScreen = (props) => {
     );
   };
 
-  const showNoResults = () => {
+  const renderNoResults = () => {
     return search ?
       <Text style={styles.noResults}>No users found</Text> :
       <View style={styles.imageContainer}>
@@ -132,10 +132,10 @@ const AddContactScreen = (props) => {
               </TouchableOpacity>
             </View>
             {isLoading ? 
-              showActivityIndicator() : 
+              renderActivityIndicator() : 
               searchResults.length > 0 ? 
-                showResultsList() :
-                showNoResults()
+                renderResultsList() :
+                renderNoResults()
             }
         </View>
       </TouchableWithoutFeedback>

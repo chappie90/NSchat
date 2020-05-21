@@ -15,7 +15,7 @@ router.post('/contacts/search', checkAuth, async (req, res) => {
 
   try {
     if (search) {
-      const contacts = await User.find({ username: { $regex: search, $ne: username } }, { username: 1, profile: 1, _id: 0 }).limit(10);
+      const contacts = await User.find({ username: { $regex: new RegExp(search, 'i'), $ne: username } }, { username: 1, profile: 1, _id: 0 }).limit(10);
       if (contacts.length == 0) {
         return res.send({ contacts: [] });
       }

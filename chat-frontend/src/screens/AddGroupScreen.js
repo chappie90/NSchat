@@ -442,7 +442,7 @@ const AddGroupScreen = props => {
                       return;
                     }
                     setGroupContacts(prevState =>
-                      contacts.filter(c => c.user.username.includes(contact))
+                      contacts.filter(c => c.user.username.toLowerCase().includes(contact.toLowerCase()))
                     );
                   }}
                   autoCapitalize="none"

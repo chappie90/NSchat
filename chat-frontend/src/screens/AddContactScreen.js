@@ -11,7 +11,8 @@ import {
   TouchableWithoutFeedback,
   Modal,
   ActivityIndicator,
-  KeyboardAvoidingView 
+  KeyboardAvoidingView,
+  Image as Img 
 } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { Image } from 'react-native-elements';
@@ -31,6 +32,7 @@ const AddContactScreen = (props) => {
   const { state: { username } } = useContext(AuthContext);
   const { state: { profileImage } } = useContext(ProfileContext);
   const [search, setSearch] = useState('');
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const renderActivityIndicator = () => {
@@ -72,6 +74,7 @@ const AddContactScreen = (props) => {
                       props.closeModal();
                       setSearch('');
                       clearSearchResults();
+                      setIsFirstRender(true);
                     }}>
                       Add
                     </SecondaryButton>
@@ -88,14 +91,25 @@ const AddContactScreen = (props) => {
     if (search) {
       return <Text style={styles.noResults}>No users found</Text>;
     } else {
-      return (
-        <View style={styles.imageContainer}>
-          <ScaleImageAnim style={styles.image} source={require('../../assets/icons-05.png')} />
-          <TranslateFadeViewAnim>
-            <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-          </TranslateFadeViewAnim>
-        </View>
-      );
+      if (isFirstRender) {
+        return (
+          <View style={styles.imageContainer}>
+            <ScaleImageAnim style={styles.image} source={require('../../assets/icons-05.png')} />
+            <TranslateFadeViewAnim>
+              <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+            </TranslateFadeViewAnim>
+          </View>
+        );
+      } else {
+        return (
+          <View style={styles.imageContainer}>
+            <Img style={styles.image} source={require('../../assets/icons-05.png')} />
+            <View>
+              <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+            </View>
+          </View>
+        );
+      }
     }  
   };
 
@@ -114,6 +128,7 @@ const AddContactScreen = (props) => {
                 value={search}
                 onChangeText={(search) => {               
                   setSearch(search);
+                  setIsFirstRender(false);
                   if (!search) {
                     clearSearchResults();
                     return;
@@ -128,6 +143,7 @@ const AddContactScreen = (props) => {
                 props.closeModal();
                 setSearch('');
                 clearSearchResults();
+                setIsFirstRender(true);
               }}>
                 <MaterialIcons name="close" size={30} color="white" />
               </TouchableOpacity>

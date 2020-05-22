@@ -33,7 +33,7 @@ const chatReducer = (state, action) => {
     case 'get_chats':
       return { ...state, previousChats: action.payload };
     case 'add_new_chat':
-      return { ...state, previousChats: [ ...state.previousChats, action.payload ] };
+      return { ...state, previousChats: [ action.payload, ...state.previousChats ] };
     case 'update_chat_state':
       let updatedChat;
       if (action.payload.chat && !state.previousChats.find(chat => chat.chatId === action.payload.chat.chatId)) {

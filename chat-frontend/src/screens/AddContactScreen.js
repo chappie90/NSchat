@@ -33,11 +33,6 @@ const AddContactScreen = (props) => {
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(false);
-  }, [searchResults]);
-
-
   const renderActivityIndicator = () => {
     return (
       <View style={styles.spinnerContainer}>
@@ -90,14 +85,18 @@ const AddContactScreen = (props) => {
   };
 
   const renderNoResults = () => {
-    return search ?
-      <Text style={styles.noResults}>No users found</Text> :
-      <View style={styles.imageContainer}>
-        <ScaleImageAnim style={styles.image} source={require('../../assets/icons-05.png')} />
-        <TranslateFadeViewAnim>
-          <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
-        </TranslateFadeViewAnim>
-      </View>;
+    if (search) {
+      return <Text style={styles.noResults}>No users found</Text>;
+    } else {
+      return (
+        <View style={styles.imageContainer}>
+          <ScaleImageAnim style={styles.image} source={require('../../assets/icons-05.png')} />
+          <TranslateFadeViewAnim>
+            <BodyText style={styles.imageCaption}>Stay in touch with your loved ones</BodyText>
+          </TranslateFadeViewAnim>
+        </View>
+      );
+    }  
   };
 
   return (
@@ -117,9 +116,11 @@ const AddContactScreen = (props) => {
                   setSearch(search);
                   if (!search) {
                     clearSearchResults();
+                    return;
                   }
                   setIsLoading(true);
-                  searchContacts({ username, search });
+                  searchContacts({ username, search })
+                    .then(res => setIsLoading(false));
                 }}
                 autoCapitalize="none"
                 autoCorrect={false} />

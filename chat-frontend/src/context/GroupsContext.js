@@ -9,6 +9,8 @@ const groupsReducer = (state, action) => {
       return { ...state, currentGroupId: action.payload };
     case 'get_group':
       return { ...state, group: action.payload };
+    case 'reset_group':
+      return { ...state, group: {} }
     default:
       return state;  
   }
@@ -16,6 +18,10 @@ const groupsReducer = (state, action) => {
 
 const getCurrentGroupId = dispatch => chatId => {
   dispatch({ type: 'get_current_group_id', payload: chatId });
+};
+
+const resetGroup = dispatch => () => {
+  dispatch({ type: 'reset_group' });
 };
 
 const getGroup = dispatch => async (chatId) => {
@@ -122,7 +128,8 @@ export const { Context, Provider } = createDataContext(
     updateGroupImage,
     deleteGroupImage,
     updateGroupName,
-    addGroupMember
+    addGroupMember,
+    resetGroup
   },
   { 
     currentGroupId: '',

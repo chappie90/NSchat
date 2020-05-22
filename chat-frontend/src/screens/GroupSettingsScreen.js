@@ -44,7 +44,8 @@ const GroupSettingsScreen = (props) => {
     updateGroupImage,
     deleteGroupImage,
     updateGroupName,
-    addGroupMember
+    addGroupMember,
+    resetGroup
   } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [addGroupMemberMode, setAddGroupMemberMode] = useState(false);
@@ -54,11 +55,16 @@ const GroupSettingsScreen = (props) => {
   const  _scrollPos = new Animated.Value(0);
   let nameInput;
 
-  useEffect(() => {
+  const onShowHandler = () => {
+    setIsLoading(true);
     getGroup(currentGroupId).then(res => {
       setIsLoading(false);
     });
-  }, []);
+  };
+
+  const onDismissHandler = () => {
+    resetGroup();
+  };
 
   useEffect(() => {
     setName(group.name);
@@ -189,7 +195,11 @@ const GroupSettingsScreen = (props) => {
   });
 
   return (
-    <ScreenModal  visible={props.visible} animationType="slide">
+    <ScreenModal
+      onShow={onShowHandler}
+      onDismiss={onDismissHandler}
+      visible={props.visible}
+      animationType="slide">
       <AddGroupMemberScreen visible={addGroupMemberMode} closeModal={closeAddMemberModal} />
       <Modal
         style={{ alignItems: "center", justifyContent: "center" }}

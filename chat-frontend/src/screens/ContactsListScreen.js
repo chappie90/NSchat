@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   name: {
-    fontSize: 16,
+    fontSize: 17,
     color: Colors.primary
   },
   textButton: {

@@ -131,7 +131,6 @@ const AddContactScreen = (props) => {
                   setIsFirstRender(false);
                   if (!search) {
                     clearSearchResults();
-                    return;
                   }
                   setIsLoading(true);
                   searchContacts({ username, search })

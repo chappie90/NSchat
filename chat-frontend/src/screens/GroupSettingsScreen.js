@@ -145,6 +145,7 @@ const GroupSettingsScreen = (props) => {
     setModalVisible(false);
     updateGroupImage(username, group._id, group.name, cameraImage.uri)
       .then(data => {
+        props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);
         updateMessages({ chatId: group._id, message: data.adminMessage });
       });
@@ -164,6 +165,7 @@ const GroupSettingsScreen = (props) => {
     setModalVisible(false);
     updateGroupImage(username, group._id, group.name, libraryImage.uri)
       .then(data => {
+        props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);
         updateMessages({ chatId: group._id, message: data.adminMessage });
       });;
@@ -173,6 +175,7 @@ const GroupSettingsScreen = (props) => {
     if (group.avatar) {
       deleteGroupImage(group._id, username)
         .then(data => {
+          props.updateGroupImage(null);
           updateGroup(data.group, 'image', data.adminMessage);
           updateMessages({ chatId: group._id, message: data.adminMessage });
         });;

@@ -299,6 +299,10 @@ const ChatDetailScreen = ({ navigation }) => {
     navigation.setParams({ username: name });
   };
 
+  const updateGroupImageHandler = (image) => {
+    navigation.setParams({ image });
+  };
+
   const scrollToBottom = () => {
     if (giftedChatRef) {
       giftedChatRef.scrollToBottom();
@@ -863,6 +867,7 @@ const ChatDetailScreen = ({ navigation }) => {
           visible={groupSettingsModal} 
           closeModal={closeModalHandler} 
           updateGroupName={updateGroupNameHandler}
+          updateGroupImage={updateGroupImageHandler}
           />
            {showScrollToBottomBtn && <View style={styles.scrollBottomBtn}>
             <TouchableOpacity onPress={() => scrollToBottom()}>

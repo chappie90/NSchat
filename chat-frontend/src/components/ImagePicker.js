@@ -27,7 +27,7 @@ const ImgPicker = props => {
   const { state: { username } } = useContext(AuthContext);
   const { state: { profileImage }, saveImage, getImage, deleteImage } = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
-  const [imageUploadInProgress, setImageUploadInProgress] = useState(0);
+  const [imageUploadInProgress, setImageUploadInProgress] = useState(false);
   const progressIndicator = useRef(new Animated.Value(0)).current;
 
   const modalCloseHandler = () => {
@@ -73,7 +73,7 @@ const ImgPicker = props => {
       return;
     }
     setModalVisible(false);
-    saveImage(username, cameraImage.uri, cameraImage.base64);
+    uploadImage(cameraImage.uri, cameraImage.base64);
   };
 
   const choosePhotoHandler = async () => {
@@ -91,78 +91,76 @@ const ImgPicker = props => {
 
     setModalVisible(false);
 
-    let imageUri = libraryImage.uri;
-    let base64 = libraryImage.base64;
+    uploadImage(libraryImage.uri, libraryImage.base64);
+  };
 
-    try {
-      const fileName = imageUri.split('/').pop();
-      const newPath = FileSystem.documentDirectory + fileName;
 
-      let base64Img = `data:image/jpg;base64,${base64}`;
+  const uploadImage = (imageUri, imageBase64) => {
+    const fileName = imageUri.split('/').pop();
+    const newPath = FileSystem.documentDirectory + fileName;
 
-      let uriParts = imageUri.split('.');
-      let fileType = uriParts[uriParts.length - 1];
-      let formData = new FormData();
+    let base64Img = `data:image/jpg;base64,${imageBase64}`;
 
-      //body.append('authToken', 'secret'); don't really need it
-      // make sure this name is the same as multer({ storage: storage }).single('profile'),
-      // otherwise will get MulterError: Unexpected field error
-      formData.append('profile', {
-        uri: imageUri,
-        name: `${username}`,
-        type: `image/${fileType}` 
-      });
-      formData.append('user', username);
-      formData.append('base64', base64Img);
+    let uriParts = imageUri.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+    let formData = new FormData();
 
-      let progress;
+    //body.append('authToken', 'secret'); don't really need it
+    // make sure this name is the same as multer({ storage: storage }).single('profile'),
+    // otherwise will get MulterError: Unexpected field error
+    formData.append('profile', {
+      uri: imageUri,
+      name: `${username}`,
+      type: `image/${fileType}` 
+    });
+    formData.append('user', username);
+    formData.append('base64', base64Img);
 
-      const response = await chatApi.post('/image/upload', formData , 
-        {
-          onUploadProgress: (progressEvent) => {
-            const totalLength = progressEvent.lengthComputable ? 
-              progressEvent.total : 
-              progressEvent.target.getResponseHeader('content-length') || 
-              progressEvent.target.getResponseHeader('x-decompressed-content-length');
+    let progress;
+    chatApi.post('/image/upload', formData , 
+      {
+        onUploadProgress: (progressEvent) => {
+          const totalLength = progressEvent.lengthComputable ? 
+            progressEvent.total : 
+            progressEvent.target.getResponseHeader('content-length') || 
+            progressEvent.target.getResponseHeader('x-decompressed-content-length');
 
-            if (totalLength !== null) {
-              progress = Math.round(((progressEvent.loaded * 100) / totalLength) * 0.8);
-              Animated.timing(
-                progressIndicator,
-                {
-                  toValue: progress,
-                  duration: 1000,
-                  delay: 200
-                },
-              ).start();
-              setImageUploadInProgress(true);
-            }
-          },
-          headers: { 'Content-Type': 'multipart/form-data' }
-        }
-      );
-
-      if (response.data) {
+          if (totalLength !== null) {
+            progress = Math.round(((progressEvent.loaded * 100) / totalLength) * 0.8);
+            Animated.timing(
+              progressIndicator,
+              {
+                toValue: progress,
+                duration: 1000,
+                delay: 200
+              },
+            ).start();
+            setImageUploadInProgress(true);
+          }
+        },
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      .then(response => {
+        if (response.data) {
         progress = 100;
          Animated.timing(
             progressIndicator,
             {
               toValue: progress,
-              duration: 300
+              duration: 200
             },
           ).start();
         setTimeout(() => {
            progressIndicator.setValue(0);
            setImageUploadInProgress(false);
-        }, 1000);
+        }, 800);
         saveImage(response.data);
       }
-
-    } catch (err) {
-      console.log(err)
-      throw err
-    }
-
+      })
+      .catch(err => {
+        throw err;
+        console.log(err)
+      });
   };
 
   const deletePhotoHandler = () => {

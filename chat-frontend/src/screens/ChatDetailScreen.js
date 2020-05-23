@@ -64,7 +64,6 @@ const ChatDetailScreen = ({ navigation }) => {
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
-  const [loadMoreHelper, setLoadMoreHelper] = useState(false);
   const [allMessagesLoaded, setAllMessagesLoaded] = useState(false);
   const [overlayMode, setOverlayMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -110,18 +109,6 @@ const ChatDetailScreen = ({ navigation }) => {
   }, [currentScreen]);
 
   useEffect(() => {
-    // console.log(username)
-    // console.log('chat')
-    // // console.log(chat)
-  }, [chat]);
-
-  useEffect(() => {
-    // console.log(username)
-    // console.log('incomingMsgs')
-    // console.log(incomingMsgs)
-  }, [incomingMsgs]);
-
-  useEffect(() => {
     if (socketState) {
       socket.current = socketState; 
 
@@ -144,9 +131,9 @@ const ChatDetailScreen = ({ navigation }) => {
             message.chat.from = username;
             addNewChat(message.chat);
           } else {
-            setIncomingMsgs(prevState => prevState.map(msg => {
-              return msg._id === message.message._id ? { ...msg, read: false } : msg;
-            }));
+            // setIncomingMsgs(prevState => prevState.map(msg => {
+            //   return msg._id === message.message._id ? { ...msg, read: false } : msg;
+            // }));
             updateChatState(message.chat);
           }
         }
@@ -154,7 +141,7 @@ const ChatDetailScreen = ({ navigation }) => {
         if (message.message.user.name === recipient) {
           if (screen.current === 'ChatDetail') {
             updateChatState(message.chat);
-            setIncomingMsgs(prevState => GiftedChat.append(prevState, message.message));
+            // setIncomingMsgs(prevState => GiftedChat.append(prevState, message.message));
             socket.current.emit('join_chat', { username, recipient, messageId: message.message._id });
           } 
         }
@@ -182,7 +169,6 @@ const ChatDetailScreen = ({ navigation }) => {
         if (data.user === recipient) {
           markMessageAsRead({ chatId: chatId });
           setIncomingMsgs(prevState => prevState.map(msg => {
-            console.log(msg)
             return msg.read === false ? { ...msg, read: true } : msg;
           }));
         } 
@@ -190,18 +176,24 @@ const ChatDetailScreen = ({ navigation }) => {
     }
   }, [socketState]);
 
-  // useEffect(() => {
-  //   let chatId = navigation.getParam('chatId') || chatIdRef.current;
+  useEffect(() => {
+    let chatId = navigation.getParam('chatId') || chatIdRef.current;
 
-  //   if (!chatId) {
-  //     return;
-  //   }
+    if (!chatId) {
+      return;
+    }
 
-  //   if (!loadMoreHelper) {
-  //     setIncomingMsgs(chat[chatId]);
-  //   }   
-  //   setLoadMoreHelper(false);
-  // }, [chat]);
+    if (chat[chatId]?.length <= 30) {
+      setIncomingMsgs(chat[chatId]);
+    } else if (chat[chatId]?.length > 30) {
+      if (incomingMsgs.length <= 31) {
+        setIncomingMsgs(chat[chatId].slice(0, 30));
+      } else if (incomingMsgs.length > 31) {
+        setIncomingMsgs(chat[chatId].slice(0, incomingMsgs.length));
+      }
+    }
+
+  }, [chat]);
 
   const didFocusHandler = () => {
     if (socket.current) {
@@ -216,6 +208,8 @@ const ChatDetailScreen = ({ navigation }) => {
   };
 
   const willFocusHandler = () => {
+    setAllMessagesLoaded(false);
+
     Animated.timing(
       fadeAnim,
       {
@@ -256,7 +250,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
     if (chat.hasOwnProperty(chatId)) {
       if (chat[chatId].length > 30) {
-        resetChatState(chatId);
+        // resetChatState(chatId);
         setIncomingMsgs(chat[chatId].slice(0, 30));
         return;
       }
@@ -350,7 +344,6 @@ const ChatDetailScreen = ({ navigation }) => {
 
     if (incomingMsgs.length < chat[chatId].length) {
       if (chat[chatId].length - incomingMsgs.length < 30) {
-        console.log('first load more / reached last messages')
         setAllMessagesLoaded(true);
         setIncomingMsgs(prevState => 
           GiftedChat.prepend(
@@ -360,7 +353,6 @@ const ChatDetailScreen = ({ navigation }) => {
         );
         return;
       }
-      console.log('first load more')
       setIncomingMsgs(prevState => 
         GiftedChat.prepend(
           prevState, 
@@ -371,11 +363,9 @@ const ChatDetailScreen = ({ navigation }) => {
     } else if (incomingMsgs.length === chat[chatId].length) {
       setAllMessagesLoaded(true);
     } else {
-      console.log('second load more')
       setIsLoading(true);
       setCurrentPage(currentPage + 1);
       let page = currentPage + 1;
-      setLoadMoreHelper(true);
       getMessages({ chatType, chatId, username, recipient, page })
         .then(messages => {
           if (mounted) {
@@ -387,8 +377,6 @@ const ChatDetailScreen = ({ navigation }) => {
           }
         }) 
     }
-    console.log(incomingMsgs.length)
-    console.log(chat[chatId].length)
   };
 
   const sendMessage = async (message) => {
@@ -888,7 +876,7 @@ const ChatDetailScreen = ({ navigation }) => {
                   } else {
                     setShowScrollToBottomBtn(false);
                   }
-                  if (isCloseToTop(nativeEvent)) {
+                  if (isCloseToTop(nativeEvent)) {    
                     let chatId = navigation.getParam('chatId') || chatIdRef.current;
                     if (chat[chatId].length > 30 && !allMessagesLoaded) {
                       loadMoreMessages();

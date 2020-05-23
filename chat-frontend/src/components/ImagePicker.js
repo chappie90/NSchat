@@ -1,18 +1,21 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import {
   View, 
   TouchableWithoutFeedback, 
   TouchableOpacity, 
   Text, 
   StyleSheet, 
-  Alert
+  Alert,
+  Animated
 } from 'react-native';
 import { Image } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import Modal from "react-native-modal";
+import * as FileSystem from 'expo-file-system';
 
+import chatApi from '../api/chat';
 import Colors from '../constants/colors';
 import PrimaryButton from './PrimaryButton';
 import BodyText from './BodyText';
@@ -24,6 +27,8 @@ const ImgPicker = props => {
   const { state: { username } } = useContext(AuthContext);
   const { state: { profileImage }, saveImage, getImage, deleteImage } = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
+  const [imageUploadInProgress, setImageUploadInProgress] = useState(0);
+  const progressIndicator = useRef(new Animated.Value(0)).current;
 
   const modalCloseHandler = () => {
     setModalVisible(false);
@@ -85,7 +90,79 @@ const ImgPicker = props => {
     }
 
     setModalVisible(false);
-    saveImage(username, libraryImage.uri, libraryImage.base64);
+
+    let imageUri = libraryImage.uri;
+    let base64 = libraryImage.base64;
+
+    try {
+      const fileName = imageUri.split('/').pop();
+      const newPath = FileSystem.documentDirectory + fileName;
+
+      let base64Img = `data:image/jpg;base64,${base64}`;
+
+      let uriParts = imageUri.split('.');
+      let fileType = uriParts[uriParts.length - 1];
+      let formData = new FormData();
+
+      //body.append('authToken', 'secret'); don't really need it
+      // make sure this name is the same as multer({ storage: storage }).single('profile'),
+      // otherwise will get MulterError: Unexpected field error
+      formData.append('profile', {
+        uri: imageUri,
+        name: `${username}`,
+        type: `image/${fileType}` 
+      });
+      formData.append('user', username);
+      formData.append('base64', base64Img);
+
+      let progress;
+
+      const response = await chatApi.post('/image/upload', formData , 
+        {
+          onUploadProgress: (progressEvent) => {
+            const totalLength = progressEvent.lengthComputable ? 
+              progressEvent.total : 
+              progressEvent.target.getResponseHeader('content-length') || 
+              progressEvent.target.getResponseHeader('x-decompressed-content-length');
+
+            if (totalLength !== null) {
+              progress = Math.round(((progressEvent.loaded * 100) / totalLength) * 0.8);
+              Animated.timing(
+                progressIndicator,
+                {
+                  toValue: progress,
+                  duration: 1000,
+                  delay: 200
+                },
+              ).start();
+              setImageUploadInProgress(true);
+            }
+          },
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      );
+
+      if (response.data) {
+        progress = 100;
+         Animated.timing(
+            progressIndicator,
+            {
+              toValue: progress,
+              duration: 300
+            },
+          ).start();
+        setTimeout(() => {
+           progressIndicator.setValue(0);
+           setImageUploadInProgress(false);
+        }, 1000);
+        saveImage(response.data);
+      }
+
+    } catch (err) {
+      console.log(err)
+      throw err
+    }
+
   };
 
   const deletePhotoHandler = () => {
@@ -156,6 +233,21 @@ const ImgPicker = props => {
           </View>
         </TouchableWithoutFeedback>
       </View>
+      {imageUploadInProgress ? <View style={{ width: 200, position: 'absolute', 
+        bottom: 0,  borderRadius: 4, backgroundColor: '#E8E8E8' }}>
+          <Animated.View style={{
+            backgroundColor: Colors.secondary, 
+            left: 0,
+            width:  progressIndicator.interpolate({
+                inputRange: [ 0, 100],
+                outputRange: [ 0, 200 ]
+            }),
+            height: 7,
+            borderRadius: 4 }}>
+          </Animated.View>
+      </View> : 
+      <View></View>
+    }
     </View>
   );
 };

@@ -30,8 +30,8 @@ import BodyText from "../components/BodyText";
 
 const AddGroupScreen = props => {
   const { state: { contacts }, getContacts } = useContext(ContactsContext);
-  const { state: { username } } = useContext(AuthContext);
-  const { createGroup, getChats } = useContext(ChatContext);
+  const { state: { username, socketState } } = useContext(AuthContext);
+  const { createGroup, getChats, updateGroup, updateMessages } = useContext(ChatContext);
   const {
     state: { 
       currentGroupId,
@@ -50,6 +50,7 @@ const AddGroupScreen = props => {
   const socket = useRef(null);
 
   useEffect(() => {
+    console.log('add group member screen ran')
     getContacts({ username });
   }, []);
 
@@ -67,7 +68,11 @@ const AddGroupScreen = props => {
   }, [contacts]);
 
   const addMemberHandler = (username, chatId, newMember) => {
-    addGroupMember(username, chatId, newMember);
+    addGroupMember(username, chatId, newMember)
+      .then(data => {
+        updateGroup(data.group, 'members', data.adminMessage);
+        updateMessages({ chatId: group._id, message: data.adminMessage });
+      });
     setAddToGroupArr([]);
     setGroupContacts(contacts);
     setDisableCreateBtn(true);

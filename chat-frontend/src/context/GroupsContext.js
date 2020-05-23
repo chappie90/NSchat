@@ -113,6 +113,8 @@ const addGroupMember = dispatch => async (username, chatId, newMembers) => {
     }
 
     dispatch({ type: 'get_group', payload: response.data.group });
+
+    return response.data;
   } catch (err) {
     console.log(err);
     throw err;

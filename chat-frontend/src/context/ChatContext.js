@@ -136,6 +136,14 @@ const chatReducer = (state, action) => {
            } : item;
         });
       }
+      if (action.payload.updatedProperty === 'members') {
+        updatedGroup = state.previousChats.map(item => {
+          return item.chatId === action.payload.updatedGroup._id ?
+           { ...item, 
+            text: action.payload.adminMessage.text
+           } : item;
+        });
+      }
       return { ...state, previousChats: updatedGroup };
     case 'save_expo_token':
       return { ...state, expoToken: action.payload };

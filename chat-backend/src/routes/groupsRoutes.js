@@ -256,8 +256,10 @@ router.patch('/group/participants/add', checkAuth, async (req, res) => {
       return res.status(422).send({ error: 'Could not add group members' });
     }
 
+    let addedGroupMemberMessage;
+
     for (const member of newMembers) {
-      const addedGroupMemberMessage = new GroupMessage({
+      addedGroupMemberMessage = new GroupMessage({
         group: groupId,
         from: 'admin',
         message: {
@@ -268,7 +270,17 @@ router.patch('/group/participants/add', checkAuth, async (req, res) => {
       await addedGroupMemberMessage.save();
     }
 
-    res.status(200).send({ group });
+    const adminMessage = {
+      _id: addedGroupMemberMessage._id,
+      text: addedGroupMemberMessage.message.text,
+      createdAt:  addedGroupMemberMessage.message.created,
+      user: {
+        _id: 1,
+        name: 'admin'
+      }
+    };
+  
+    res.status(200).send({ group, adminMessage });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Could not add group members' });

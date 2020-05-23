@@ -137,13 +137,14 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     const cameraImage = await ImagePicker.launchCameraAsync({
-      allowsEditing: true
+      allowsEditing: true,
+      base64: true
     });
     if (!cameraImage.uri) {
       return;
     }
     setModalVisible(false);
-    updateGroupImage(username, group._id, group.name, cameraImage.uri)
+    updateGroupImage(username, group._id, group.name, cameraImage.uri, cameraImage.base64)
       .then(data => {
         props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);
@@ -157,13 +158,14 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     const libraryImage = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true
+      allowsEditing: true,
+      base64: true
     });
     if (!libraryImage.uri) {
       return;
     }
     setModalVisible(false);
-    updateGroupImage(username, group._id, group.name, libraryImage.uri)
+    updateGroupImage(username, group._id, group.name, libraryImage.uri, libraryImage.base64)
       .then(data => {
         props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);

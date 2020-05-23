@@ -1,11 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const axios = require('axios');
 
 const Group = mongoose.model('Group');
 const User = mongoose.model('User');
 const GroupMessage = mongoose.model('GroupMessage');
 const checkAuth = require('../middlewares/checkAuth');
+const setCloudinaryTransformUrl = require('../helpers/setCloudinaryTransformUrl');
+
+const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dycqqk3s6/upload';
 
 const router = express.Router();
 
@@ -103,16 +107,39 @@ router.post(
     const username = req.body.username;
     const groupId = req.body.chatId;
 
-    const url = req.protocol + '://' + req.get('host');
-    const imgPath = url + '/public/uploads/' + req.file.filename;
+    let imgPath, cloudinaryUrl;
 
     try {
+
+      if (req.file) {
+        const url = req.protocol + '://' + req.get('host');
+        imgPath = url + '/public/uploads/' + req.file.filename;
+
+        const base64 = req.body.base64;
+        let cloudinaryData = {
+          file: base64,
+          upload_preset: 'ml_default'
+        };
+
+        const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+
+        if (response.status !== 200) {
+          return res.status(422).send({ error: 'Could not update image' });
+        }
+
+        let urlParts = response.data.url.split('/');
+        urlParts.splice(-2, 1);
+        cloudinaryUrl = urlParts.join('/');
+      }
 
       const group = await Group.findOneAndUpdate(
         { _id: groupId },
         { avatar: {
           imagePath: imgPath,
-          imageName: req.file.filename
+          imageName: req.file.filename,
+          cloudinaryImgPath_150: setCloudinaryTransformUrl(cloudinaryUrl, 150),
+          cloudinaryImgPath_200: setCloudinaryTransformUrl(cloudinaryUrl, 200),
+          cloudinaryImgPath_400: setCloudinaryTransformUrl(cloudinaryUrl, 400)
         } },
         { new: true }
       ).populate('participants.user');
@@ -140,6 +167,8 @@ router.post(
           name: 'admin'
         }
       };
+
+      console.log(group)
     
       res.status(200).send({ group, adminMessage });
     } catch (err) {

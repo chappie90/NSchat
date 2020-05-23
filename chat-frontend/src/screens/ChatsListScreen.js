@@ -258,6 +258,7 @@ const ChatsListScreen = ({ navigation }) => {
     }
 
     if (origin === 'selected') {
+      markMessagesAsRead({ username, recipient: notificationState.current.data.sender });
       if (notificationState.current.data.type === 'group') {
         getCurrentGroupId(notificationState.current.data.chatId);
       }
@@ -272,6 +273,7 @@ const ChatsListScreen = ({ navigation }) => {
     }
 
     if (Platform.OS === 'ios' && !notification.remote && origin === 'received') {
+      markMessagesAsRead({ username, recipient: notificationState.current.data.sender });
       if (notificationState.current.data.type === 'group') {
         getCurrentGroupId(notificationState.current.data.chatId);
       }
@@ -502,7 +504,7 @@ const ChatsListScreen = ({ navigation }) => {
           return (
             <TouchableWithoutFeedback
               onPress={() => {
-                markMessagesAsRead({ username, recipient: rowData.item.contact });;
+                markMessagesAsRead({ username, recipient: rowData.item.contact });
                 if (rowData.item.type === 'group') {
                   getCurrentGroupId(rowData.item.chatId);
                 }

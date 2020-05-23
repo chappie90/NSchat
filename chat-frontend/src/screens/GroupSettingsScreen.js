@@ -92,6 +92,7 @@ const GroupSettingsScreen = (props) => {
     if (group.name !== name) {
       updateGroupName(group._id, name, username)
         .then(data => {
+          props.updateGroupName(name);
           updateGroup(data.group, 'name', data.adminMessage);
           updateMessages({ chatId: group._id, message: data.adminMessage });
         });

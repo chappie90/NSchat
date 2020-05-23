@@ -295,6 +295,10 @@ const ChatDetailScreen = ({ navigation }) => {
     setGroupSettingsModal(false);
   };
 
+  const updateGroupNameHandler = (name) => {
+    navigation.setParams({ username: name });
+  };
+
   const scrollToBottom = () => {
     if (giftedChatRef) {
       giftedChatRef.scrollToBottom();
@@ -854,7 +858,12 @@ const ChatDetailScreen = ({ navigation }) => {
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
          </Modal>
-        <GroupSettingsScreen navigation={navigation} visible={groupSettingsModal} closeModal={closeModalHandler} />
+        <GroupSettingsScreen
+          navigation={navigation} 
+          visible={groupSettingsModal} 
+          closeModal={closeModalHandler} 
+          updateGroupName={updateGroupNameHandler}
+          />
            {showScrollToBottomBtn && <View style={styles.scrollBottomBtn}>
             <TouchableOpacity onPress={() => scrollToBottom()}>
               <MaterialIcons name="keyboard-arrow-down" size={30} color={Colors.primary} />

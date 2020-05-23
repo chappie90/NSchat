@@ -323,12 +323,13 @@ const ChatsListScreen = ({ navigation }) => {
       socket.current.on('offline', user => {
         userIsOffline(user);
       });
-      socket.current.on('message', message => {
-        if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
-          updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
-          updateMessages({ chatId: message.message.chatId, message: message.message });
-        }       
-      });
+      // socket.current.on('message', message => {
+      //   if (username !== message.message.user.name && screen.current !== 'ChatDetail') {
+      //     console.log('update message count will focus')
+      //     updateChatState({ chat: message.chat, updateUnreadMessageCount: true });
+      //     updateMessages({ chatId: message.message.chatId, message: message.message });
+      //   }       
+      // });
       socket.current.on('is_typing', username => {
         setIsTyping(true);
         setTypingUser(username);

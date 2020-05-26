@@ -257,7 +257,7 @@ router.patch('/group/name/update', checkAuth, async (req, res) => {
       }
     };
 
-    emitter.emit('print', 'how was Dunkirk?')
+    emitter.emit('update_group_name', { group, adminMessage } );
 
     res.status(200).send({ group, adminMessage });
   } catch (err) {

@@ -60,7 +60,8 @@ const ChatsListScreen = ({ navigation }) => {
     updateMessages,
     updateChatState,
     addNewChat,
-    getCurrentScreen
+    getCurrentScreen,
+    updateGroup
   } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus, userIsOffline } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
@@ -193,6 +194,12 @@ const ChatsListScreen = ({ navigation }) => {
       });
       socket.current.on('new_group', () => {
         getChats({ username });
+      });
+      socket.current.on('update_group_name', (data) => {
+        console.log('update group name')
+        // console.log(data)
+        let unreadMessageCount = true;
+        updateGroup(data.group, 'name', data.adminMessage, unreadMessageCount);
       });
     }
 

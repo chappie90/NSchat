@@ -102,10 +102,28 @@ module.exports = function(io) {
       }
     });
 
-    emitter.on('print', (arg) => {
-      console.log('success');
-      console.log(arg)
-    })
+    emitter.on('update_group_name', (data) => {
+      const groupParticipants = data.group.participants;
+      const activeGroupParticipants = [];
+
+      for (let p of groupParticipants) {
+        if (p.user.username !== username && users[p.user.username]) {
+          activeGroupParticipants.push(users[p.user.username].id);
+        }
+      }
+
+      const updatePreviousChatsRecipient = {
+        chatId: data.group._id,
+        contact: data.group.name,
+        date: data.adminMessage.createdAt,
+        text: data.adminMessage.text,
+        from: username
+      };
+
+      for (let p of activeGroupParticipants) {
+        io.to(p).emit('update_group_name', { group: data.group, adminMessage: data.adminMessage });
+      }
+    });
 
     socket.on('message', async msgObj => {
 

@@ -113,13 +113,15 @@ const chatReducer = (state, action) => {
     case 'create_group':
       return { ...state, previousChats: [action.payload].concat(state.previousChats) }; // [action.payload, ...state.previousChats]
     case 'update_group':
+    console.log(action.payload.unreadMessageCount)
       let updatedGroup;
       if (action.payload.updatedProperty === 'name') {
         updatedGroup = state.previousChats.map(item => {
           return item.chatId === action.payload.updatedGroup._id ?
            { ...item, 
             contact: action.payload.updatedGroup.name,
-            text: action.payload.adminMessage.text
+            text: action.payload.adminMessage.text,
+            unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 1
            } : item;
         });
       }
@@ -364,8 +366,8 @@ const createGroup = dispatch => async ({
   }
 };
 
-const updateGroup = dispatch => (updatedGroup, updatedProperty, adminMessage) => {
-  dispatch({ type: 'update_group', payload: { updatedGroup, updatedProperty, adminMessage } });
+const updateGroup = dispatch => (updatedGroup, updatedProperty, adminMessage, unreadMessageCount) => {
+  dispatch({ type: 'update_group', payload: { updatedGroup, updatedProperty, adminMessage, unreadMessageCount } });
 };
 
 const resetBadgeCount = dispatch => async (username) => {

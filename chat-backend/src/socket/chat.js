@@ -107,7 +107,7 @@ module.exports = function(io) {
       const activeGroupParticipants = [];
 
       for (let p of groupParticipants) {
-        if (p.user.username !== username && users[p.user.username]) {
+        if (p.user.username !== data.editor && users[p.user.username]) {
           activeGroupParticipants.push(users[p.user.username].id);
         }
       }
@@ -496,6 +496,7 @@ module.exports = function(io) {
     });
 
     socket.on('disconnect', async () => {
+      emitter.removeAllListeners();
       console.log('User disconnected');
       // console.log(io.sockets.adapter.rooms);
       const user = await User.findOne({ username }).populate('contacts.user');

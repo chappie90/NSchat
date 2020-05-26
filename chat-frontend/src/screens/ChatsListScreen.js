@@ -196,10 +196,10 @@ const ChatsListScreen = ({ navigation }) => {
         getChats({ username });
       });
       socket.current.on('update_group_name', (data) => {
-        console.log('update group name')
-        // console.log(data)
+        console.log('called')
         let unreadMessageCount = true;
         updateGroup(data.group, 'name', data.adminMessage, unreadMessageCount);
+        updateMessages({ chatId: data.group._id, message: data.adminMessage });
       });
     }
 

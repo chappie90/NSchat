@@ -159,61 +159,23 @@ module.exports = function(io) {
     });
 
 
-    socket.on('update_group_name', async (data) => {
-      const groupId = data.id;
-      const groupName = data.name;
-      const editor = data.username;
+    socket.on('group_name_updated', async (data) => {
+      const groupParticipants = data.group.participants;
+      const activeGroupParticipants = [];
 
-      try {
-        const group = await Group.findOneAndUpdate(
-          { _id: groupId },
-          { name: groupName },
-          { new: true }
-        ).populate('participants.user');
-
-        if (!group) {
-          return res.status(422).send({ error: 'Could not update group name' });
+      for (let p of groupParticipants) {
+        if (p.user.username !== data.editor && users[p.user.username]) {
+          activeGroupParticipants.push(users[p.user.username].id);
         }
+      }
 
-        const updatedGroupNameMessage = new GroupMessage({
-          group: groupId,
-          from: 'admin',
-          message: {
-            text: `${username} changed group name to '${groupName}'`,
-            created: Date.now()
-          }
+      for (let p of activeGroupParticipants) {
+        io.to(p).emit('group_name_updated', {
+          editor: data.editor, 
+          group: data.group, 
+          adminMessage: data.adminMessage 
         });
-        await updatedGroupNameMessage.save();
-
-        const adminMessage = {
-          _id: updatedGroupNameMessage._id,
-          text: updatedGroupNameMessage.message.text,
-          createdAt:  updatedGroupNameMessage.message.created,
-          user: {
-            _id: 1,
-            name: 'admin'
-          }
-        };
-
-        const groupParticipants = group.participants;
-        const activeGroupParticipants = [];
-
-        for (let p of groupParticipants) {
-          if (p.user.username !== editor && users[p.user.username]) {
-            activeGroupParticipants.push(users[p.user.username].id);
-          }
-        }
-
-        for (let p of activeGroupParticipants) {
-          io.to(p).emit('group_name_updated', { editor, group, adminMessage });
-        }
-        io.to(socketId).emit('group_name_updated', { editor, group, adminMessage });
-        // res.status(200).send({ group, adminMessage });
-      } catch (err) {
-        console.log(err);
-        // send error with emit instead
-        // res.status(422).send({ error: 'Could not update group name' });
-      } 
+      }
     });
 
     socket.on('message', async msgObj => {

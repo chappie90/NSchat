@@ -59,12 +59,6 @@ const GroupSettingsScreen = (props) => {
   useEffect(() => {
     if (socketState) {
       socket.current = socketState; 
-
-      socket.current.on('group_name_updated', (data) => {
-        if (username === data.editor) {
-          props.updateGroupName(data.group.name);
-        }
-      });
     }
   }, [socketState]);
 
@@ -120,10 +114,20 @@ const GroupSettingsScreen = (props) => {
   };
 
   const saveNameHandler = () => {
-    if (socket.current) {
-      if (group.name !== name) {
-        socket.current.emit('update_group_name', { id: group._id, name, username});
-      }
+    if (group.name !== name) {
+      updateGroupName(group._id, name, username)
+        .then(data => {
+          props.updateGroupName(data.group.name);
+          updateGroup(data.group, 'name', data.adminMessage);
+          updateMessages({ chatId: group._id, message: data.adminMessage });
+          if (socket.current) {
+            socket.current.emit('group_name_updated', {
+              group: data.group,
+              adminMessage: data.adminMessage,  
+              editor: username
+            });
+          }
+        });
     }
     setEditName(false);
   };

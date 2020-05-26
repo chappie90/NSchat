@@ -81,18 +81,18 @@ const updateGroupImage = dispatch => async (username, chatId, groupName, groupIm
 
 };
 
-// const updateGroupName = dispatch => async (chatId, groupName, username) => {
-//   try {
-//     const response = await chatApi.patch('/group/name/update', { chatId, groupName, username });
+const updateGroupName = dispatch => async (chatId, groupName, username) => {
+  try {
+    const response = await chatApi.patch('/group/name/update', { chatId, groupName, username });
 
-//     dispatch({ type: 'get_group', payload: response.data.group });
+    dispatch({ type: 'get_group', payload: response.data.group });
 
-//     return response.data;
-//   } catch (err) {
-//     console.log(err);
-//     throw err;
-//   }
-// };
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
 
 const deleteGroupImage = dispatch => async (chatId, username) => {
   try {
@@ -136,7 +136,7 @@ export const { Context, Provider } = createDataContext(
     leaveGroup,
     updateGroupImage,
     deleteGroupImage,
-    // updateGroupName,
+    updateGroupName,
     addGroupMember,
     resetGroup
   },

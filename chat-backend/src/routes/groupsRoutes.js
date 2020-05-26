@@ -227,48 +227,48 @@ router.patch('/group/image/delete', checkAuth, async (req, res) => {
   }
 });
 
-// router.patch('/group/name/update', checkAuth, async (req, res) => {
-//   const groupId = req.body.chatId;
-//   const groupName = req.body.groupName;
-//   const username = req.body.username;
+router.patch('/group/name/update', checkAuth, async (req, res) => {
+  const groupId = req.body.chatId;
+  const groupName = req.body.groupName;
+  const username = req.body.username;
 
-//   try {
-//     const group = await Group.findOneAndUpdate(
-//       { _id: groupId },
-//       { name: groupName },
-//       { new: true }
-//     ).populate('participants.user');
+  try {
+    const group = await Group.findOneAndUpdate(
+      { _id: groupId },
+      { name: groupName },
+      { new: true }
+    ).populate('participants.user');
 
-//     if (!group) {
-//       return res.status(422).send({ error: 'Could not update group name' });
-//     }
+    if (!group) {
+      return res.status(422).send({ error: 'Could not update group name' });
+    }
 
-//     const updatedGroupNameMessage = new GroupMessage({
-//       group: groupId,
-//       from: 'admin',
-//       message: {
-//         text: `${username} changed group name to '${groupName}'`,
-//         created: Date.now()
-//       }
-//     });
-//     await updatedGroupNameMessage.save();
+    const updatedGroupNameMessage = new GroupMessage({
+      group: groupId,
+      from: 'admin',
+      message: {
+        text: `${username} changed group name to '${groupName}'`,
+        created: Date.now()
+      }
+    });
+    await updatedGroupNameMessage.save();
 
-//     const adminMessage = {
-//       _id: updatedGroupNameMessage._id,
-//       text: updatedGroupNameMessage.message.text,
-//       createdAt:  updatedGroupNameMessage.message.created,
-//       user: {
-//         _id: 1,
-//         name: 'admin'
-//       }
-//     };
+    const adminMessage = {
+      _id: updatedGroupNameMessage._id,
+      text: updatedGroupNameMessage.message.text,
+      createdAt:  updatedGroupNameMessage.message.created,
+      user: {
+        _id: 1,
+        name: 'admin'
+      }
+    };
 
-//     res.status(200).send({ group, adminMessage });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(422).send({ error: 'Could not update group name' });
-//   } 
-// });
+    res.status(200).send({ group, adminMessage });
+  } catch (err) {
+    console.log(err);
+    res.status(422).send({ error: 'Could not update group name' });
+  } 
+});
 
 router.patch('/group/participants/add', checkAuth, async (req, res) => {
   const username = req.body.username;

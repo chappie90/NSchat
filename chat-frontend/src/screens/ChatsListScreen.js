@@ -200,10 +200,8 @@ const ChatsListScreen = ({ navigation }) => {
       });
 
       socket.current.on('group_name_updated', (data) => {
-        updateMessages({ chatId: data.group._id, message: data.adminMessage });
-        if (username === data.editor) {
-          updateGroup(data.group, 'name', data.adminMessage);
-        } else {
+        if (username !== data.editor) {
+          updateMessages({ chatId: data.group._id, message: data.adminMessage });
           let unreadMessageCount;
           if (screen.current !== 'ChatDetail') {
             unreadMessageCount = true;

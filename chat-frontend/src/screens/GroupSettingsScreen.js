@@ -381,6 +381,7 @@ const GroupSettingsScreen = (props) => {
           leaveGroup(group._id, userId, username).then(res => {
             getChats({username}).then(res => {
               setIsLoading(false);
+              props.closeModal();
               props.navigation.navigate('ChatsList');
             });
           });

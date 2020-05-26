@@ -102,6 +102,23 @@ const GroupSettingsScreen = (props) => {
     setEditName(true);
   };
 
+  const leaveGroupHandler = (groupId, userId, username) => {
+    leaveGroup(groupId, userId, username).then(data => {
+      getChats({username}).then(res => {
+        setIsLoading(false);
+         if (socket.current) {
+          socket.current.emit('user_left_group', {
+            group: data.group,
+            adminMessage: data.adminMessage,  
+            editor: username
+          });
+        }
+        props.closeModal();
+        props.navigation.navigate('ChatsList');
+      });
+    });
+  };
+
   const saveNameHandler = () => {
     if (socket.current) {
       if (group.name !== name) {
@@ -378,13 +395,7 @@ const GroupSettingsScreen = (props) => {
         </View>
         <TouchableOpacity onPress={() => {
           setIsLoading(true);
-          leaveGroup(group._id, userId, username).then(res => {
-            getChats({username}).then(res => {
-              setIsLoading(false);
-              props.closeModal();
-              props.navigation.navigate('ChatsList');
-            });
-          });
+          leaveGroupHandler(group._id, userId, username);
         }}>
           <HeadingText style={{ color: Colors.tertiary, fontSize: 17, marginTop: 15, marginBottom: 20, textAlign: 'center' }}>Leave Group</HeadingText>
         </TouchableOpacity>

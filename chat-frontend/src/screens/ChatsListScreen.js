@@ -233,6 +233,19 @@ const ChatsListScreen = ({ navigation }) => {
           updateGroup(data.group, 'image', data.adminMessage, unreadMessageCount);
         }
       });
+
+       socket.current.on('user_left_group', (data) => {
+        console.log('chats list socket left')
+        console.log(data)
+        if (username !== data.editor) {
+          updateMessages({ chatId: data.group._id, message: data.adminMessage });
+          let unreadMessageCount;
+          if (screen.current !== 'ChatDetail') {
+            unreadMessageCount = true;
+          }
+          updateGroup(data.group, 'leave', data.adminMessage, unreadMessageCount);
+        }
+      });
     }
 
     return () => {

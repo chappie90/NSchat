@@ -143,7 +143,19 @@ const chatReducer = (state, action) => {
         updatedGroup = state.previousChats.map(item => {
           return item.chatId === action.payload.updatedGroup._id ?
            { ...item, 
-            text: action.payload.adminMessage.text
+            text: action.payload.adminMessage.text,
+            unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 0
+           } : item;
+        });
+      }
+      if (action.payload.updatedProperty === 'leave') {
+        console.log('leave context')
+        console.log(action.payload.adminMessage)
+        updatedGroup = state.previousChats.map(item => {
+          return item.chatId === action.payload.updatedGroup._id ?
+           { ...item, 
+            text: action.payload.adminMessage.text,
+            unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 0
            } : item;
         });
       }

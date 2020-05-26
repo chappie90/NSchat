@@ -72,7 +72,7 @@ router.patch('/group/leave', checkAuth, async (req, res) => {
       { new: true }
     );
 
-    const group = await Group.update(
+    const group = await Group.findOneAndUpdate(
       { _id: groupId },
       { $pull: {
         participants: {
@@ -80,7 +80,7 @@ router.patch('/group/leave', checkAuth, async (req, res) => {
         }
       } },
       { new: true }
-    );
+    ).populate('participants.user');
 
    const userLeftGroupMessage = new GroupMessage({
       group:groupId,
@@ -91,8 +91,18 @@ router.patch('/group/leave', checkAuth, async (req, res) => {
       }
     });
     await userLeftGroupMessage.save();
+
+    const adminMessage = {
+      _id: userLeftGroupMessage._id,
+      text: userLeftGroupMessage.message.text,
+      createdAt:  userLeftGroupMessage.message.created,
+      user: {
+        _id: 1,
+        name: 'admin'
+      }
+    };
     
-    res.status(200).send({ message: 'You\'ve left the group' });
+    res.status(200).send({ group, adminMessage });
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: 'Did not leave group successfully' })

@@ -45,12 +45,13 @@ const GroupSettingsScreen = (props) => {
     deleteGroupImage,
     updateGroupName,
     addGroupMember,
+    updateGroupState,
     resetGroup
   } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [addGroupMemberMode, setAddGroupMemberMode] = useState(false);
   const [name, setName] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [editName, setEditName] = useState(false);
   const  _scrollPos = new Animated.Value(0);
   let nameInput;
@@ -62,16 +63,20 @@ const GroupSettingsScreen = (props) => {
     }
   }, [socketState]);
 
-
   const onShowHandler = () => {
-    setIsLoading(true);
-    getGroup(currentGroupId).then(res => {
-      setIsLoading(false);
-    });
+    // setIsLoading(true);
+    // const group = previousChats.filter(item => item.chatId === currentGroupId);
+    // updateGroupState(group)
+    //   .then(res => {
+    //     setIsLoading(false);
+    //   });
+    // getGroup(currentGroupId).then(res => {
+    //   setIsLoading(false);
+    // });
   };
 
   const onDismissHandler = () => {
-    resetGroup();
+    // resetGroup();
   };
 
   useEffect(() => {

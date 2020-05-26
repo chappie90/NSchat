@@ -60,7 +60,7 @@ const ChatDetailScreen = ({ navigation }) => {
     saveMessageImage,
     addNewChat
  } = useContext(ChatContext);
-  const { state: { group } } = useContext(GroupsContext);
+  const { state: { group }, updateGroupState } = useContext(GroupsContext);
   const [incomingMsgs, setIncomingMsgs] = useState([]);
   const [recipient, setRecipient] = useState('');
   const [currentPage, setCurrentPage] = useState(null);
@@ -254,6 +254,9 @@ const ChatDetailScreen = ({ navigation }) => {
     if (Platform.OS === 'ios') {
       setStatusBarColor(2);
     } 
+
+    const group = previousChats.filter(item => item.chatId === chatId);
+    updateGroupState(group);
 
     setCurrentPage(1);
     let page = 1;

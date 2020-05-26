@@ -119,6 +119,13 @@ router.post('/chats', checkAuth, async (req, res) => {
       .sort({ 'message.created': -1 })
       .limit(1);
 
+      const group = await Group.find({ _id: g.group._id })
+        .populate('participants.user');
+
+      if (!group) {
+        return res.status(422).send({ error: 'Could not fetch chats' }); 
+      }
+
       chats.push({
         text: lastGroupMessage[0].message.text,
         date: lastGroupMessage[0].message.created,
@@ -132,7 +139,12 @@ router.post('/chats', checkAuth, async (req, res) => {
         chatId: g.group._id,
         muted: g.muted,
         from: lastGroupMessage[0].from,
-        unreadMessageCount: 0
+        unreadMessageCount: 0,
+        avatar: {
+          imagePath: g.group.avatar.imagePath
+        },
+        participants: group[0].participants,
+        owner: g.group.owner
       });
     }
 

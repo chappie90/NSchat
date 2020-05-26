@@ -37,6 +37,11 @@ const getGroup = dispatch => async (chatId) => {
   }
 };
 
+const updateGroupState = dispatch => async (group) => {
+  dispatch({ type: 'get_group', payload: group[0] });
+  return group[0];
+};
+
 const leaveGroup = dispatch => async (chatId, userId, username) => {
   try {
     const response = await chatApi.patch('/group/leave', { chatId, userId, username });
@@ -138,7 +143,8 @@ export const { Context, Provider } = createDataContext(
     deleteGroupImage,
     updateGroupName,
     addGroupMember,
-    resetGroup
+    resetGroup,
+    updateGroupState
   },
   { 
     currentGroupId: '',

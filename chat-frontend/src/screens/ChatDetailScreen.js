@@ -149,9 +149,11 @@ const ChatDetailScreen = ({ navigation }) => {
      socket.current.on('is_typing', () => {
         navigation.setParams({ isTyping: 'is typing...' });
       });
+
       socket.current.on('is_not_typing', () => {
         navigation.setParams({ isTyping: '' });
       });
+
       socket.current.on('message_deleted', data => {
         if (username === data.recipient) {
           let chatId = navigation.getParam('chatId') || chatIdRef.current;
@@ -161,6 +163,7 @@ const ChatDetailScreen = ({ navigation }) => {
           }));
         }
       });
+
       socket.current.on('has_joined_chat', data => {
         let chatType =  chatType || navigation.getParam('type');
         let chatId = navigation.getParam('chatId') || chatIdRef.current;
@@ -172,6 +175,17 @@ const ChatDetailScreen = ({ navigation }) => {
             return msg.read === false ? { ...msg, read: true } : msg;
           }));
         } 
+      });
+
+      socket.current.on('group_name_updated', (data) => {
+        if (username !== data.editor) {
+          navigation.setParams({ username: data.group.name });
+        }
+      });
+       socket.current.on('group_image_updated', (data) => {
+        if (username !== data.editor) {
+          navigation.setParams({ image: data.group.avatar && data.group.avatar.imagePath ?  data.group.avatar.imagePath : null  });
+        }
       });
     }
   }, [socketState]);

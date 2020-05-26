@@ -134,7 +134,8 @@ const chatReducer = (state, action) => {
                 action.payload.updatedGroup.avatar.imagePath :
                 null
             },
-            text: action.payload.adminMessage.text
+            text: action.payload.adminMessage.text,
+            unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 0
            } : item;
         });
       }

@@ -184,17 +184,21 @@ const ChatsListScreen = ({ navigation }) => {
           }       
         }
       });
+
       socket.current.on('is_typing', username => {
         setIsTyping(true);
         setTypingUser(username);
       });
+
       socket.current.on('is_not_typing', () => {
         setIsTyping(false);
         setTypingUser(null);
       });
+
       socket.current.on('new_group', () => {
         getChats({ username });
       });
+
       socket.current.on('group_name_updated', (data) => {
         updateMessages({ chatId: data.group._id, message: data.adminMessage });
         if (username === data.editor) {
@@ -205,6 +209,17 @@ const ChatsListScreen = ({ navigation }) => {
             unreadMessageCount = true;
           }
           updateGroup(data.group, 'name', data.adminMessage, unreadMessageCount);
+        }
+      });
+
+      socket.current.on('group_image_updated', (data) => {
+        if (username !== data.editor) {
+          updateMessages({ chatId: data.group._id, message: data.adminMessage });
+          let unreadMessageCount;
+          if (screen.current !== 'ChatDetail') {
+            unreadMessageCount = true;
+          }
+          updateGroup(data.group, 'image', data.adminMessage, unreadMessageCount);
         }
       });
     }

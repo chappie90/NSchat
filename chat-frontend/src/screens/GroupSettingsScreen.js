@@ -59,6 +59,12 @@ const GroupSettingsScreen = (props) => {
   useEffect(() => {
     if (socketState) {
       socket.current = socketState; 
+
+      socket.current.on('group_name_updated', (data) => {
+        if (username === data.editor) {
+          props.updateGroupName(data.group.name);
+        }
+      });
     }
   }, [socketState]);
 
@@ -101,11 +107,6 @@ const GroupSettingsScreen = (props) => {
       if (group.name !== name) {
         socket.current.emit('update_group_name', { id: group._id, name, username});
       }
-      socket.current.on('group_name_updated', (data) => {
-        if (username === data.editor) {
-          props.updateGroupName(name);
-        }
-      });
     }
     setEditName(false);
   };
@@ -154,11 +155,19 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     setModalVisible(false);
+
     updateGroupImage(username, group._id, group.name, cameraImage.uri, cameraImage.base64)
       .then(data => {
         props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);
         updateMessages({ chatId: group._id, message: data.adminMessage });
+        if (socket.current) {
+          socket.current.emit('group_image_updated', {
+            group: data.group,
+            adminMessage: data.adminMessage,  
+            editor: username
+          });
+        }
       });
   };
 
@@ -180,6 +189,13 @@ const GroupSettingsScreen = (props) => {
         props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);
         updateMessages({ chatId: group._id, message: data.adminMessage });
+        if (socket.current) {
+          socket.current.emit('group_image_updated', {
+            group: data.group,
+            adminMessage: data.adminMessage,  
+            editor: username
+          });
+        }
       });;
   };
 
@@ -190,6 +206,13 @@ const GroupSettingsScreen = (props) => {
           props.updateGroupImage(null);
           updateGroup(data.group, 'image', data.adminMessage);
           updateMessages({ chatId: group._id, message: data.adminMessage });
+          if (socket.current) {
+          socket.current.emit('group_image_updated', {
+            group: data.group,
+            adminMessage: data.adminMessage,  
+            editor: username
+          });
+        }
         });;
     }
     setModalVisible(false);

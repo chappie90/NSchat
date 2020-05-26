@@ -167,8 +167,6 @@ router.post(
           name: 'admin'
         }
       };
-
-      console.log(group)
     
       res.status(200).send({ group, adminMessage });
     } catch (err) {

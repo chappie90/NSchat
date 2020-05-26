@@ -195,11 +195,17 @@ const ChatsListScreen = ({ navigation }) => {
       socket.current.on('new_group', () => {
         getChats({ username });
       });
-      socket.current.on('update_group_name', (data) => {
-        console.log('called')
-        let unreadMessageCount = true;
-        updateGroup(data.group, 'name', data.adminMessage, unreadMessageCount);
+      socket.current.on('group_name_updated', (data) => {
         updateMessages({ chatId: data.group._id, message: data.adminMessage });
+        if (username === data.editor) {
+          updateGroup(data.group, 'name', data.adminMessage);
+        } else {
+          let unreadMessageCount;
+          if (screen.current !== 'ChatDetail') {
+            unreadMessageCount = true;
+          }
+          updateGroup(data.group, 'name', data.adminMessage, unreadMessageCount);
+        }
       });
     }
 

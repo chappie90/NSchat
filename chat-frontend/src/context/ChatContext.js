@@ -19,6 +19,7 @@ const chatReducer = (state, action) => {
     case 'reset_chat_state':
       return { ...state, chat: { [action.payload]: state.chat[action.payload].slice(0, 30) } };
     case 'update_messages':
+      // console.log('called')
       return state.chat[action.payload.chatId] ?
        { ...state, chat: {
         ...state.chat, 
@@ -113,7 +114,6 @@ const chatReducer = (state, action) => {
     case 'create_group':
       return { ...state, previousChats: [action.payload].concat(state.previousChats) }; // [action.payload, ...state.previousChats]
     case 'update_group':
-    console.log(action.payload.unreadMessageCount)
       let updatedGroup;
       if (action.payload.updatedProperty === 'name') {
         updatedGroup = state.previousChats.map(item => {
@@ -121,7 +121,7 @@ const chatReducer = (state, action) => {
            { ...item, 
             contact: action.payload.updatedGroup.name,
             text: action.payload.adminMessage.text,
-            unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 1
+            unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 0
            } : item;
         });
       }

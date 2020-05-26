@@ -32,7 +32,7 @@ import BodyText from "../components/BodyText";
 import AddGroupMemberScreen from './AddGroupMemberScreen';
 
 const GroupSettingsScreen = (props) => {
-  const { state: { username, userId }, setStatusBarColor } = useContext(AuthContext);
+  const { state: { username, userId, socketState }, setStatusBarColor } = useContext(AuthContext);
   const { state: { previousChats }, getChats, updateGroup, updateMessages } = useContext(ChatContext);
   const {
     state: { 
@@ -54,6 +54,14 @@ const GroupSettingsScreen = (props) => {
   const [editName, setEditName] = useState(false);
   const  _scrollPos = new Animated.Value(0);
   let nameInput;
+  const socket = useRef(null);
+
+  useEffect(() => {
+    if (socketState) {
+      socket.current = socketState; 
+    }
+  }, [socketState]);
+
 
   const onShowHandler = () => {
     setIsLoading(true);
@@ -89,13 +97,15 @@ const GroupSettingsScreen = (props) => {
   };
 
   const saveNameHandler = () => {
-    if (group.name !== name) {
-      updateGroupName(group._id, name, username)
-        .then(data => {
+    if (socket.current) {
+      if (group.name !== name) {
+        socket.current.emit('update_group_name', { id: group._id, name, username});
+      }
+      socket.current.on('group_name_updated', (data) => {
+        if (username === data.editor) {
           props.updateGroupName(name);
-          updateGroup(data.group, 'name', data.adminMessage);
-          updateMessages({ chatId: group._id, message: data.adminMessage });
-        });
+        }
+      });
     }
     setEditName(false);
   };

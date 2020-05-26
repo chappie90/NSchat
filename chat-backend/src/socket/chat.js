@@ -5,7 +5,6 @@ const PrivateMessage = mongoose.model('PrivateMessage');
 const PrivateChat = mongoose.model('PrivateChat');
 const GroupMessage = mongoose.model('GroupMessage');
 const Group = mongoose.model('Group');
-const emitter = require('./nodeEventEmitter')();
 
 const users = {};
 let onlineContacts = [];
@@ -102,27 +101,61 @@ module.exports = function(io) {
       }
     });
 
-    emitter.on('update_group_name', (data) => {
-      const groupParticipants = data.group.participants;
-      const activeGroupParticipants = [];
+    socket.on('update_group_name', async (data) => {
+      const groupId = data.id;
+      const groupName = data.name;
+      const editor = data.username;
 
-      for (let p of groupParticipants) {
-        if (p.user.username !== data.editor && users[p.user.username]) {
-          activeGroupParticipants.push(users[p.user.username].id);
+      try {
+        const group = await Group.findOneAndUpdate(
+          { _id: groupId },
+          { name: groupName },
+          { new: true }
+        ).populate('participants.user');
+
+        if (!group) {
+          return res.status(422).send({ error: 'Could not update group name' });
         }
-      }
 
-      const updatePreviousChatsRecipient = {
-        chatId: data.group._id,
-        contact: data.group.name,
-        date: data.adminMessage.createdAt,
-        text: data.adminMessage.text,
-        from: username
-      };
+        const updatedGroupNameMessage = new GroupMessage({
+          group: groupId,
+          from: 'admin',
+          message: {
+            text: `${username} changed group name to '${groupName}'`,
+            created: Date.now()
+          }
+        });
+        await updatedGroupNameMessage.save();
 
-      for (let p of activeGroupParticipants) {
-        io.to(p).emit('update_group_name', { group: data.group, adminMessage: data.adminMessage });
-      }
+        const adminMessage = {
+          _id: updatedGroupNameMessage._id,
+          text: updatedGroupNameMessage.message.text,
+          createdAt:  updatedGroupNameMessage.message.created,
+          user: {
+            _id: 1,
+            name: 'admin'
+          }
+        };
+
+        const groupParticipants = group.participants;
+        const activeGroupParticipants = [];
+
+        for (let p of groupParticipants) {
+          if (p.user.username !== editor && users[p.user.username]) {
+            activeGroupParticipants.push(users[p.user.username].id);
+          }
+        }
+
+        for (let p of activeGroupParticipants) {
+          io.to(p).emit('group_name_updated', { editor, group, adminMessage });
+        }
+        io.to(socketId).emit('group_name_updated', { editor, group, adminMessage });
+        // res.status(200).send({ group, adminMessage });
+      } catch (err) {
+        console.log(err);
+        // send error with emit instead
+        // res.status(422).send({ error: 'Could not update group name' });
+      } 
     });
 
     socket.on('message', async msgObj => {
@@ -135,9 +168,6 @@ module.exports = function(io) {
         message: [{ text, createdAt, _id, imgPath, imgName }],
         replyTo: { messageId, messageText, messageAuthor }
       } = msgObj;
-
-      // console.log('on message')
-      // console.log(msgObj)
 
       try {
 

@@ -120,6 +120,26 @@ module.exports = function(io) {
         }
     });
 
+    socket.on('group_members_added', async (data) => {
+        const groupParticipants = data.group.participants;
+        const activeGroupParticipants = [];
+
+        for (let p of groupParticipants) {
+          if (p.user.username !== data.editor && users[p.user.username]) {
+            activeGroupParticipants.push(users[p.user.username].id);
+          }
+        }
+
+        for (let p of activeGroupParticipants) {
+          io.to(p).emit('group_members_added', {
+            editor: data.editor, 
+            group: data.group, 
+            adminMessage: data.adminMessage 
+          });
+        }
+    });
+
+
     socket.on('update_group_name', async (data) => {
       const groupId = data.id;
       const groupName = data.name;

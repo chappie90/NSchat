@@ -67,11 +67,24 @@ const AddGroupScreen = props => {
     setGroupContacts(contacts);
   }, [contacts]);
 
+   useEffect(() => {
+    if (socketState) {
+      socket.current = socketState; 
+    }
+  }, [socketState]);
+
   const addMemberHandler = (username, chatId, newMember) => {
     addGroupMember(username, chatId, newMember)
       .then(data => {
         updateGroup(data.group, 'members', data.adminMessage);
         updateMessages({ chatId: group._id, message: data.adminMessage });
+        if (socket.current) {
+          socket.current.emit('group_members_added', {
+            group: data.group,
+            adminMessage: data.adminMessage,  
+            editor: username
+          });
+        }
       });
     setAddToGroupArr([]);
     setGroupContacts(contacts);

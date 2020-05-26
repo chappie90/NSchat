@@ -222,6 +222,17 @@ const ChatsListScreen = ({ navigation }) => {
           updateGroup(data.group, 'image', data.adminMessage, unreadMessageCount);
         }
       });
+
+       socket.current.on('group_members_added', (data) => {
+        if (username !== data.editor) {
+          updateMessages({ chatId: data.group._id, message: data.adminMessage });
+          let unreadMessageCount;
+          if (screen.current !== 'ChatDetail') {
+            unreadMessageCount = true;
+          }
+          updateGroup(data.group, 'image', data.adminMessage, unreadMessageCount);
+        }
+      });
     }
 
     return () => {

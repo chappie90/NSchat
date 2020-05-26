@@ -13,6 +13,8 @@ const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dycqqk3s6/upload';
 
 const router = express.Router();
 
+const emitter = require('../socket/nodeEventEmitter')();
+
 const MIME_TYPE_GROUPIMAGE = {
   'image/png': 'png',
   'image/jpeg': 'jpg',
@@ -254,6 +256,8 @@ router.patch('/group/name/update', checkAuth, async (req, res) => {
         name: 'admin'
       }
     };
+
+    emitter.emit('print', 'how was Dunkirk?')
 
     res.status(200).send({ group, adminMessage });
   } catch (err) {

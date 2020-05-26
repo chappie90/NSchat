@@ -5,502 +5,509 @@ const PrivateMessage = mongoose.model('PrivateMessage');
 const PrivateChat = mongoose.model('PrivateChat');
 const GroupMessage = mongoose.model('GroupMessage');
 const Group = mongoose.model('Group');
+const emitter = require('./nodeEventEmitter')();
 
 const users = {};
 let onlineContacts = [];
 
 module.exports = function(io) {
-  const expo = new Expo();
 
-  io.on('connection', async socket => {
-  console.log('A user connected');
+    const expo = new Expo();
 
-  const username = socket.handshake.query.username;
-  const socketId = socket.id;
+    io.on('connection', async socket => {
+      console.log('A user connected');
 
-  // To have a client join a room you need to get the clients obejct (socket)
-  // Could have everyone join an 'All' room instead of using users object?
-  users[username] = socket;
+      const username = socket.handshake.query.username;
+      const socketId = socket.id;
 
-  // every socket is automatically connected to their own room with the id socket.id 
-  // but we are creating our own to have more control
-  socket.join(username);
-  // show list of all rooms
-  // console.log(io.sockets.adapter.rooms);
-  try {
-    const user = await User.findOne({ username }).populate('contacts.user');
+      // To have a client join a room you need to get the clients obejct (socket)
+      // Could have everyone join an 'All' room instead of using users object?
+      users[username] = socket;
 
-    if (!user) {
-      return;
-      // ? exit socket ?
-      // return res.status(422).send({ error: 'Something went wrong with your request' });
-    }
-    const contacts = user.contacts.map(c => c.user.username);
+      // every socket is automatically connected to their own room with the id socket.id 
+      // but we are creating our own to have more control
+      socket.join(username);
+      // show list of all rooms
+      // console.log(io.sockets.adapter.rooms);
+      try {
+        const user = await User.findOne({ username }).populate('contacts.user');
 
-    for (const c of contacts) {
-      for (let [key, value] of Object.entries(users)) {
-        if (c === key) {
-          if (!onlineContacts.includes(key)) {
-            onlineContacts.push(key);
-          }
-          users[key].join(username); 
-        } else {
-          onlineContacts = onlineContacts.filter(item => item !== key);
+        if (!user) {
+          return;
+          // ? exit socket ?
+          // return res.status(422).send({ error: 'Something went wrong with your request' });
         }
-      }
-    }
- 
-    // Get the clients in a room
-    io.in(username).clients((err , clients) => {
-      // console.log(clients);
-    });
-    // need to send yourself array of online contacts and
-    // send all clients in the room your name so they can add update their state and add you in their array
-    // send to everyone in the room including the sender
-    //io.sockets.in(username).emit('online', onlineContacts);
-    // send to everyone in the room except the sender
-    let onlineUser = [username];
-    socket.broadcast.to(username).emit('online', onlineUser);
-    // send to sender only
-    io.to(socketId).emit('online', onlineContacts);
-  } catch (err) {
-    console.log(err);
-    return res.status(422).send({ error: 'Something went wrong with your request' });
-  }
+        const contacts = user.contacts.map(c => c.user.username);
 
-  socket.on('start_typing', data => {
-    if (users[data.recipient]) {
-      io.to(users[data.recipient].id).emit('is_typing', data.username);
-    }
-  });
-
-  socket.on('stop_typing', recipient => {
-    if (users[recipient]){
-      io.to(users[recipient].id).emit('is_not_typing');
-    }
-  });
-
-  socket.on('delete_message', async (data) => {
-    if (users[data.recipient]){
-      io.to(users[data.recipient].id).emit('message_deleted', data);
-    }
-  });
-
-  socket.on('join_chat', data => {
-    if (users[data.recipient]) {
-      io.to(users[data.recipient].id).emit('has_joined_chat', { user: data.username, messageId: data.messageId });
-    }
-  });
-
-  socket.on('new_group', data => {
-    for (let member of data.groupMembers) {
-      if (users[member]) {
-        io.to(users[member].id).emit('new_group');
-      }
-    }
-  });
-
-  socket.on('message', async msgObj => {
-
-    const {
-      type,
-      chatId,
-      from, 
-      to, 
-      message: [{ text, createdAt, _id, imgPath, imgName }],
-      replyTo: { messageId, messageText, messageAuthor }
-    } = msgObj;
-
-    // console.log('on message')
-    // console.log(msgObj)
-
-    try {
-
-    // messageHandler.handleMessage(socket, users); 
-
-    // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
-    let expoPushTokens = [];
-    let notifications = [];
-
-    if (type === 'group') {
-
-      const groupMessage = new GroupMessage({
-        group: chatId,
-        from: from,
-        message: {
-          giftedChatId: _id,
-          text,
-          created: createdAt
-        },
-        replyTo: {
-          originalMsgId: messageId,
-          originalMsgText: messageText,
-          originalMsgAuthor: messageAuthor
-        },
-        image: {
-          imgPath: imgPath ? imgPath : null,
-          imgName: imgName ? imgName : ''
-        }
-      });
-
-      await groupMessage.save();
-
-      const group = await Group.find({ _id: chatId }).populate('participants.user');
-
-      const groupParticipants = group[0].participants;
-      const activeGroupParticipants = [];
-
-      for (let p of groupParticipants) {
-        if (p.user.username !== from && users[p.user.username]) {
-          activeGroupParticipants.push(users[p.user.username].id);
-
-          const badgeCount = p.user.badgeCount + 1;
-
-          if (!Expo.isExpoPushToken(p.user.expoToken)) {
-            console.log(`Push token ${p.user.expoToken} is not a valid Expo push token`);
-          }
-
-          const checkIfMuted = p.user.groups.filter(item => item.group == chatId);
-
-          if (checkIfMuted.length > 0 && !checkIfMuted[0].muted) {
-
-            notifications.push({
-              to: p.user.expoToken,
-              sound: 'default',
-              title: from,
-              ttl: 2419200,
-              badge: badgeCount,
-              body: text ? `${from}: ${text}` : `${from} sent a photo`,
-              data: {
-               sender: group[0].name,
-               message: text ? `${from}: ${text}` : `${from} sent a photo`,
-               img: group[0].avatar.cloudinaryImgPath_150,
-               type: type,
-               chatId: chatId 
-             },
-            });
-
-            let chunks = expo.chunkPushNotifications(notifications);
-
-            (async () => {
-              for (let chunk of chunks) {
-                try {
-                  let receipts = await expo.sendPushNotificationsAsync(chunk);
-                } catch (error) {
-                  console.log(error);
-                }
+        for (const c of contacts) {
+          for (let [key, value] of Object.entries(users)) {
+            if (c === key) {
+              if (!onlineContacts.includes(key)) {
+                onlineContacts.push(key);
               }
-            })();
+              users[key].join(username); 
+            } else {
+              onlineContacts = onlineContacts.filter(item => item !== key);
+            }
           }
         }
-      }
      
-      const returnGroupMsgRecipient = 
-        {
-          _id: groupMessage.message.giftedChatId,
-          text,
-          createdAt,
-          user: {
-            _id: 2,
-            name: from
-          },
-          read: false,
-          deleted: false,
-          reply: messageText,
-          replyAuthor: messageAuthor,
-          image: imgPath ? imgPath : '',
-        };
+        // Get the clients in a room
+        io.in(username).clients((err , clients) => {
+          // console.log(clients);
+      });
+      // need to send yourself array of online contacts and
+      // send all clients in the room your name so they can add update their state and add you in their array
+      // send to everyone in the room including the sender
+      //io.sockets.in(username).emit('online', onlineContacts);
+      // send to everyone in the room except the sender
+      let onlineUser = [username];
+      socket.broadcast.to(username).emit('online', onlineUser);
+      // send to sender only
+      io.to(socketId).emit('online', onlineContacts);
+    } catch (err) {
+      console.log(err);
+      return res.status(422).send({ error: 'Something went wrong with your request' });
+    }
 
-        const updatePreviousChatsRecipient = {
+    socket.on('start_typing', data => {
+      if (users[data.recipient]) {
+        io.to(users[data.recipient].id).emit('is_typing', data.username);
+      }
+    });
+
+    socket.on('stop_typing', recipient => {
+      if (users[recipient]){
+        io.to(users[recipient].id).emit('is_not_typing');
+      }
+    });
+
+    socket.on('delete_message', async (data) => {
+      if (users[data.recipient]){
+        io.to(users[data.recipient].id).emit('message_deleted', data);
+      }
+    });
+
+    socket.on('join_chat', data => {
+      if (users[data.recipient]) {
+        io.to(users[data.recipient].id).emit('has_joined_chat', { user: data.username, messageId: data.messageId });
+      }
+    });
+
+    socket.on('new_group', data => {
+      for (let member of data.groupMembers) {
+        if (users[member]) {
+          io.to(users[member].id).emit('new_group');
+        }
+      }
+    });
+
+    emitter.on('print', (arg) => {
+      console.log('success');
+      console.log(arg)
+    })
+
+    socket.on('message', async msgObj => {
+
+      const {
+        type,
+        chatId,
+        from, 
+        to, 
+        message: [{ text, createdAt, _id, imgPath, imgName }],
+        replyTo: { messageId, messageText, messageAuthor }
+      } = msgObj;
+
+      // console.log('on message')
+      // console.log(msgObj)
+
+      try {
+
+      // messageHandler.handleMessage(socket, users); 
+
+      // TEMPORARY - GET USER IDS AND REDUCE NUMBER OF QUERIES
+      let expoPushTokens = [];
+      let notifications = [];
+
+      if (type === 'group') {
+
+        const groupMessage = new GroupMessage({
+          group: chatId,
+          from: from,
+          message: {
+            giftedChatId: _id,
+            text,
+            created: createdAt
+          },
+          replyTo: {
+            originalMsgId: messageId,
+            originalMsgText: messageText,
+            originalMsgAuthor: messageAuthor
+          },
+          image: {
+            imgPath: imgPath ? imgPath : null,
+            imgName: imgName ? imgName : ''
+          }
+        });
+
+        await groupMessage.save();
+
+        const group = await Group.find({ _id: chatId }).populate('participants.user');
+
+        const groupParticipants = group[0].participants;
+        const activeGroupParticipants = [];
+
+        for (let p of groupParticipants) {
+          if (p.user.username !== from && users[p.user.username]) {
+            activeGroupParticipants.push(users[p.user.username].id);
+
+            const badgeCount = p.user.badgeCount + 1;
+
+            if (!Expo.isExpoPushToken(p.user.expoToken)) {
+              console.log(`Push token ${p.user.expoToken} is not a valid Expo push token`);
+            }
+
+            const checkIfMuted = p.user.groups.filter(item => item.group == chatId);
+
+            if (checkIfMuted.length > 0 && !checkIfMuted[0].muted) {
+
+              notifications.push({
+                to: p.user.expoToken,
+                sound: 'default',
+                title: from,
+                ttl: 2419200,
+                badge: badgeCount,
+                body: text ? `${from}: ${text}` : `${from} sent a photo`,
+                data: {
+                 sender: group[0].name,
+                 message: text ? `${from}: ${text}` : `${from} sent a photo`,
+                 img: group[0].avatar.cloudinaryImgPath_150,
+                 type: type,
+                 chatId: chatId 
+               },
+              });
+
+              let chunks = expo.chunkPushNotifications(notifications);
+
+              (async () => {
+                for (let chunk of chunks) {
+                  try {
+                    let receipts = await expo.sendPushNotificationsAsync(chunk);
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }
+              })();
+            }
+          }
+        }
+       
+        const returnGroupMsgRecipient = 
+          {
+            _id: groupMessage.message.giftedChatId,
+            text,
+            createdAt,
+            user: {
+              _id: 2,
+              name: from
+            },
+            read: false,
+            deleted: false,
+            reply: messageText,
+            replyAuthor: messageAuthor,
+            image: imgPath ? imgPath : '',
+          };
+
+          const updatePreviousChatsRecipient = {
+            chatId,
+            contact: from,
+            date: createdAt,
+            text,
+            from
+          };
+
+        const returnGroupMsgUser = 
+         {
+            _id: groupMessage.message.giftedChatId,
+            text,
+            createdAt,
+            user: {
+              _id: 1,
+              name: from
+            },
+            read: false,
+            deleted: false,
+            reply: messageText,
+            replyAuthor: messageAuthor,
+            image: imgPath ? imgPath : '',
+          };
+
+        const updatePreviousChatsUser = {
           chatId,
-          contact: from,
+          contact: to,
           date: createdAt,
           text,
           from
         };
 
-      const returnGroupMsgUser = 
-       {
-          _id: groupMessage.message.giftedChatId,
-          text,
-          createdAt,
-          user: {
-            _id: 1,
-            name: from
-          },
-          read: false,
-          deleted: false,
-          reply: messageText,
-          replyAuthor: messageAuthor,
-          image: imgPath ? imgPath : '',
-        };
+        for (let p of activeGroupParticipants) {
+          io.to(p).emit('message', { message: returnGroupMsgRecipient, chat: updatePreviousChatsRecipient });
+        }
+        io.to(socketId).emit('message', { message: returnGroupMsgUser, chat: updatePreviousChatsUser });
 
-      const updatePreviousChatsUser = {
-        chatId,
-        contact: to,
-        date: createdAt,
-        text,
-        from
-      };
-
-      for (let p of activeGroupParticipants) {
-        io.to(p).emit('message', { message: returnGroupMsgRecipient, chat: updatePreviousChatsRecipient });
       }
-      io.to(socketId).emit('message', { message: returnGroupMsgUser, chat: updatePreviousChatsUser });
+      
+      if (type === 'private') {
 
-    }
-    
-    if (type === 'private') {
+        const tempUserId = await User.find({ username: from });
+        const tempUserId2 = await User.find({ username: to });
 
-      const tempUserId = await User.find({ username: from });
-      const tempUserId2 = await User.find({ username: to });
-
-      const updateBadge = await User.updateOne(
-        { username: to }, 
-        { $inc: { badgeCount: 1 } },
-        { new: true }
-      );
-
-      const badgeCount = tempUserId2[0].badgeCount + 1;
-      const senderImage = tempUserId[0].profile.cloudinaryImgPath_200;
-      const recipientImage = tempUserId2[0].profile.cloudinaryImgPath_200;
-
-      expoPushTokens.push(tempUserId2[0].expoToken);
-
-      let privateChatId, newContact;
-
-      const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
-
-      if (checkPrivateChat.length === 0) {
-
-        const newPrivateChat = new PrivateChat({
-          participants: [from, to]   
-        });
-        await newPrivateChat.save();
-
-        privateChatId =  newPrivateChat._id;
-
-        const updateFromUserChats = await User.updateOne(
-          { username: from }, 
-          { $addToSet: {
-            privateChats: {
-              privateChat: newPrivateChat._id
-            } }
-          },
-          { new: true}
+        const updateBadge = await User.updateOne(
+          { username: to }, 
+          { $inc: { badgeCount: 1 } },
+          { new: true }
         );
-      } else {
 
-        privateChatId = checkPrivateChat[0]._id;
+        const badgeCount = tempUserId2[0].badgeCount + 1;
+        const senderImage = tempUserId[0].profile.cloudinaryImgPath_200;
+        const recipientImage = tempUserId2[0].profile.cloudinaryImgPath_200;
 
-        const isPrivateChat = await User.find({ username: username, 'privateChats.privateChat': chatId });
+        expoPushTokens.push(tempUserId2[0].expoToken);
 
-        if (isPrivateChat.length === 0) {
+        let privateChatId, newContact;
+
+        const checkPrivateChat = await PrivateChat.find({ participants: { $all: [to, from] } });
+
+        if (checkPrivateChat.length === 0) {
+
+          const newPrivateChat = new PrivateChat({
+            participants: [from, to]   
+          });
+          await newPrivateChat.save();
+
+          privateChatId =  newPrivateChat._id;
+
           const updateFromUserChats = await User.updateOne(
             { username: from }, 
             { $addToSet: {
               privateChats: {
-                privateChat: checkPrivateChat[0]._id
+                privateChat: newPrivateChat._id
               } }
             },
             { new: true}
           );
-        }
-      }
+        } else {
 
-      const contactRecipient = await User.find({
-        username: to, 
-        'contacts.user': tempUserId[0]._id
-      });
+          privateChatId = checkPrivateChat[0]._id;
 
-      if (contactRecipient.length === 0) {
+          const isPrivateChat = await User.find({ username: username, 'privateChats.privateChat': chatId });
 
-      newContact = await User.findOneAndUpdate(
-          { username: to },
-          { $addToSet: {
-              contacts: {
-                user: tempUserId[0]._id,
-                previousChat: true
+          if (isPrivateChat.length === 0) {
+            const updateFromUserChats = await User.updateOne(
+              { username: from }, 
+              { $addToSet: {
+                privateChats: {
+                  privateChat: checkPrivateChat[0]._id
+                } }
               },
-              privateChats: {
-                privateChat: privateChatId
-              }
-          }},
+              { new: true}
+            );
+          }
+        }
+
+        const contactRecipient = await User.find({
+          username: to, 
+          'contacts.user': tempUserId[0]._id
+        });
+
+        if (contactRecipient.length === 0) {
+
+        newContact = await User.findOneAndUpdate(
+            { username: to },
+            { $addToSet: {
+                contacts: {
+                  user: tempUserId[0]._id,
+                  previousChat: true
+                },
+                privateChats: {
+                  privateChat: privateChatId
+                }
+            }},
+            { new: true }
+          );
+
+        }
+
+        const myChat = await User.updateOne(
+          { username: from, 'contacts.user': tempUserId2[0]._id }, 
+          { $set: {
+              'contacts.$.previousChat': true 
+            },
+          },
           { new: true }
         );
 
-      }
-
-      const myChat = await User.updateOne(
-        { username: from, 'contacts.user': tempUserId2[0]._id }, 
-        { $set: {
-            'contacts.$.previousChat': true 
+        const privateMessage = new PrivateMessage({
+          privateChat: privateChatId,
+          between: [from, to],
+          from,
+          to,
+          message: {
+            id: _id,
+            text,
+            createdAt
           },
-        },
-        { new: true }
-      );
-
-      const privateMessage = new PrivateMessage({
-        privateChat: privateChatId,
-        between: [from, to],
-        from,
-        to,
-        message: {
-          id: _id,
-          text,
-          createdAt
-        },
-        replyTo: {
-          messageId,
-          messageText,
-          messageAuthor
-        },
-        image: {
-          imgPath: imgPath ? imgPath : null,
-          imgName: imgName ? imgName : ''
-        }
-      });
-      
-      await privateMessage.save();
-
-      let recipientSocketId;
-      if (users[to]) {
-        recipientSocketId = users[to].id;
-      }
-     
-      const returnMsgRecipient = 
-        {
-          _id: privateMessage.message.id,
-          text,
-          createdAt,
-          user: {
-            _id: 2,
-            name: from
+          replyTo: {
+            messageId,
+            messageText,
+            messageAuthor
           },
-          read: false,
-          deleted: false,
-          reply: messageText,
-          replyAuthor: messageAuthor,
-          image: imgPath ? imgPath : '',
-        };
-
-      const updatePreviousChatsRecipient = {
-        chatId: privateChatId,
-        contact: from,
-        date: createdAt,
-        text, 
-        profile: {
-          imgPath: senderImage
-        } 
-      };
-
-      const returnMsgUser = 
-       {
-          _id: privateMessage.message.id,
-          text,
-          createdAt,
-          user: {
-            _id: 1,
-            name: from
-          },
-          read: false,
-          deleted: false,
-          reply: messageText,
-          replyAuthor: messageAuthor,
-          image: imgPath ? imgPath : '',
-        };
-
-      const updatePreviousChatsUser = {
-        chatId: privateChatId,
-        contact: to,
-        date: createdAt,
-        text,
-        profile: {
-          imgPath: recipientImage
-        } 
-      };
-
-      io.to(recipientSocketId).emit('message', { message: returnMsgRecipient, chat: updatePreviousChatsRecipient });
-      io.to(socketId).emit('message', { message: returnMsgUser, chat: updatePreviousChatsUser });
-
-      if (!Expo.isExpoPushToken(expoPushTokens[0])) {
-        console.log(`Push token ${pushToken} is not a valid Expo push token`);
-      }
-
-      let checkIfMuted;
-      if (newContact) {
-        checkIfMuted = newContact.privateChats.filter(item => item.privateChat == chatId);
-      } else {
-        checkIfMuted = tempUserId2[0].privateChats.filter(item => item.privateChat == chatId);
-      }
-      if (checkIfMuted.length > 0 && !checkIfMuted[0].muted) {
-        notifications.push({
-          to: expoPushTokens[0],
-          sound: 'default',
-          title: from,
-          ttl: 2419200,
-          badge: badgeCount,
-          body: text ? text : `${from} sent a photo`,
-          data: {
-            sender: from, 
-            message: text ? text : `${from} sent a photo`,
-            img: tempUserId2[0].profile.cloudinaryImgPath_150, 
-            type: type, 
-            chatId: chatId 
+          image: {
+            imgPath: imgPath ? imgPath : null,
+            imgName: imgName ? imgName : ''
           }
         });
+        
+        await privateMessage.save();
 
-        let chunks = expo.chunkPushNotifications(notifications);
+        let recipientSocketId;
+        if (users[to]) {
+          recipientSocketId = users[to].id;
+        }
+       
+        const returnMsgRecipient = 
+          {
+            _id: privateMessage.message.id,
+            text,
+            createdAt,
+            user: {
+              _id: 2,
+              name: from
+            },
+            read: false,
+            deleted: false,
+            reply: messageText,
+            replyAuthor: messageAuthor,
+            image: imgPath ? imgPath : '',
+          };
 
-        (async () => {
-          for (let chunk of chunks) {
-            try {
-              let receipts = await expo.sendPushNotificationsAsync(chunk);
-            } catch (error) {
-              console.log(error);
+        const updatePreviousChatsRecipient = {
+          chatId: privateChatId,
+          contact: from,
+          date: createdAt,
+          text, 
+          profile: {
+            imgPath: senderImage
+          } 
+        };
+
+        const returnMsgUser = 
+         {
+            _id: privateMessage.message.id,
+            text,
+            createdAt,
+            user: {
+              _id: 1,
+              name: from
+            },
+            read: false,
+            deleted: false,
+            reply: messageText,
+            replyAuthor: messageAuthor,
+            image: imgPath ? imgPath : '',
+          };
+
+        const updatePreviousChatsUser = {
+          chatId: privateChatId,
+          contact: to,
+          date: createdAt,
+          text,
+          profile: {
+            imgPath: recipientImage
+          } 
+        };
+
+        io.to(recipientSocketId).emit('message', { message: returnMsgRecipient, chat: updatePreviousChatsRecipient });
+        io.to(socketId).emit('message', { message: returnMsgUser, chat: updatePreviousChatsUser });
+
+        if (!Expo.isExpoPushToken(expoPushTokens[0])) {
+          console.log(`Push token ${pushToken} is not a valid Expo push token`);
+        }
+
+        let checkIfMuted;
+        if (newContact) {
+          checkIfMuted = newContact.privateChats.filter(item => item.privateChat == chatId);
+        } else {
+          checkIfMuted = tempUserId2[0].privateChats.filter(item => item.privateChat == chatId);
+        }
+        if (checkIfMuted.length > 0 && !checkIfMuted[0].muted) {
+          notifications.push({
+            to: expoPushTokens[0],
+            sound: 'default',
+            title: from,
+            ttl: 2419200,
+            badge: badgeCount,
+            body: text ? text : `${from} sent a photo`,
+            data: {
+              sender: from, 
+              message: text ? text : `${from} sent a photo`,
+              img: tempUserId2[0].profile.cloudinaryImgPath_150, 
+              type: type, 
+              chatId: chatId 
             }
-          }
-        })();        
+          });
+
+          let chunks = expo.chunkPushNotifications(notifications);
+
+          (async () => {
+            for (let chunk of chunks) {
+              try {
+                let receipts = await expo.sendPushNotificationsAsync(chunk);
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          })();        
+        }
+
       }
 
-    }
+      } catch(err) {
+        console.log(err);
+      }
+    });
 
-    } catch(err) {
-      console.log(err);
-    }
-  });
+    socket.on('disconnect', async () => {
+      console.log('User disconnected');
+      // console.log(io.sockets.adapter.rooms);
+      const user = await User.findOne({ username }).populate('contacts.user');
 
-  socket.on('disconnect', async () => {
-    console.log('User disconnected');
-    // console.log(io.sockets.adapter.rooms);
-    const user = await User.findOne({ username }).populate('contacts.user');
+      if (!user) {
+        return;
+        // ? exit socket ?
+        // return res.status(422).send({ error: 'Something went wrong with your request' });
+      }
+      const contacts = user.contacts.map(c => c.user.username);
 
-    if (!user) {
-      return;
-      // ? exit socket ?
-      // return res.status(422).send({ error: 'Something went wrong with your request' });
-    }
-    const contacts = user.contacts.map(c => c.user.username);
-
-    for (const c of contacts) {
-      for (let [key, value] of Object.entries(users)) {
-        if (c === key) {
-          if (!onlineContacts.includes(key)) {
-            onlineContacts.push(key);
+      for (const c of contacts) {
+        for (let [key, value] of Object.entries(users)) {
+          if (c === key) {
+            if (!onlineContacts.includes(key)) {
+              onlineContacts.push(key);
+            }
+            users[key].join(username); 
+          } else {
+            onlineContacts = onlineContacts.filter(item => item !== key);
           }
-          users[key].join(username); 
-        } else {
-          onlineContacts = onlineContacts.filter(item => item !== key);
         }
       }
-    }
 
-    socket.broadcast.to(username).emit('offline', username);
-    io.of('/').in(username).clients((error, socketIds) => {
-      if (error) throw error;
-      socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(username));
+      socket.broadcast.to(username).emit('offline', username);
+      io.of('/').in(username).clients((error, socketIds) => {
+        if (error) throw error;
+        socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(username));
+      });
+      delete users[username];
     });
-    delete users[username];
   });
-});
 }

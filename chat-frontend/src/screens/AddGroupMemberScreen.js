@@ -75,8 +75,10 @@ const AddGroupScreen = props => {
   const addMemberHandler = (username, chatId, newMember) => {
     addGroupMember(username, chatId, newMember)
       .then(data => {
+        console.log(data.adminMessage)
+
         updateGroup(data.group, 'members', data.adminMessage);
-        updateMessages({ chatId: group._id, message: data.adminMessage });
+        updateMessages({ chatId: group.chatId, message: data.adminMessage });
         if (socket.current) {
           socket.current.emit('group_members_added', {
             group: data.group,
@@ -233,7 +235,7 @@ const AddGroupScreen = props => {
               </TouchableOpacity>    
               <HeadingText style={styles.heading}>Add Participants</HeadingText>
               <TouchableOpacity disabled={disableCreateBtn} onPress={() => {
-                addMemberHandler(username, group._id, addToGroupArr)
+                addMemberHandler(username, group.chatId, addToGroupArr)
               }}>
                 <Ionicons
                   color={disableCreateBtn ? "#C0C0C0" : "#fff"}

@@ -9,6 +9,12 @@ const groupsReducer = (state, action) => {
       return { ...state, currentGroupId: action.payload };
     case 'get_group':
       return { ...state, group: action.payload };
+    case 'update_group_image':
+      return { ...state, group: { ...state.group, avatar: { imagePath: action.payload } } };
+     case 'update_group_name':
+      return { ...state, group: { ...state.group, name: action.payload } };
+    case 'update_group_members':
+      return { ...state, group: { ...state.group, participants: action.payload } };
     case 'reset_group':
       return { ...state, group: {} }
     default:
@@ -76,7 +82,7 @@ const updateGroupImage = dispatch => async (username, chatId, groupName, groupIm
 
     const response = await chatApi.post('/group/image/update', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     
-    dispatch({ type: 'get_group', payload: response.data.group });
+    dispatch({ type: 'update_group_image', payload: response.data.group.avatar.imagePath });
 
     return response.data;
   } catch (err) {
@@ -90,7 +96,7 @@ const updateGroupName = dispatch => async (chatId, groupName, username) => {
   try {
     const response = await chatApi.patch('/group/name/update', { chatId, groupName, username });
 
-    dispatch({ type: 'get_group', payload: response.data.group });
+    dispatch({type: 'update_group_name', payload: response.data.group.name });
 
     return response.data;
   } catch (err) {
@@ -106,7 +112,7 @@ const deleteGroupImage = dispatch => async (chatId, username) => {
     if (!response.data.group) {
       return;
     }
-    dispatch({ type: 'get_group', payload: response.data.group });
+    dispatch({ type: 'update_group_image', payload: null });
 
     return response.data;
   } catch (err) {
@@ -124,7 +130,7 @@ const addGroupMember = dispatch => async (username, chatId, newMembers) => {
       return;
     }
 
-    dispatch({ type: 'get_group', payload: response.data.group });
+    dispatch({ type: 'update_group_members', payload: response.data.group.participants });
 
     return response.data;
   } catch (err) {

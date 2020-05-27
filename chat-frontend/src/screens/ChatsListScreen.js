@@ -233,8 +233,6 @@ const ChatsListScreen = ({ navigation }) => {
       });
 
        socket.current.on('user_left_group', (data) => {
-        console.log('chats list socket left')
-        console.log(data)
         if (username !== data.editor) {
           updateMessages({ chatId: data.group._id, message: data.adminMessage });
           let unreadMessageCount;

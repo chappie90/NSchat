@@ -231,14 +231,14 @@ const ImgPicker = props => {
           </View>
         </TouchableWithoutFeedback>
       </View>
-      {imageUploadInProgress ? <View style={{ width: 200, position: 'absolute', 
+      {imageUploadInProgress ? <View style={{ width: Dimensions.get('window').width, position: 'absolute', 
         bottom: 0,  borderRadius: 4, backgroundColor: '#E8E8E8' }}>
           <Animated.View style={{
             backgroundColor: Colors.secondary, 
             left: 0,
             width:  progressIndicator.interpolate({
                 inputRange: [ 0, 100],
-                outputRange: [ 0, 200 ]
+                outputRange: [ 0, Dimensions.get('window').width ]
             }),
             height: 7,
             borderRadius: 4 }}>

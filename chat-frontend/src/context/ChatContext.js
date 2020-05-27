@@ -150,6 +150,7 @@ const chatReducer = (state, action) => {
           return item.chatId === action.payload.updatedGroup._id ?
            { ...item, 
             text: action.payload.adminMessage.text,
+            participants: action.payload.updatedGroup.participants,
             unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 0
            } : item;
         });

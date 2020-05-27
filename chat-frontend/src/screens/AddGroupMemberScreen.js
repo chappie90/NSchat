@@ -50,7 +50,6 @@ const AddGroupScreen = props => {
   const socket = useRef(null);
 
   useEffect(() => {
-    console.log('add group member screen ran')
     getContacts({ username });
   }, []);
 

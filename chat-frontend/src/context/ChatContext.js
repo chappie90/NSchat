@@ -120,6 +120,7 @@ const chatReducer = (state, action) => {
           return item.chatId === action.payload.updatedGroup._id ?
            { ...item, 
             contact: action.payload.updatedGroup.name,
+            name: action.payload.updatedGroup.name,
             text: action.payload.adminMessage.text,
             unreadMessageCount: action.payload.unreadMessageCount ? item.unreadMessageCount + 1 : 0
            } : item;
@@ -131,6 +132,11 @@ const chatReducer = (state, action) => {
            { ...item, 
             profile: {
               imgPath: action.payload.updatedGroup.avatar ?
+                action.payload.updatedGroup.avatar.imagePath :
+                null
+            },
+            avatar: {
+              imagePath: action.payload.updatedGroup.avatar ?
                 action.payload.updatedGroup.avatar.imagePath :
                 null
             },
@@ -149,8 +155,6 @@ const chatReducer = (state, action) => {
         });
       }
       if (action.payload.updatedProperty === 'leave') {
-        console.log('leave context')
-        console.log(action.payload.adminMessage)
         updatedGroup = state.previousChats.map(item => {
           return item.chatId === action.payload.updatedGroup._id ?
            { ...item, 

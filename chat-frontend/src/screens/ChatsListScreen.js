@@ -39,7 +39,7 @@ import { Context as GroupsContext } from '../context/GroupsContext';
 import HeadingText from '../components/HeadingText';
 import BodyText from '../components/BodyText';
 import ScaleImageAnim from '../components/animations/ScaleImageAnim';
-import ScaleViewTriggerAnim from '../components/animations/ScaleViewTriggerAnim';
+import ScaleViewAnim from '../components/animations/ScaleViewTriggerAnim';
 import TranslateFadeViewAnim from '../components/animations/TranslateFadeViewAnim';
 import AddGroupScreen from './AddGroupScreen';
 
@@ -588,9 +588,9 @@ const ChatsListScreen = ({ navigation }) => {
                     <View style={{ flexDirection: 'row', alignItems: 'center'}}>  
                       <BodyText style={styles.date}>{formatDate(rowData.item.date)}</BodyText>
                       {rowData.item.muted && (
-                        <ScaleViewTriggerAnim>
+                        <View>
                           <Octicons style={{marginLeft: 5}} name="mute" size={20} color='lightgrey' />
-                        </ScaleViewTriggerAnim>
+                        </View>
                       )}
                     </View>
                   </View>

@@ -120,11 +120,11 @@ const GroupSettingsScreen = (props) => {
 
   const saveNameHandler = () => {
     if (group.name !== name) {
-      updateGroupName(group._id, name, username)
+      updateGroupName(group.chatId, name, username)
         .then(data => {
           props.updateGroupName(data.group.name);
           updateGroup(data.group, 'name', data.adminMessage);
-          updateMessages({ chatId: group._id, message: data.adminMessage });
+          updateMessages({ chatId: group.chatId, message: data.adminMessage });
           if (socket.current) {
             socket.current.emit('group_name_updated', {
               group: data.group,
@@ -182,11 +182,11 @@ const GroupSettingsScreen = (props) => {
     }
     setModalVisible(false);
 
-    updateGroupImage(username, group._id, group.name, cameraImage.uri, cameraImage.base64)
+    updateGroupImage(username, group.chatId, group.name, cameraImage.uri, cameraImage.base64)
       .then(data => {
         props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);
-        updateMessages({ chatId: group._id, message: data.adminMessage });
+        updateMessages({ chatId: group.chatId, message: data.adminMessage });
         if (socket.current) {
           socket.current.emit('group_image_updated', {
             group: data.group,
@@ -210,11 +210,11 @@ const GroupSettingsScreen = (props) => {
       return;
     }
     setModalVisible(false);
-    updateGroupImage(username, group._id, group.name, libraryImage.uri, libraryImage.base64)
+    updateGroupImage(username, group.chatId, group.name, libraryImage.uri, libraryImage.base64)
       .then(data => {
         props.updateGroupImage(data.group.avatar.imagePath);
         updateGroup(data.group, 'image', data.adminMessage);
-        updateMessages({ chatId: group._id, message: data.adminMessage });
+        updateMessages({ chatId: group.chatId, message: data.adminMessage });
         if (socket.current) {
           socket.current.emit('group_image_updated', {
             group: data.group,
@@ -227,11 +227,11 @@ const GroupSettingsScreen = (props) => {
 
   const deletePhotoHandler = () => {
     if (group.avatar) {
-      deleteGroupImage(group._id, username)
+      deleteGroupImage(group.chatId, username)
         .then(data => {
           props.updateGroupImage(null);
           updateGroup(data.group, 'image', data.adminMessage);
-          updateMessages({ chatId: group._id, message: data.adminMessage });
+          updateMessages({ chatId: group.chatId, message: data.adminMessage });
           if (socket.current) {
           socket.current.emit('group_image_updated', {
             group: data.group,
@@ -379,7 +379,7 @@ const GroupSettingsScreen = (props) => {
                 style={{ width: '100%', height: '100%'}}
                 source={require("../../assets/avatar-small.png")} />
             </View>
-            <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{group.owner}</BodyText>
+            <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{group.groupOwner}</BodyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 8, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
             <BodyText style={{ fontSize: 16, marginRight: 15, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
@@ -404,7 +404,7 @@ const GroupSettingsScreen = (props) => {
         </View>
         <TouchableOpacity onPress={() => {
           setIsLoading(true);
-          leaveGroupHandler(group._id, userId, username);
+          leaveGroupHandler(group.chatId, userId, username);
         }}>
           <HeadingText style={{ color: Colors.tertiary, fontSize: 17, marginTop: 15, marginBottom: 20, textAlign: 'center' }}>Leave Group</HeadingText>
         </TouchableOpacity>

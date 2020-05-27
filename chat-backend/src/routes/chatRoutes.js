@@ -144,7 +144,7 @@ router.post('/chats', checkAuth, async (req, res) => {
           imagePath: g.group.avatar.imagePath
         },
         participants: group[0].participants,
-        owner: g.group.owner
+        name: g.group.name
       });
     }
 

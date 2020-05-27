@@ -419,6 +419,8 @@ router.post(
       });
       await initialGroupMessage.save();
 
+      const createdGroup = await Group.find({ _id: group._id }).populate('participants.user');
+
       const newGroup = {
         chatId: group._id,
         type: 'group',
@@ -430,7 +432,12 @@ router.post(
           imgName: req.file ? req.file.filename : ''
         },
         groupOwner: username,
-        unreadMessageCount: 0
+        unreadMessageCount: 0,
+        avatar: {
+          imagePath: group.avatar.imagePath
+        },
+        participants: createdGroup[0].participants,
+        name: group.name
       };
 
       for (let token of expoPushTokens) {

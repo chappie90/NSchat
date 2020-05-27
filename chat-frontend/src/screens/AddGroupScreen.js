@@ -70,7 +70,7 @@ const AddGroupScreen = props => {
   const createGroupHandler = (username, groupName, groupImageUri, groupImageBase64, groupMembers) => {
     setIsLoading(true);
     createGroup({ username, groupName, groupImageUri, groupImageBase64, groupMembers }).then(res => {
-      getChats({ username });
+      // getChats({ username });
       socketState.emit('new_group', { groupMembers });
       setAddToGroupArr([]);
       setGroupContacts(contacts);

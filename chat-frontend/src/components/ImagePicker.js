@@ -24,11 +24,12 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as ProfileContext } from '../context/ProfileContext';
 
 const ImgPicker = props => {
-  const { state: { username } } = useContext(AuthContext);
+  const { state: { username, socketState } } = useContext(AuthContext);
   const { state: { profileImage }, saveImage, getImage, deleteImage } = useContext(ProfileContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [imageUploadInProgress, setImageUploadInProgress] = useState(false);
   const progressIndicator = useRef(new Animated.Value(0)).current;
+  const socket = useRef(null);
 
   const modalCloseHandler = () => {
     setModalVisible(false);
@@ -37,6 +38,12 @@ const ImgPicker = props => {
   useEffect(() => {
     getImage(username);
   }, []);
+
+  useEffect(() => {
+    if (socketState) {
+      socket.current = socketState; 
+    }
+  }, [socketState]);
 
   const avatarClickHandler = () => {
     setModalVisible(true);
@@ -155,6 +162,9 @@ const ImgPicker = props => {
            setImageUploadInProgress(false);
         }, 800);
         saveImage(response.data);
+        if (socket.current) {
+          socket.current.emit('profile_image_updated', { username, image: response.data });
+        } 
       }
       })
       .catch(err => {
@@ -231,14 +241,14 @@ const ImgPicker = props => {
           </View>
         </TouchableWithoutFeedback>
       </View>
-      {imageUploadInProgress ? <View style={{ width: Dimensions.get('window').width, position: 'absolute', 
+      {imageUploadInProgress ? <View style={{ width: 200, position: 'absolute', 
         bottom: 0,  borderRadius: 4, backgroundColor: '#E8E8E8' }}>
           <Animated.View style={{
             backgroundColor: Colors.secondary, 
             left: 0,
             width:  progressIndicator.interpolate({
                 inputRange: [ 0, 100],
-                outputRange: [ 0, Dimensions.get('window').width ]
+                outputRange: [ 0, 200 ]
             }),
             height: 7,
             borderRadius: 4 }}>

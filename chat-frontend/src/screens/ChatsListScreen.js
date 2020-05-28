@@ -61,7 +61,8 @@ const ChatsListScreen = ({ navigation }) => {
     updateChatState,
     addNewChat,
     getCurrentScreen,
-    updateGroup
+    updateGroup,
+    updateChatProfile
   } = useContext(ChatContext);
   const { state: { onlineContacts }, getActiveStatus, userIsOffline } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
@@ -241,6 +242,10 @@ const ChatsListScreen = ({ navigation }) => {
           }
           updateGroup(data.group, 'leave', data.adminMessage, unreadMessageCount);
         }
+      });
+
+      socket.current.on('profile_image_updated', (data) => {
+        updateChatProfile(data);
       });
     }
 

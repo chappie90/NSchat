@@ -35,6 +35,17 @@ const chatReducer = (state, action) => {
       return { ...state, previousChats: action.payload };
     case 'add_new_chat':
       return { ...state, previousChats: [ action.payload, ...state.previousChats ] };
+    case 'update_chat_new_profile':
+      const updateProfileImage = state.previousChats.map(item => {
+        return item.contact === action.payload.username ?
+          { ...item,
+            profile: {
+              imgPath: action.payload.image.transformedImg
+            }
+          } :
+          item
+      });
+      return { ...state, previousChats: updateProfileImage };
     case 'update_chat_state':
       let updatedChat;
       if (action.payload.chat && !state.previousChats.find(chat => chat.chatId === action.payload.chat.chatId)) {
@@ -401,6 +412,10 @@ const resetBadgeCount = dispatch => async (username) => {
   }
 };
 
+const updateChatProfile = dispatch => (data) => {
+  dispatch({ type: 'update_chat_new_profile', payload: data });
+};
+
 const saveExpoToken = dispatch => async (expoToken, username) => {
   try {
     const response = await chatApi.post('/expo/token', { expoToken, username });
@@ -473,7 +488,8 @@ export const { Context, Provider } = createDataContext(
     updateChatState,
     saveMessageImage,
     updateGroup,
-    addNewChat
+    addNewChat,
+    updateChatProfile
   },
   {  
     previousChats: [], 

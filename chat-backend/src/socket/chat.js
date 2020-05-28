@@ -178,6 +178,11 @@ module.exports = function(io) {
       }
     });
 
+    socket.on('profile_image_updated', async (data) => {
+      // io.to(socketId).emit('profile_image_updated', data);
+      socket.broadcast.to(username).emit('profile_image_updated', data);
+    });
+
     socket.on('message', async msgObj => {
 
       const {

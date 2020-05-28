@@ -77,7 +77,7 @@ router.post(
         return res.status(422).send({ error: 'Could not save image' });
       } 
 
-      res.status(200).send({ img: user.profile.cloudinaryImgPath_400 });
+      res.status(200).send({ img: user.profile.cloudinaryImgPath_400, transformedImg: user.profile.cloudinaryImgPath_200 });
     } catch (err) {
       console.log(err);
       res.status(422).send({ error: 'Could not save image' });

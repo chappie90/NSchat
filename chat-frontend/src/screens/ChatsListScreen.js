@@ -67,6 +67,7 @@ const ChatsListScreen = ({ navigation }) => {
   const { state: { onlineContacts }, getActiveStatus, userIsOffline } = useContext(ContactsContext);
   const { getCurrentGroupId } = useContext(GroupsContext);
   const [modalVisible, setModalVisible] = useState(false);
+  const [localChats, setLocalChats] = useState([]);
   const socket = useRef(null);
   const openRowRefs = [];
   const [isTyping, setIsTyping] = useState(false);
@@ -110,8 +111,9 @@ const ChatsListScreen = ({ navigation }) => {
   useEffect(() => {
 
     registerForPushNotificationsAsync();
-    getChats({ username }).then(res => {
+    getChats({ username }).then(result => {
       setIsLoading(false);
+      setLocalChats(result.slice(0, 10));
     });
     _handleAppStateChange();
     AppState.addEventListener('change', _handleAppStateChange);
@@ -255,7 +257,16 @@ const ChatsListScreen = ({ navigation }) => {
   }, [socketState])
 
   useEffect(() => {
-    // if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
+     if (previousChats?.length <= 10) {
+      setLocalChats(previousChats);
+    } else if (previousChats?.length > 10) {
+      if (localChats.length <= 10) {
+        setLocalChats(previousChats.slice(0, 10));
+      } else if (localChats.length > 11) {
+        setLocalChats(previousChats.slice(0, localChats.length));
+      }
+    }
+    // // if (Object.entries(rowTranslateAnimatedValues).length === 0 && 
     //     rowTranslateAnimatedValues.constructor === Object) {
     // if (previousChats.length > 0) {
     if (Object.keys(rowTranslateAnimatedValues).length !== previousChats.length) {
@@ -367,8 +378,16 @@ const ChatsListScreen = ({ navigation }) => {
     setStatusBarColor(1);
 
     getCurrentScreen(navigation.state.routeName);
-  }
 
+    if (previousChats.length > 0) {
+      setLocalChats(previousChats.slice(0, 10));
+    } 
+  };
+
+  const willBlurHandler = () => {
+    setLocalChats(previousChats.slice(0, 10));
+  };
+ 
   const didFocusHandler = () => {
     if (socketState) {
       socket.current = socketState;  
@@ -399,6 +418,10 @@ const ChatsListScreen = ({ navigation }) => {
     }
   };
 
+  const loadMoreChats = () => {
+    setLocalChats([ ...localChats, ...previousChats.slice(localChats.length, localChats.length + 10) ]);
+  };
+
   const closeModal = () => {
     setNewGroupMode(false);
   };
@@ -422,7 +445,7 @@ const ChatsListScreen = ({ navigation }) => {
   };
 
   const onRowOpen = (rowKey, rowMap, toValue) => {
-    const listItem = previousChats[rowKey];
+    const listItem = localChats[rowKey];
     // if (rowOpenValue.current < -200 && isRowOpen) {
     //    deleteRow(rowKey, rowMap, listItem);
     // }
@@ -551,7 +574,13 @@ const ChatsListScreen = ({ navigation }) => {
             refreshing={isLoading}
             tintColor={Colors.primary} />
         }
-        data={previousChats}
+        onEndReached={() => {
+          if (localChats.length < previousChats.length && screen.current === 'ChatsList') {
+            loadMoreChats();
+          }
+        }}
+        onEndReachedThreshold={0.8}
+        data={localChats}
         keyExtractor={(data, index) => index.toString()}
         renderItem={ (rowData, rowMap) => {
           return (
@@ -714,8 +743,11 @@ const ChatsListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-     <StatusBar barStyle={statusBarColor === 1 ? 'light-content' : 'dark-content'} />
-     <NavigationEvents onDidFocus={didFocusHandler} onWillFocus={willFocusHandler} />
+      <StatusBar barStyle={statusBarColor === 1 ? 'light-content' : 'dark-content'} />
+      <NavigationEvents 
+        onWillBlur={willBlurHandler}
+        onDidFocus={didFocusHandler} 
+        onWillFocus={willFocusHandler} />
       <Modal
         style={{ alignItems: "center", justifyContent: "center" }}
         isVisible={modalVisible}
@@ -764,7 +796,7 @@ const ChatsListScreen = ({ navigation }) => {
 
       {isLoading ?
         renderActivityIndicator() :
-        previousChats.length > 0 ?
+        localChats.length > 0 ?
           renderChatsList() :
           renderStarterView()
       } 

@@ -193,6 +193,8 @@ const getChats = dispatch => async ({ username }) => {
     const chats = response.data.chats.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     dispatch({ type: 'get_chats', payload: chats });
+
+    return chats;
   } catch (err) {
     console.log(err);
     throw err;

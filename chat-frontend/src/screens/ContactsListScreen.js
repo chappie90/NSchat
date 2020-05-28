@@ -38,14 +38,28 @@ const ContactsListScreen = ({ navigation }) => {
   const [newContactMode, setNewContactMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showActiveUsers, setShowActiveUsers] = useState(false);
+  const [localContacts, setLocalContacts] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const socket = useRef(null);
-    
+
   useEffect(() => {
     getContacts({ username }).then(res => {
       setIsLoading(false);
+      setLocalContacts(contacts.slice(0, 30));
     });
   }, []);
+
+  useEffect(() => {
+     if (contacts?.length <= 30) {
+      setLocalContacts(contacts);
+    } else if (contacts?.length > 30) {
+      if (localContacts.length <= 30) {
+        setLocalContacts(contacts.slice(0, 30));
+      } else if (localContacts.length > 31) {
+        setLocalContacts(contacts.slice(0, localContacts.length));
+      }
+    }
+  }, [contacts]);
 
   useEffect(() => {
     const onlineUsers = contacts.filter(item => onlineContacts.includes(item.user.username)); 
@@ -62,11 +76,23 @@ const ContactsListScreen = ({ navigation }) => {
 
   const willFocusHandler = () => {
     setStatusBarColor(1);
+
+     if (contacts.length > 0) {
+      setLocalContacts(contacts.slice(0, 30));
+    } 
   }
+
+   const loadMoreContacts = () => {
+    setLocalContacts([ ...localContacts, ...contacts.slice(localContacts.length, localContacts.length + 30) ]);
+  };
+
+  const willBlurHandler = () => {
+    setLocalContacts(contacts.slice(0, 30));
+  };
 
   return (
     <View style={styles.container}>
-    <NavigationEvents onWillFocus={willFocusHandler} />
+    <NavigationEvents onWillFocus={willFocusHandler} onWillBlur={willBlurHandler} />
       <AddContactScreen visible={newContactMode} closeModal={closeModal} />
       <View style={styles.background} />
       <View style={styles.headerContainer}>
@@ -115,7 +141,12 @@ const ContactsListScreen = ({ navigation }) => {
                   refreshing={isLoading}
                   tintColor={Colors.primary} />
               }
-              data={contacts}
+              data={localContacts}
+               onEndReached={() => {
+                if (localContacts.length < contacts.length) {
+                  loadMoreContacts();
+                }
+              }}
               keyExtractor={(item, index) => index.toString()}
               renderItem={ (rowData, rowMap) => {
                 const chat = previousChats.filter(c => c.contact === rowData.item.user.username);

@@ -40,10 +40,10 @@ const storage = multer.diskStorage({
   }
 });
 
-router.post('/chats', checkAuth, async (req, res) => {
-  const { username } = req.body;
-
+router.post('/chats', checkAuth, async (req, res, next) => {
   try {
+
+    const { username } = req.body;
     const user = await User.find({ username })
       // .populate('contacts.user')
       .populate('groups.group')
@@ -154,7 +154,7 @@ router.post('/chats', checkAuth, async (req, res) => {
 
     res.send({ chats });
   } catch (err) {
-    console.log(err)
+    next(err);
     return res.status(422).send({ error: 'Could not fetch chats' });
   }
 
@@ -180,13 +180,13 @@ router.post('/chats', checkAuth, async (req, res) => {
  //    });
  //  },
 
-router.post('/messages', checkAuth, async (req, res) => {
-  const { chatType, chatId, username, recipient, page } = req.body;
-
-  const skip = 1000 * (page - 1);
-  let messages;
+router.post('/messages', checkAuth, async (req, res, next) => {
 
   try {
+    const { chatType, chatId, username, recipient, page } = req.body;
+
+    const skip = 1000 * (page - 1);
+    let messages;
 
     if (chatType === 'private') {
       messages = await PrivateMessage.find({ between: { $all: [username, recipient] } })
@@ -222,7 +222,7 @@ router.patch('/messages/clear', checkAuth, async (req, res) => {
 
     res.status(200).send({ response });
   } catch (err) {
-    console.log(err);
+    next(err);
     return res.status(422).send({ error: 'Could not clear messages' });
   }
 });
@@ -255,9 +255,11 @@ router.patch('/messages/clear', checkAuth, async (req, res) => {
 //   }
 // });
 
-router.patch('/message/delete', checkAuth, async (req, res) => {
-  const { messageId } = req.body;
+router.patch('/message/delete', checkAuth, async (req, res, next) => {
+  
   try {
+    const { messageId } = req.body;
+
     const message = await PrivateMessage.update(
       { 'message.id': messageId },
       { $set: { 'message.text': 'Message deleted', deleted: true } },
@@ -298,7 +300,7 @@ router.patch('/chat/delete', checkAuth, async (req, res) => {
     
     res.status(200).send({ response });
   } catch (err) {
-    console.log(err);
+    next(err);
     res.status(422).send({ error: 'Could not delete chat' });
   }
 });

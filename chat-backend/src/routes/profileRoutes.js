@@ -38,7 +38,7 @@ router.post(
   '/image/upload', 
   checkAuth, 
   multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('profile'),
-  async (req, res) => {
+  async (req, res, next) => {
     const username = req.body.user;
     const url = req.protocol + '://' + req.get('host');
     const imgPath = url + '/public/uploads/' + req.file.filename;
@@ -79,7 +79,7 @@ router.post(
 
       res.status(200).send({ img: user.profile.cloudinaryImgPath_400, transformedImg: user.profile.cloudinaryImgPath_200 });
     } catch (err) {
-      console.log(err);
+      next(err);
       res.status(422).send({ error: 'Could not save image' });
     }
 });
@@ -105,7 +105,7 @@ router.patch('/image/delete', checkAuth, async (req, res) => {
   }
 });
 
-router.get('/image', checkAuth, async (req, res) => {
+router.get('/image', checkAuth, async (req, res, next) => {
   const username = req.query.user;
   let modifiedPath;
 
@@ -118,7 +118,7 @@ router.get('/image', checkAuth, async (req, res) => {
     
     res.status(200).send({ image: user[0].profile.cloudinaryImgPath_400 });
   } catch (err) {
-    console.log(err);
+    next(err);
     res.status(422).send({ error: 'Could not fetch image' });
   }
 });

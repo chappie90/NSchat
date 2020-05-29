@@ -168,8 +168,8 @@ const ImgPicker = props => {
       }
       })
       .catch(err => {
-        throw err;
         console.log(err)
+        throw err;  
       });
   };
 

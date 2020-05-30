@@ -53,10 +53,6 @@ mongoose.connection.on('error', (err) => {
   console.log('Erro connection to mongo', err);
 });
 
-const hostname = 'localhost';
-const port = process.env.PORT || "3000";
-app.set("port", port);
-
-server.listen(port, hostname, () => {
-  console.log(`Listening on port ${port}`);
+server.listen(() => {
+  console.log(`Server running`);
 });

@@ -28,6 +28,13 @@ app.use(bodyParser.json());
 
 app.use('/public/uploads/', express.static('public/uploads'), serveIndex('public/uploads', {'icons': true}));
 
+app.get('/', (req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Conten-Type', 'text/plain');
+  res.end('Hello World\n');
+});
+
+
 app.use(authRoutes);
 app.use(chatRoutes);
 app.use(contactsRoutes);
@@ -53,6 +60,13 @@ mongoose.connection.on('error', (err) => {
   console.log('Erro connection to mongo', err);
 });
 
-server.listen(() => {
-  console.log(`Server running`);
+const hostname = 'localhost';
+const port = 3000;
+
+// const hostname = '206.189.126.249';
+// const port = process.env.PORT || "3000";
+// app.set("port", port);
+
+server.listen(port, hostname, () => {
+  console.log(`Listening on host`);
 });

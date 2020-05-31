@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
+import * as Sentry from 'sentry-expo';
+import Constants from 'expo-constants';
 
 import ChatNavigator from './src/navigation/ChatNavigator';
 import { Provider as AuthProvider } from './src/context/AuthContext';
@@ -12,6 +14,16 @@ import { Provider as GroupsProvider } from './src/context/GroupsContext';
 import { Provider as YoutubeProvider } from './src/context/YoutubeContext';
 import { setNavigator } from './src/components/navigationRef';
 import { init } from './src/database/db';
+
+// const sentryAuthToken = 'ef9d17b7b1964db8bba5712827dbe6f5a3fad9b5e43747cfad0c7700d4454d7c';
+
+Sentry.init({
+  dsn: 'hey-zn',
+  enableInExpoDevelopment: true,
+  debug: true,
+});
+
+Sentry.setRelease(Constants.manifest.revisionId);
 
 init().then(() => {
   console.log('Successfully initialized database');

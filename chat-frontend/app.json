@@ -37,6 +37,18 @@
         "WRITE_EXTERNAL_STORAGE"
       ],
       "googleServicesFile": "./google-services.json"
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "hey-zn",
+            "project": "hey-zn",
+            "authToken": "ef9d17b7b1964db8bba5712827dbe6f5a3fad9b5e43747cfad0c7700d4454d7c"
+          }
+        }
+      ]
     }
   }
 }

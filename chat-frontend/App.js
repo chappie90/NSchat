@@ -18,12 +18,13 @@ import { init } from './src/database/db';
 // const sentryAuthToken = 'ef9d17b7b1964db8bba5712827dbe6f5a3fad9b5e43747cfad0c7700d4454d7c';
 
 Sentry.init({
-  dsn: 'hey-zn',
+  dsn: 'https://dcfc8929b68542a5923769730189dd81@o400837.ingest.sentry.io/5259628',
   enableInExpoDevelopment: true,
   debug: true,
 });
 
 Sentry.setRelease(Constants.manifest.revisionId);
+
 
 init().then(() => {
   console.log('Successfully initialized database');

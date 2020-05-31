@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "Nora & Stoyan",
-    "slug": "nschat",
+    "name": "Hey",
+    "slug": "hey-chat",
+    "version": "1.0.0",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
@@ -25,11 +26,11 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.stoyangarov.chat-app-course",
+      "bundleIdentifier": "com.hey-chat",
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "com.stoyangarov.chat_app_course",
+      "package": "com.hey-chat",
       "versionCode": 1,
       "permissions": [
         "CAMERA",

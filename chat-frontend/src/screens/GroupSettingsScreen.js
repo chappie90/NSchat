@@ -75,12 +75,16 @@ const GroupSettingsScreen = (props) => {
     // });
   };
 
+
+
   const onDismissHandler = () => {
     // resetGroup();
   };
 
   useEffect(() => {
-    setName(group.name);
+    if (group) {
+      setName(group.name);
+    }  
   }, [group]);
 
   useEffect(() => {
@@ -348,7 +352,7 @@ const GroupSettingsScreen = (props) => {
           <TouchableOpacity activeOpacity={1}>
             <View>
               <View>
-                {group.avatar && group.avatar.imagePath ?
+                {group?.avatar && group.avatar.imagePath ?
                   <Animated.Image 
                     placeholderStyle={styles.placeholder}
                     source={{ uri: group.avatar.imagePath }}
@@ -390,7 +394,7 @@ const GroupSettingsScreen = (props) => {
                 style={{ width: '100%', height: '100%'}}
                 source={require("../../assets/avatar-small.png")} />
             </View>
-            <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{group.groupOwner}</BodyText>
+            <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{group?.groupOwner}</BodyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 8, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>
             <BodyText style={{ fontSize: 16, marginRight: 15, marginBottom: 5, color: Colors.primary }}>Members</BodyText>
@@ -401,7 +405,7 @@ const GroupSettingsScreen = (props) => {
               </TouchableOpacity>
           </View>
           <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingBottom: 15}}>
-            {group.participants && group.participants.map((item, index) => (
+            {group?.participants && group?.participants.map((item, index) => (
               <View key={index} style={styles.participant}>
                  <View style={{ overflow: 'hidden', marginBottom: 2, width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
                   <Image

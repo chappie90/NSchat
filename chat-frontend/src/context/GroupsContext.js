@@ -154,6 +154,6 @@ export const { Context, Provider } = createDataContext(
   },
   { 
     currentGroupId: '',
-    group: {},
+    group: null,
   }
 );

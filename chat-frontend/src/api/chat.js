@@ -1,9 +1,12 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import { AsyncStorage } from 'react-native';
 
 const instance = axios.create({
   baseURL: 'http://178.62.22.9/' 
 });
+
+axiosRetry(instance, { retries: 3 });
 
 instance.interceptors.request.use(
   async (config) => {

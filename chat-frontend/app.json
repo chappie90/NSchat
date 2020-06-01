@@ -2,7 +2,6 @@
   "expo": {
     "name": "HeyChatApp",
     "slug": "hey-chat",
-    "version": "1.0.0",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
@@ -10,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -26,11 +25,11 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.heychatapp",
+      "bundleIdentifier": "com.heychat.myapp",
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "com.heychatapp",
+      "package": "com.heychat.myapp",
       "versionCode": 1,
       "permissions": [
         "CAMERA",

@@ -39,12 +39,11 @@ router.post(
   checkAuth, 
   multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('profile'),
   async (req, res, next) => {
-    const username = req.body.user;
-    const url = req.protocol + '://' + req.get('host');
-    const imgPath = url + '/public/uploads/' + req.file.filename;
-    const base64 = req.body.base64;
-
     try {
+      const username = req.body.user;
+      const url = req.protocol + '://' + req.get('host');
+      const imgPath = url + '/public/uploads/' + req.file.filename;
+      const base64 = req.body.base64;
   
       let cloudinaryData = {
         file: base64,
@@ -59,16 +58,16 @@ router.post(
 
       let urlParts = response.data.url.split('/');
       urlParts.splice(-2, 1);
-      let url = urlParts.join('/');
+      let cloudUrl = urlParts.join('/');
 
       const user = await User.findOneAndUpdate(
         { username: username },
         { profile: {
             imgPath,
             imgName: req.file.filename,
-            cloudinaryImgPath_150: setCloudinaryTransformUrl(url, 150),
-            cloudinaryImgPath_200: setCloudinaryTransformUrl(url, 200),
-            cloudinaryImgPath_400: setCloudinaryTransformUrl(url, 400)
+            cloudinaryImgPath_150: setCloudinaryTransformUrl(cloudUrl, 150),
+            cloudinaryImgPath_200: setCloudinaryTransformUrl(cloudUrl, 200),
+            cloudinaryImgPath_400: setCloudinaryTransformUrl(cloudUrl, 400)
         } },
         { new: true }
       );

@@ -141,7 +141,7 @@ const ContactsListScreen = ({ navigation }) => {
                   refreshing={isLoading}
                   tintColor={Colors.primary} />
               }
-              data={localContacts}
+              data={localContacts.sort((a, b) => a.user.username.localeCompare(b.user.username))}
                onEndReached={() => {
                 if (localContacts.length < contacts.length) {
                   loadMoreContacts();
@@ -238,7 +238,7 @@ const ContactsListScreen = ({ navigation }) => {
                   refreshing={isLoading}
                   tintColor={Colors.primary} />
               }
-              data={activeUsers}
+              data={activeUsers.sort((a, b) => a.user.username.localeCompare(b.user.username))}
               keyExtractor={(item, index) => index.toString()}
               renderItem={ (rowData, rowMap) => {
                 const chat = previousChats.filter(c => c.contact === rowData.item.user.username);

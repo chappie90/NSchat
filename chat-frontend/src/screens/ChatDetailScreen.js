@@ -736,7 +736,9 @@ const ChatDetailScreen = ({ navigation }) => {
             position: 'absolute',
             bottom: 0
           }}>
-            <Text style={{ color: '#fff', fontSize: 16 }}>{props.currentMessage.user.name}</Text>
+            <Text style={{ color: '#fff', fontWeight: Platform.OS === 'ios' ? '100' : '400', fontSize: 16 }}>
+              {props.currentMessage.user.name.charAt(0).toUpperCase()}
+            </Text>
           </View>
           <View style={{ paddingBottom: 2, marginRight: 60, marginLeft: 52 }}>
             <View style={{ borderRadius: 15, backgroundColor: '#E8E8E8' }}>
@@ -819,7 +821,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const renderAvatar = (avatarProps) => {
     return (
       <Avatar { ...avatarProps }
-        imageStyle={{ left: styles.avatar }} />
+        imageStyle={{ left: styles.avatar}} />
     );
   };
 

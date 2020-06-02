@@ -60,13 +60,13 @@ mongoose.connection.on('error', (err) => {
   console.log('Erro connection to mongo', err);
 });
 
-const hostname = 'localhost';
+// const hostname = 'localhost';
 const port = 3000;
 
 // const hostname = '206.189.126.249';
 // const port = process.env.PORT || "3000";
 // app.set("port", port);
 
-server.listen(port, hostname, () => {
+server.listen(port, () => {
   console.log(`Listening on host`);
 });

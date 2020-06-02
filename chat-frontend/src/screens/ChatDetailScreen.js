@@ -96,7 +96,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const statusBarHeight = Constants.statusBarHeight;
 
   useEffect(() => {
-    if (group) {
+    if (group && group.type === 'group') {
       navigation.setParams({
         username: group.name,
         image: group.avatar ? group.avatar.imagePath : null
@@ -983,7 +983,6 @@ const ChatDetailScreen = ({ navigation }) => {
 ChatDetailScreen.navigationOptions = ({ navigation }) => {
   const { state: { params = {} } } = navigation;
       {/* title:  `${params.username} ${params.isTyping ? params.isTyping : ''}`  || '' */}
-
   return {
     headerLeft: (
       <TouchableOpacity onPress={() => navigation.navigate(params.goBack)}>
@@ -1019,7 +1018,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
         alignItems: 'center',
         paddingLeft: 45,
         paddingTop: 20 }}>
-        <FadeViewAnim style={{ overflow: 'hidden',  backgroundColor: '#F0F0F0', width: 40, height: 40, borderRadius: 20 }}>
+        <View style={{ overflow: 'hidden',  backgroundColor: '#F0F0F0', width: 40, height: 40, borderRadius: 20 }}>
           {params.image ? (
             <Image source={{ uri: params.image }} style={{ width: '100%', height: '100%' }} />
           ) : (
@@ -1027,7 +1026,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
               style={{ width: '100%', height: '100%' }} 
               source={params.type === 'private' ? require('../../assets/avatar-small.png') : require('../../assets/group-small.png')} />
           )}
-        </FadeViewAnim>
+        </View>
         <HeadingText
           numberOfLines={1}
           style={{ 

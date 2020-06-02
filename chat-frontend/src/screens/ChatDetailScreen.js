@@ -96,7 +96,7 @@ const ChatDetailScreen = ({ navigation }) => {
   const statusBarHeight = Constants.statusBarHeight;
 
   useEffect(() => {
-    if (!Object.keys(group).length === 0 && group.constructor === Object) {
+    if (group) {
       navigation.setParams({
         username: group.name,
         image: group.avatar ? group.avatar.imagePath : null

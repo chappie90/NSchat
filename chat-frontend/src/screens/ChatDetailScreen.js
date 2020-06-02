@@ -909,7 +909,7 @@ const ChatDetailScreen = ({ navigation }) => {
                   }
                   if (isCloseToTop(nativeEvent)) {    
                     let chatId = navigation.getParam('chatId') || chatIdRef.current;
-                    if (chat[chatId].length > 30 && !allMessagesLoaded) {
+                    if (chatId && chat[chatId].length > 30 && !allMessagesLoaded) {
                       loadMoreMessages();
                     }
                     

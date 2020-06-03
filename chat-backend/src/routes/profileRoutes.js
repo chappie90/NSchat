@@ -52,7 +52,7 @@ router.post(
         upload_preset: 'ml_default'
       };     
 
-      if (req.file.size > 8 * 1024 * 1024) {
+      if (req.file.size > 6 * 1024 * 1024) {
         let imageUrl = imgPath;
         useOriginalImage = true;
       } else {

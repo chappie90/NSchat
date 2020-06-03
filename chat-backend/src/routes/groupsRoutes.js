@@ -112,12 +112,12 @@ router.patch('/group/leave', checkAuth, async (req, res) => {
 router.post(
   '/group/image/update', 
   checkAuth, 
-  multer({ storage: storage }).single('groupImage'),
+  multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('groupImage'),
   async (req, res) => {
     const username = req.body.username;
     const groupId = req.body.chatId;
 
-    let imgPath, cloudinaryUrl;
+    let imgPath, cloudinaryUrl, useOriginalImage;
 
     try {
 
@@ -131,15 +131,21 @@ router.post(
           upload_preset: 'ml_default'
         };
 
-        const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+        if (req.file.size > 8 * 1024 * 1024) {
+          let imageUrl = imgPath;
+          useOriginalImage = true;
+        } else {
 
-        if (response.status !== 200) {
-          return res.status(422).send({ error: 'Could not update image' });
+          const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+
+          if (response.status !== 200) {
+            return res.status(422).send({ error: 'Could not update image' });
+          }
+
+          let urlParts = response.data.url.split('/');
+          urlParts.splice(-2, 1);
+          cloudinaryUrl = urlParts.join('/');
         }
-
-        let urlParts = response.data.url.split('/');
-        urlParts.splice(-2, 1);
-        cloudinaryUrl = urlParts.join('/');
       }
 
       const group = await Group.findOneAndUpdate(
@@ -147,9 +153,9 @@ router.post(
         { avatar: {
           imagePath: imgPath,
           imageName: req.file.filename,
-          cloudinaryImgPath_150: setCloudinaryTransformUrl(cloudinaryUrl, 150),
-          cloudinaryImgPath_200: setCloudinaryTransformUrl(cloudinaryUrl, 200),
-          cloudinaryImgPath_400: setCloudinaryTransformUrl(cloudinaryUrl, 400)
+          cloudinaryImgPath_150: useOriginalImage ? imageUrl : setCloudinaryTransformUrl(cloudinaryUrl, 150),
+          cloudinaryImgPath_200: useOriginalImage ? imageUrl : setCloudinaryTransformUrl(cloudinaryUrl, 200),
+          cloudinaryImgPath_400: useOriginalImage ? imageUrl : setCloudinaryTransformUrl(cloudinaryUrl, 400)
         } },
         { new: true }
       ).populate('participants.user');

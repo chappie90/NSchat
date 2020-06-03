@@ -187,7 +187,7 @@ const AddGroupScreen = props => {
   const renderResults = () => {
     return (
       <FlatList
-        data={groupContacts}
+        data={groupContacts.sort((a, b) => a.user.username.localeCompare(b.user.username))}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {

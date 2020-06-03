@@ -101,6 +101,8 @@ const ChatDetailScreen = ({ navigation }) => {
         username: group.name,
         image: group.avatar ? group.avatar.imagePath : null
       });
+
+      group.participants.sort((a, b) => a.user.username.localeCompare(b.user.username));
     }
   }, [group]);
 

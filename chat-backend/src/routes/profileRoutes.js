@@ -37,11 +37,10 @@ const storage = multer.diskStorage({
 router.post(
   '/image/upload', 
   checkAuth, 
-  multer({ storage: storage, limits: { fieldSize: 10 * 1024 * 1024 } }).single('profile'),
+  multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('profile'),
   async (req, res, next) => {
     try {
-
-      console.log(req.file)
+      let useOriginalImage, cloudUrl;
 
       const username = req.body.user;
       const url = req.protocol + '://' + req.get('host');
@@ -53,24 +52,29 @@ router.post(
         upload_preset: 'ml_default'
       };     
 
-      const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
+      if (req.file.size > 10 * 1024 * 1024) {
+        let imageUrl = imgPath;
+        useOriginalImage = true;
+      } else {
+        const response = await axios.post(CLOUDINARY_URL, cloudinaryData);
 
-      if (response.status !== 200) {
-        return res.status(422).send({ error: 'Could not save image' });
-      }
+        if (response.status !== 200) {
+          return res.status(422).send({ error: 'Could not save image' });
+        }
 
-      let urlParts = response.data.url.split('/');
-      urlParts.splice(-2, 1);
-      let cloudUrl = urlParts.join('/');
+        let urlParts = response.data.url.split('/');
+        urlParts.splice(-2, 1);
+        cloudUrl = urlParts.join('/');
+      }   
 
       const user = await User.findOneAndUpdate(
         { username: username },
         { profile: {
             imgPath,
             imgName: req.file.filename,
-            cloudinaryImgPath_150: setCloudinaryTransformUrl(cloudUrl, 150),
-            cloudinaryImgPath_200: setCloudinaryTransformUrl(cloudUrl, 200),
-            cloudinaryImgPath_400: setCloudinaryTransformUrl(cloudUrl, 400)
+            cloudinaryImgPath_150: useOriginalImage ? imageUrl : setCloudinaryTransformUrl(cloudUrl, 150),
+            cloudinaryImgPath_200: useOriginalImage ? imageUrl : setCloudinaryTransformUrl(cloudUrl, 200),
+            cloudinaryImgPath_400: useOriginalImage ? imageUrl : setCloudinaryTransformUrl(cloudUrl, 400)
         } },
         { new: true }
       );

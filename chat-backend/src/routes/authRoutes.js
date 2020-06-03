@@ -9,6 +9,12 @@ router.post('/signup', async (req, res) => {
   const { username, password } = req.body;
 
   try {
+    const checkAvailability = await User.find({ username: username });
+
+    if (checkAvailability) {
+      return res.status(422).send({ message: 'Username already taken' });
+    }
+
     const user = new User({ username, password, contacts: [] });
     await user.save();
 
@@ -18,7 +24,7 @@ router.post('/signup', async (req, res) => {
     console.log(err);
     if (err.code === 11000) {
       console.log(err);
-      return res.status(422).send({ message: 'Username already taken'});
+      return res.status(422).send({ message: 'Username already taken' });
     } else {
       return res.status(422).send({ message: 'Invalid username or password' });
     }

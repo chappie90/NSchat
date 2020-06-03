@@ -85,6 +85,7 @@ const GroupSettingsScreen = (props) => {
     if (group) {
       setName(group.name);
     }  
+
   }, [group]);
 
   useEffect(() => {
@@ -407,11 +408,20 @@ const GroupSettingsScreen = (props) => {
           <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingBottom: 15}}>
             {group?.participants && group?.participants.map((item, index) => (
               <View key={index} style={styles.participant}>
+                {item.user.profile ? (
+                  <View style={{ overflow: 'hidden', width: 44, marginBottom: 2, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
+                    <Image
+                      style={{ width: '100%', height: '100%' }}
+                      source={{ uri: item.user.profile.cloudinaryImgPath_150 }}
+                    />
+                  </View>
+                ) : (
                  <View style={{ overflow: 'hidden', marginBottom: 2, width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
                   <Image
                     style={{ width: '100%', height: '100%' }}
                     source={require("../../assets/avatar-small.png")} />
                   </View>
+                )}
                 <BodyText numberOfLines={1} style={{ fontSize: 15, color: Colors.darkGrey }}>{item.user.username}</BodyText>
               </View>
             ))}      

@@ -37,9 +37,12 @@ const storage = multer.diskStorage({
 router.post(
   '/image/upload', 
   checkAuth, 
-  multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } }).single('profile'),
+  multer({ storage: storage, limits: { fieldSize: 10 * 1024 * 1024 } }).single('profile'),
   async (req, res, next) => {
     try {
+
+      console.log(req.file)
+
       const username = req.body.user;
       const url = req.protocol + '://' + req.get('host');
       const imgPath = url + '/public/uploads/' + req.file.filename;

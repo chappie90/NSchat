@@ -412,7 +412,7 @@ const GroupSettingsScreen = (props) => {
                     style={{ width: '100%', height: '100%' }}
                     source={require("../../assets/avatar-small.png")} />
                   </View>
-                <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{item.user.username}</BodyText>
+                <BodyText numberOfLines={1} style={{ fontSize: 15, color: Colors.darkGrey }}>{item.user.username}</BodyText>
               </View>
             ))}      
           </View>
@@ -463,7 +463,8 @@ const styles = StyleSheet.create({
   participant: {
     alignItems: 'center',
     width: 50,
-    marginLeft: 15
+    marginLeft: 15,
+    marginBottom: 8
   },
   heading: {
     color: '#fff',

@@ -388,7 +388,7 @@ const GroupSettingsScreen = (props) => {
         </View>
         <View style={{backgroundColor: '#fff'}}>
           <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Creator</BodyText> 
-          <View style={styles.participant}>
+          <View style={styles.creator}>
             <View style={{ overflow: 'hidden', marginBottom: 2, width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
               <Image
                 style={{ width: '100%', height: '100%'}}
@@ -459,6 +459,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
     borderBottomWidth: 1,
     borderBottomColor: '#DCDCDC'
+  },
+  creator: {
+    marginLeft: 15
   },
   participant: {
     alignItems: 'center',

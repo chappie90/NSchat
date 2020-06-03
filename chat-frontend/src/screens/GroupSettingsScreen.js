@@ -390,11 +390,20 @@ const GroupSettingsScreen = (props) => {
         <View style={{backgroundColor: '#fff'}}>
           <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Creator</BodyText> 
           <View style={styles.creator}>
+          {group?.participants.find(item => item.user.username === group.groupOwner).user.profile ? (
+            <View style={{ overflow: 'hidden', width: 44, marginBottom: 2, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
+              <Image
+                style={{ width: '100%', height: '100%' }}
+                source={{ uri: group.participants.find(item => item.user.username === group.groupOwner).user.profile.cloudinaryImgPath_150 }}
+              />
+            </View>
+          ) : (
             <View style={{ overflow: 'hidden', marginBottom: 2, width: 44, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0'}}>
               <Image
                 style={{ width: '100%', height: '100%'}}
                 source={require("../../assets/avatar-small.png")} />
             </View>
+          )}
             <BodyText style={{ fontSize: 15, color: Colors.darkGrey }}>{group?.groupOwner}</BodyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 8, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 15 }}>

@@ -39,7 +39,8 @@ const searchContacts = dispatch => async ({ username, search }) => {
   try {
     const response = await chatApi.post('/contacts/search', { username, search });
     if (response.data.contacts !== undefined || response.data.contacts.length != 0) {
-      dispatch({ type: 'search_contacts', payload: response.data.contacts });
+      const contacts = response.data.contacts.sort((a, b) => a.username.localeCompare(b.username));
+      dispatch({ type: 'search_contacts', payload: contacts });
     }
   } catch (err) {
     console.log(err);

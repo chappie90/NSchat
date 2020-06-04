@@ -647,7 +647,7 @@ const ChatDetailScreen = ({ navigation }) => {
 
   const AdminBubble = props => {
     return (
-      <View style={{ alignSelf: 'center', marginVertical: 8 }}>
+      <View style={{ alignSelf: 'center', marginVertical: 8, marginHorizontal: 12 }}>
           <Text style={{ 
             borderRadius: 10, 
             overflow: 'hidden', 

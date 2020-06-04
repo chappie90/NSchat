@@ -390,7 +390,7 @@ const GroupSettingsScreen = (props) => {
         <View style={{backgroundColor: '#fff'}}>
           <BodyText style={{ fontSize: 16, marginLeft: 15, marginTop: 8, marginBottom: 5, color: Colors.primary }}>Creator</BodyText> 
           <View style={styles.creator}>
-          {group?.participants.find(item => item.user.username === group.groupOwner).user.profile ? (
+          {group?.participants?.find(item => item.user.username === group.groupOwner).user.profile ? (
             <View style={{ overflow: 'hidden', width: 44, marginBottom: 2, height: 44, borderRadius: 22, backgroundColor: '#F0F0F0' }}>
               <Image
                 style={{ width: '100%', height: '100%' }}

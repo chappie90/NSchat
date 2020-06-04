@@ -1035,7 +1035,7 @@ ChatDetailScreen.navigationOptions = ({ navigation }) => {
           numberOfLines={1}
           style={{ 
             marginLeft: 10, 
-            maxWidth: '60%', 
+            maxWidth: '55%', 
             fontFamily: 'open-sans-semi-bold', 
             fontSize: 17,
             color: '#202020' }}>

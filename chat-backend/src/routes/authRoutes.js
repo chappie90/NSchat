@@ -51,6 +51,26 @@ router.post('/signin', async (req, res) => {
     console.log(err);
     return res.status(422).send({ message: 'Invalid username or password' });
   }
-})
+});
+
+router.patch('/signout', async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findOneAndUpdate(
+      { _id: userId },
+      { expoToken: null },
+      { new: true }
+    );
+
+    if (!user) {
+      return  res.status(422).send({ message: 'Something went wrong with your request' });
+    }
+
+    res.status(200).send({ message: 'User successfully signed out' });
+  } catch (err) {
+    console.log(err);
+    return res.status(422).send({ message: 'Could not sign out' });
+  }
+});
 
 module.exports = router;

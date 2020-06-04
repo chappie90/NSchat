@@ -94,9 +94,11 @@ const clearErrorMessage = dispatch => () => {
   dispatch({ type: 'clear_error' });
 };
 
-const signout = dispatch => async () => {
+const signout = dispatch => async (userId) => {
   try {
     await AsyncStorage.removeItem('data');
+
+    const response = await chatApi.patch('/signout', { userId });
 
     dispatch({ type: 'signout' });
 

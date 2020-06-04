@@ -12,7 +12,7 @@ import ImagePicker from '../components/ImagePicker';
 
 const AccountScreen = ({ navigation }) => {
   const {
-    state: { username }, 
+    state: { username, userId }, 
     signout,
     setStatusBarColor 
   } = useContext(AuthContext);
@@ -27,7 +27,7 @@ const AccountScreen = ({ navigation }) => {
       <View style={styles.background} />
       <View style={styles.innerContainer}>
         <View style={styles.signout}>
-          <TouchableOpacity onPress={signout}>
+          <TouchableOpacity onPress={() => signout(userId)}>
             <HeadingText style={styles.text}>Sign Out</HeadingText>
           </TouchableOpacity>
         </View>

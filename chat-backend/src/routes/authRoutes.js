@@ -11,7 +11,7 @@ router.post('/signup', async (req, res) => {
   try {
     const checkAvailability = await User.find({ username: username });
 
-    if (checkAvailability) {
+    if (checkAvailability.length > 0) {
       return res.status(422).send({ message: 'Username already taken' });
     }
 

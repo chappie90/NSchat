@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { AsyncStorage } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -12,10 +12,22 @@ import ImagePicker from '../components/ImagePicker';
 
 const AccountScreen = ({ navigation }) => {
   const {
-    state: { username, userId }, 
+    state: { username, userId, socketState }, 
     signout,
     setStatusBarColor 
   } = useContext(AuthContext);
+  const socket = useRef(null);
+
+   useEffect(() => {
+    if (socketState) {
+      socket.current = socketState; 
+    }
+  }, [socketState]);
+
+  const signoutHandler = () => {
+    socket.current.emit('offline');
+    signout(userId);
+  }; 
 
   const willFocusHandler = () => {
     setStatusBarColor(1);
@@ -27,7 +39,7 @@ const AccountScreen = ({ navigation }) => {
       <View style={styles.background} />
       <View style={styles.innerContainer}>
         <View style={styles.signout}>
-          <TouchableOpacity onPress={() => signout(userId)}>
+          <TouchableOpacity onPress={signoutHandler}>
             <HeadingText style={styles.text}>Sign Out</HeadingText>
           </TouchableOpacity>
         </View>

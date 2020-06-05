@@ -12,6 +12,7 @@ const privateMessageSchema = new mongoose.Schema({
     // createdAt: { type: Date, default: Date.now() }
   },
   read: { type: Boolean, default: false },
+  delivered: { type: Boolean, default: true },
   deleted: { type: Boolean, default: false },
   replyTo: { 
     messageId: String,

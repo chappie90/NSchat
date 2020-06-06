@@ -66,7 +66,7 @@ module.exports = function(io) {
       io.to(socketId).emit('online', onlineContacts);
     } catch (err) {
       console.log(err);
-      return res.status(422).send({ error: 'Something went wrong with your request' });
+      // return res.status(422).send({ error: 'Something went wrong with your request' });
     }
 
     socket.on('start_typing', data => {

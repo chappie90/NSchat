@@ -141,7 +141,7 @@ const AddGroupScreen = props => {
                     <Image
                       style={{ width: '100%', height: '100%' }}
                       placeholderStyle={styles.placeholder}
-                      source={{ uri: item.user.profile.imgPath }}
+                      source={{ uri: item.user.profile.profile.cloudinaryImgPath_150 }}
                     />
                   ) : (
                     <Image
@@ -331,7 +331,7 @@ const AddGroupScreen = props => {
                        <View style={{ overflow: 'hidden', width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff'}}>
                         <Image
                           style={{ width: '100%', height: '100%' }}
-                          source={{ uri: contact.user.profile.imgPath }}
+                          source={{ uri: contact.user.profile.cloudinaryImgPath_150 }}
                         />
                       </View>
                       <BodyText style={{ fontSize: 15, color: "#fff" }} key={item.contactId}>

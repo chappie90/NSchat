@@ -8,6 +8,10 @@ const profileReducer = (state, action) => {
   switch (action.type) {
     case 'update_image':
       return { ...state, profileImage: action.payload };
+    case 'reset_state':
+      return {
+        profileImage: null
+      };
     default:
       return state;
   }
@@ -113,8 +117,12 @@ const deleteImage = dispatch => async (user) => {
   }
 };
 
+const resetProfileState = dispatch => async () => {
+  dispatch({ type: 'reset_state' });
+};
+
 export const { Context, Provider } = createDataContext(
   profileReducer,
-  { saveImage, getImage, deleteImage },
+  { saveImage, getImage, deleteImage, resetProfileState },
   { profileImage: null }
 );

@@ -550,36 +550,6 @@ module.exports = function(io) {
       }
     });
 
-    socket.on('offline', async () => {
-      console.log('User disconnected');
-      const user = await User.findOne({ username }).populate('contacts.user');
-
-      if (!user) {
-        return;
-      }
-      const contacts = user.contacts.map(c => c.user.username);
-
-      for (const c of contacts) {
-        for (let [key, value] of Object.entries(users)) {
-          if (c === key) {
-            if (!onlineContacts.includes(key)) {
-              onlineContacts.push(key);
-            }
-            users[key].join(username); 
-          } else {
-            onlineContacts = onlineContacts.filter(item => item !== key);
-          }
-        }
-      }
-
-      socket.broadcast.to(username).emit('offline', username);
-      io.of('/').in(username).clients((error, socketIds) => {
-        if (error) throw error;
-        socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(username));
-      });
-      delete users[username];
-    });
-
     socket.on('disconnect', async () => {
       console.log('User disconnected');
       // console.log(io.sockets.adapter.rooms);

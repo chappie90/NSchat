@@ -6,6 +6,9 @@ import { NavigationEvents } from 'react-navigation';
 
 import Colors from '../constants/colors';
 import { Context as AuthContext } from '../context/AuthContext';
+import { Context as ChatContext } from '../context/ChatContext';
+import { Context as ContactsContext } from '../context/ContactsContext';
+import { Context as ProfileContext } from '../context/ProfileContext';
 import PrimaryButton from '../components/PrimaryButton';
 import HeadingText from '../components/HeadingText';
 import ImagePicker from '../components/ImagePicker';
@@ -16,6 +19,8 @@ const AccountScreen = ({ navigation }) => {
     signout,
     setStatusBarColor 
   } = useContext(AuthContext);
+  const { resetContactsState } = useContext(ContactsContext);
+  const { resetProfileState } = useContext(ProfileContext);
   const socket = useRef(null);
 
    useEffect(() => {
@@ -25,8 +30,15 @@ const AccountScreen = ({ navigation }) => {
   }, [socketState]);
 
   const signoutHandler = () => {
-    socket.current.emit('offline');
-    signout(userId);
+    if (socket.current) {
+      socket.current.removeAllListeners();
+      socket.current.disconnect();
+    } 
+    signout(userId).
+      then(response => {
+        resetContactsState();
+        resetProfileState();
+      });   
   }; 
 
   const willFocusHandler = () => {

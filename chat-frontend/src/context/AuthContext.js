@@ -15,7 +15,14 @@ const authReducer = (state, action) => {
         errorMessageSignup: ''  
       };
     case 'signout':
-      return { token: null, username: null, errorMessage: '' };
+      return {
+        token: null, 
+        username: null, 
+        userId: null,  
+        errorMessageSignin: '', 
+        errorMessageSignup: '',
+        socketState: null
+      };
       // return { state: undefined };
     case 'add_error_signin':
       return { ...state, errorMessageSignin: action.payload };

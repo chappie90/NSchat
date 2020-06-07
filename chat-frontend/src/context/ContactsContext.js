@@ -22,6 +22,12 @@ const contactsReducer = (state, action) => {
       return { ...state, onlineContacts: [ ...state.onlineContacts, ...onlineUsers ] };
     case 'user_is_offline':
       return { ...state, onlineContacts: state.onlineContacts.filter(item => item !== action.payload) };
+    case 'reset_state':
+      return {
+        searchResults: [], 
+        contacts: [],
+        onlineContacts: []
+      };
     default:
       return state;  
   }
@@ -77,6 +83,10 @@ const getContacts = dispatch => async ({ username }) => {
   }
 };
 
+const resetContactsState = dispatch => async () => {
+  dispatch({ type: 'reset_state' });
+};
+
 export const { Context, Provider } = createDataContext(
   contactsReducer,
   { 
@@ -85,7 +95,8 @@ export const { Context, Provider } = createDataContext(
     addContact, 
     getContacts,
     getActiveStatus,
-    userIsOffline
+    userIsOffline,
+    resetContactsState
   },
   { 
     searchResults: [], 
